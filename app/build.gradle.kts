@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -19,6 +20,7 @@ android {
             useSupportLibrary = true
         }
         buildConfigField(type = "String", name = "GEMINI_API_KEY", value = project.findProperty("GEMINI_API_KEY").toString())
+        buildConfigField(type = "String", name = "WEB_CLIENT_ID", value = project.findProperty("WEB_CLIENT_ID").toString())
     }
 
     buildFeatures {
@@ -63,6 +65,8 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.auth)
+    implementation(libs.firebase.firestore)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -95,4 +99,9 @@ dependencies {
 
     implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
     implementation(libs.androidx.compose.material3.adaptive.navigation)
+
+    // navigation
+    implementation(libs.androidx.navigation.compose)
+
+    implementation(libs.play.services.auth.v2060)
 }

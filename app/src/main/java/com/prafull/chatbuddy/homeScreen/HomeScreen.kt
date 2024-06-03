@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -86,7 +87,7 @@ fun HomeScreen() {
         ) {
             items(state.value.messages) { message ->
                 LazyRow(
-                        modifier = Modifier.padding(all = 8.dp)
+                        modifier = Modifier.padding(horizontal = 8.dp)
                 ) {
                     items(message.imageUri) { imageUri ->
                         AsyncImage(
@@ -94,7 +95,7 @@ fun HomeScreen() {
                                 contentDescription = null,
                                 modifier = Modifier
                                     .padding(4.dp)
-                                    .requiredSize(72.dp)
+                                    .requiredWidth(72.dp)
                         )
                     }
                 }
@@ -118,7 +119,6 @@ fun HomeScreen() {
                     )
                 }
             }
-
             PromptField(imageUris = {
                 imageUris.add(it)
             }) { prompt ->

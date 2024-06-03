@@ -8,9 +8,6 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
-    single {
-
-    }
     single<GenerativeModel> {
         GenerativeModel(
                 modelName = "gemini-1.5-flash-latest",
@@ -20,5 +17,5 @@ val appModule = module {
                 }
         )
     }
-    viewModel { ChatViewModel(get()) }
+    viewModel { ChatViewModel() }
 }

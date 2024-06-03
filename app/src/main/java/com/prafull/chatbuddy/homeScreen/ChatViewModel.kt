@@ -13,11 +13,12 @@ import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.type.asTextOrNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.util.UUID
 
-class ChatViewModel(
-    private val generativeModel: GenerativeModel
-): ViewModel() {
+class ChatViewModel : ViewModel(), KoinComponent{
+    private val generativeModel: GenerativeModel by inject()
     private val chat = generativeModel.startChat(
             history = listOf()
     )
