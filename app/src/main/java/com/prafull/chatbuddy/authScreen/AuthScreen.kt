@@ -44,39 +44,62 @@ fun AuthScreen(
         .build()
     val googleSignInClient = getClient(context, gso)
     // Google SignIn Launcher
-    val signInLauncher = rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
-        val googleSignInAccountTask = getSignedInAccountFromIntent(result.data)
-        val exception = googleSignInAccountTask.exception
-        if (googleSignInAccountTask.isSuccessful) {
-            try {
-                val account = googleSignInAccountTask.getResult(ApiException::class.java)!!
-                mAuth.signInWithCredential(GoogleAuthProvider.getCredential(account.idToken, null))
-                    .addOnCompleteListener { authResultTask ->
-                        if (authResultTask.isSuccessful) {
-                            authViewModel.loginUser(account.displayName ?: "User", account.email ?: "")
+    val signInLauncher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.StartActivityForResult()) { result ->
+            val googleSignInAccountTask = getSignedInAccountFromIntent(result.data)
+            val exception = googleSignInAccountTask.exception
+            if (googleSignInAccountTask.isSuccessful) {
+                try {
+                    val account = googleSignInAccountTask.getResult(ApiException::class.java)!!
+                    mAuth.signInWithCredential(
+                            GoogleAuthProvider.getCredential(
+                                    account.idToken,
+                                    null
+                            )
+                    )
+                        .addOnCompleteListener { authResultTask ->
+                            if (authResultTask.isSuccessful) {
+                                authViewModel.loginUser(
+                                        account.displayName ?: "User",
+                                        account.email ?: ""
+                                )
 
-                            Toast.makeText(context, "Google SignIn Successful", Toast.LENGTH_SHORT).show()
-                            navController.navigate(MajorScreens.App.name)
-                        } else {
-                            Toast.makeText(context, "Google SignIn Failed", Toast.LENGTH_SHORT).show()
-                            authViewModel.loading = false
+                                Toast.makeText(
+                                        context,
+                                        "Google SignIn Successful",
+                                        Toast.LENGTH_SHORT
+                                ).show()
+                                navController.navigate(MajorScreens.App.name)
+                            } else {
+                                Toast.makeText(context, "Google SignIn Failed", Toast.LENGTH_SHORT)
+                                    .show()
+                                authViewModel.loading = false
+                            }
                         }
-                    }
-            } catch (e: Exception) {
+                } catch (e: Exception) {
+                    authViewModel.loading = false
+                    Toast.makeText(context, "Google SignIn Failed task", Toast.LENGTH_SHORT).show()
+                }
+            } else {
                 authViewModel.loading = false
-                Toast.makeText(context, "Google SignIn Failed task", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Google SignIn Failed $exception", Toast.LENGTH_SHORT)
+                    .show()
             }
-        } else {
-            authViewModel.loading = false
-            Toast.makeText(context, "Google SignIn Failed $exception", Toast.LENGTH_SHORT).show()
         }
-    }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceEvenly, horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(painter = painterResource(id = R.drawable.logo), contentDescription = "logo", colorFilter = ColorFilter.tint(
-                    color = Color.Cyan
-            ))
+        Column(
+                Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Image(
+                    painter = painterResource(id = R.drawable.logo),
+                    contentDescription = "logo",
+                    colorFilter = ColorFilter.tint(
+                            color = Color.Cyan
+                    )
+            )
             OutlinedButton(onClick = {
                 signInLauncher.launch(googleSignInClient.signInIntent)
             }, enabled = !authViewModel.loading) {

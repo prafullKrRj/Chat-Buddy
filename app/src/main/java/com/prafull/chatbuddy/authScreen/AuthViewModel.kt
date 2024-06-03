@@ -10,7 +10,7 @@ import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class AuthViewModel(): ViewModel(), KoinComponent {
+class AuthViewModel : ViewModel(), KoinComponent {
     private val repository: AuthRepository by inject()
 
     var loading by mutableStateOf(false)

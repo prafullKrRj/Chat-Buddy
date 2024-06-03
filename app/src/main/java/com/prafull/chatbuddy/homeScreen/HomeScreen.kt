@@ -55,7 +55,7 @@ import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun HomeScreen() {
-    val viewModel:ChatViewModel = getViewModel()
+    val viewModel: ChatViewModel = getViewModel()
     val coroutineScope = rememberCoroutineScope()
     val imageRequestBuilder = ImageRequest.Builder(LocalContext.current)
     val imageLoader = ImageLoader.Builder(LocalContext.current).build()
@@ -64,22 +64,24 @@ fun HomeScreen() {
 
     val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
 
-    LaunchedEffect(state){
+    LaunchedEffect(state) {
         if (state.value.messages.isNotEmpty()
-            ){
+        ) {
             listState.scrollToItem(state.value.messages.lastIndex)
         }
     }
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(
-                top = WindowInsets.systemBars
-                    .asPaddingValues()
-                    .calculateTopPadding(),
-                bottom = WindowInsets.systemBars
-                    .asPaddingValues()
-                    .calculateBottomPadding()
-        )) {
+    Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(
+                        top = WindowInsets.systemBars
+                            .asPaddingValues()
+                            .calculateTopPadding(),
+                        bottom = WindowInsets.systemBars
+                            .asPaddingValues()
+                            .calculateBottomPadding()
+                )
+    ) {
         LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 userScrollEnabled = true,
@@ -174,7 +176,10 @@ fun PromptField(imageUris: (Uri) -> Unit, send: (String) -> Unit) {
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)   // Launch the media picker
                     )
                 }) {
-                    Icon(painter = painterResource(id = R.drawable.baseline_image_24), contentDescription = "Add Image")
+                    Icon(
+                            painter = painterResource(id = R.drawable.baseline_image_24),
+                            contentDescription = "Add Image"
+                    )
                 }
             },
             trailingIcon = {

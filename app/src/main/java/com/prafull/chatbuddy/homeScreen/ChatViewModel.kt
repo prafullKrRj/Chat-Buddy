@@ -1,23 +1,22 @@
 package com.prafull.chatbuddy.homeScreen
 
 import android.graphics.Bitmap
-import android.net.Uri
+import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.ai.client.generativeai.GenerativeModel
+import com.google.ai.client.generativeai.type.asTextOrNull
 import com.google.ai.client.generativeai.type.content
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import androidx.compose.runtime.toMutableStateList
-import androidx.lifecycle.viewModelScope
-import com.google.ai.client.generativeai.type.asTextOrNull
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
 
-class ChatViewModel : ViewModel(), KoinComponent{
+class ChatViewModel : ViewModel(), KoinComponent {
     private val generativeModel: GenerativeModel by inject()
     private val chat = generativeModel.startChat(
             history = listOf()
@@ -46,7 +45,7 @@ class ChatViewModel : ViewModel(), KoinComponent{
                 )
         )
 
-        viewModelScope.launch(Dispatchers.IO){
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = chat.sendMessage(content {
                     for (image in images) {

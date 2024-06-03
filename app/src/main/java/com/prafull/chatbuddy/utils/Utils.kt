@@ -9,5 +9,6 @@ class UriSaver : Saver<MutableList<Uri>, List<String>> {
         Uri.parse(it)
     }.toMutableList()
 
-    override fun SaverScope.save(value: MutableList<Uri>): List<String> = value.map { it.toString() }
+    override fun SaverScope.save(value: MutableList<Uri>): List<String> =
+        value.map { it.toString() }
 }

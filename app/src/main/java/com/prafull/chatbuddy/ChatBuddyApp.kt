@@ -5,7 +5,7 @@ import com.prafull.chatbuddy.di.appModule
 import com.prafull.chatbuddy.di.authModule
 import org.koin.core.context.startKoin
 
-class ChatBuddyApp: Application() {
+class ChatBuddyApp : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
