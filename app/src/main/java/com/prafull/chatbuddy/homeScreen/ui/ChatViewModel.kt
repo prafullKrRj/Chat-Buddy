@@ -101,20 +101,11 @@ class ChatUiState(
     fun addMessage(msg: ChatMessage) {
         _messages.add(msg)
     }
-
-    fun replaceLastPendingMessage() {
-        val lastMessage = _messages.lastOrNull()
-        lastMessage?.let {
-            val newMessage = lastMessage.apply { isPending = false }
-            _messages.removeLast()
-            _messages.add(newMessage)
-        }
-    }
 }
 
 
 enum class Participant {
-    USER, MODEL, ERROR
+    USER, MODEL
 }
 
 data class ChatMessage(
