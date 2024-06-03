@@ -25,9 +25,9 @@ fun UserImage(modifier: Modifier, firebaseAuth: FirebaseAuth) {
 @Composable
 fun BotImage(modifier: Modifier) {
     Image(
-            modifier = modifier,
+            modifier = modifier.clip(CircleShape),
             painter = painterResource(id = R.drawable.logo),
             contentDescription = "Bot Image",
-            contentScale = ContentScale.FillWidth
+            contentScale = ContentScale.FillWidth,
     )
 }

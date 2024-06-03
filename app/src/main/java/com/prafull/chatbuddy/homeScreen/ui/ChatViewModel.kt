@@ -8,6 +8,7 @@ import com.google.ai.client.generativeai.type.asTextOrNull
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
@@ -27,11 +28,17 @@ class ChatViewModel : ViewModel(), KoinComponent {
                     imageUri = mutableListOf()
             )
         }))
+
     val uiState: StateFlow<ChatUiState> =
         _uiState.asStateFlow()
 
+    private val _chatting = MutableStateFlow(false)
+    val chatting = _chatting.asStateFlow()
 
     fun sendMessage(userMessage: String, images: List<Bitmap>) {
+        _chatting.update {
+            true
+        }
         _uiState.value.addMessage(
                 ChatMessage(
                         text = userMessage,
@@ -42,7 +49,7 @@ class ChatViewModel : ViewModel(), KoinComponent {
         )
         _uiState.value.addMessage(
                 ChatMessage(
-                        text = "Bot response",
+                        text = "oobrbneroibneriobe\noiwvonorbnoerb\noiwniwnbiernerinerb\niwnviwnieniernbernbirnbierb\noiwnvininbinbinbinwerinwiniwer\niowdnviwdniniwrnbwrwer",
                         participant = Participant.MODEL,
                         isPending = false
                 )
@@ -77,6 +84,10 @@ class ChatViewModel : ViewModel(), KoinComponent {
                 )
             }
         }*/
+    }
+
+    fun getCurrCoins(): Long {
+        return 2000
     }
 }
 

@@ -19,8 +19,16 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField(type = "String", name = "GEMINI_API_KEY", value = project.findProperty("GEMINI_API_KEY").toString())
-        buildConfigField(type = "String", name = "WEB_CLIENT_ID", value = project.findProperty("WEB_CLIENT_ID").toString())
+        buildConfigField(
+                type = "String",
+                name = "GEMINI_API_KEY",
+                value = project.findProperty("GEMINI_API_KEY").toString()
+        )
+        buildConfigField(
+                type = "String",
+                name = "WEB_CLIENT_ID",
+                value = project.findProperty("WEB_CLIENT_ID").toString()
+        )
     }
 
     buildFeatures {
@@ -80,14 +88,14 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.okhttp)
-    implementation (libs.converter.gson)
+    implementation(libs.converter.gson)
 
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
     implementation(libs.generativeai)
 
     implementation(libs.coil.compose.v240)
-    implementation (libs.accompanist.coil)
+    implementation(libs.accompanist.coil)
 
     implementation(libs.koin.android)
     implementation(libs.koin.core)
