@@ -90,15 +90,9 @@ dependencies {
     implementation (libs.accompanist.coil)
 
     implementation(libs.koin.android)
-
     implementation(libs.koin.core)
-    implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
-    testImplementation(libs.koin.test.junit4.v340)
-    testImplementation(libs.koin.test)
 
-    implementation(libs.androidx.compose.material3.adaptive.navigation.suite)
-    implementation(libs.androidx.compose.material3.adaptive.navigation)
 
     // navigation
     implementation(libs.androidx.navigation.compose)
