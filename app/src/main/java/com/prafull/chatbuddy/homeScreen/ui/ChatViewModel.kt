@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.homeScreen
+package com.prafull.chatbuddy.homeScreen.ui
 
 import android.graphics.Bitmap
 import androidx.compose.runtime.toMutableStateList
@@ -44,7 +44,13 @@ class ChatViewModel : ViewModel(), KoinComponent {
                         imageUri = images
                 )
         )
-
+        _uiState.value.addMessage(
+                ChatMessage(
+                        text = "Bot response",
+                        participant = Participant.MODEL,
+                        isPending = false
+                )
+        )/*
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val response = chat.sendMessage(content {
@@ -74,7 +80,7 @@ class ChatViewModel : ViewModel(), KoinComponent {
                         )
                 )
             }
-        }
+        }*/
     }
 }
 

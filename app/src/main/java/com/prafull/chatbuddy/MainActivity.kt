@@ -13,7 +13,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
-import com.prafull.chatbuddy.homeScreen.HomeScreen
+import com.prafull.chatbuddy.homeScreen.ui.HomeScreen
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 
 class MainActivity : ComponentActivity() {

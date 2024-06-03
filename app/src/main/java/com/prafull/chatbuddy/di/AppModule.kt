@@ -3,7 +3,7 @@ package com.prafull.chatbuddy.di
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.generationConfig
 import com.prafull.chatbuddy.BuildConfig
-import com.prafull.chatbuddy.homeScreen.ChatViewModel
+import com.prafull.chatbuddy.homeScreen.ui.ChatViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
