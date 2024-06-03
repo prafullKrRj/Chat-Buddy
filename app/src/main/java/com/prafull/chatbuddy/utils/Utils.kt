@@ -19,6 +19,7 @@ class UriSaver : Saver<MutableList<Uri>, List<String>> {
     override fun SaverScope.save(value: MutableList<Uri>): List<String> =
         value.map { it.toString() }
 }
+
 suspend fun Uri.toBitmaps(context: Context): Bitmap? {
     val imageRequestBuilder = ImageRequest.Builder(context)
     val imageLoader = ImageLoader.Builder(context).build()

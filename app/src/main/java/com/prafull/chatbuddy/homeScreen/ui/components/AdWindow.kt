@@ -37,7 +37,8 @@ fun AdWindow() {
         Row(
                 Modifier
                     .fillMaxWidth()
-                    .padding(16.dp)) {
+                    .padding(16.dp)
+        ) {
             Column(
                     modifier = Modifier
                         .weight(.8f)
@@ -54,7 +55,10 @@ fun AdWindow() {
                         modifier = Modifier
                             .fillMaxWidth()
                 ) {
-                    Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "Watch Video Ad")
+                    Icon(
+                            imageVector = Icons.Default.AccountCircle,
+                            contentDescription = "Watch Video Ad"
+                    )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(text = "Watch Ad", color = MaterialTheme.colorScheme.onPrimary)
                 }

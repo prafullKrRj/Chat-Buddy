@@ -93,7 +93,12 @@ fun HomeScreen() {
                     state = listState
             ) {
                 items(state.value.messages) { message ->
-                    Row (Modifier.fillMaxWidth().padding(horizontal = 12.dp), verticalAlignment = CenterVertically){
+                    Row(
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 12.dp),
+                            verticalAlignment = CenterVertically
+                    ) {
 
                         if (message.participant == Participant.USER) {
                             UserImage(Modifier.weight(.05f), firebaseAuth = mA)
