@@ -48,7 +48,7 @@ import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Precision
 import com.prafull.chatbuddy.R
-import com.prafull.chatbuddy.UriSaver
+import com.prafull.chatbuddy.utils.UriSaver
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 

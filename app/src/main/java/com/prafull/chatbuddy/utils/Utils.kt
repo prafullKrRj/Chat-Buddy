@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy
+package com.prafull.chatbuddy.utils
 
 import android.net.Uri
 import androidx.compose.runtime.saveable.Saver
