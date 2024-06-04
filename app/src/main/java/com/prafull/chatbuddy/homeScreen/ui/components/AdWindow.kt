@@ -25,12 +25,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.prafull.chatbuddy.ads.rewardedAds
 import com.prafull.chatbuddy.homeScreen.ui.ChatViewModel
 import com.prafull.chatbuddy.ui.theme.gold
 
 @Composable
-fun AdWindow(viewModel: ChatViewModel, watchAd: () -> Unit){
+fun AdWindow(viewModel: ChatViewModel, watchAd: () -> Unit) {
     val activity = LocalContext.current as Activity
     Card(
             modifier = Modifier
