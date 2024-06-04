@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.ads.BannerAd
 import com.prafull.chatbuddy.homeScreen.ui.ChatViewModel
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
@@ -94,7 +95,7 @@ fun PromptField(viewModel: ChatViewModel) {
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 8.dp),
+                    .padding(8.dp),
                 leadingIcon = {
                     IconButton(onClick = {
                         pickMedia.launch(
@@ -133,6 +134,7 @@ fun PromptField(viewModel: ChatViewModel) {
                         unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer
                 )
         )
+        BannerAd()
     }
 
 }

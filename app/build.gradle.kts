@@ -106,4 +106,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.play.services.auth.v2060)
+
+    implementation(libs.play.services.ads)
 }

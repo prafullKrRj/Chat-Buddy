@@ -35,6 +35,8 @@ class ChatViewModel : ViewModel(), KoinComponent {
     private val _chatting = MutableStateFlow(false)
     val chatting = _chatting.asStateFlow()
 
+    private val _coins = MutableStateFlow(2000L)
+    val coins = _coins.asStateFlow()
     fun sendMessage(userMessage: String, images: List<Bitmap>) {
         _chatting.update {
             true
@@ -86,8 +88,10 @@ class ChatViewModel : ViewModel(), KoinComponent {
         }*/
     }
 
-    fun getCurrCoins(): Long {
-        return 2000
+    fun addCoins() {
+        _coins.update {
+            it + 5000
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.homeScreen.ui
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,10 +11,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
+import com.prafull.chatbuddy.ads.rewardedAds
 import com.prafull.chatbuddy.homeScreen.ui.components.AdWindow
 import com.prafull.chatbuddy.homeScreen.ui.components.MessageBubble
 import com.prafull.chatbuddy.homeScreen.ui.components.PromptField
@@ -40,6 +46,9 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
 
     val isChatting by viewModel.chatting.collectAsState()
 
+    var watchAd by rememberSaveable {
+        mutableStateOf(false)
+    }
     Column(
             modifier = modifier
                 .fillMaxSize()
@@ -50,7 +59,9 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
             ) {
-                AdWindow()
+                AdWindow(viewModel) {
+                    watchAd = true
+                }
                 PromptField(viewModel)
             }
         } else {
@@ -67,6 +78,12 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
             Column(Modifier.padding(8.dp)) {
                 PromptField(viewModel)
             }
+        }
+    }
+    if (watchAd) {
+        rewardedAds(LocalContext.current as Activity) {
+            viewModel.addCoins()
+            watchAd = false
         }
     }
 }

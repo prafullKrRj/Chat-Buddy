@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.homeScreen.ui.components
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,13 +21,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.prafull.chatbuddy.ads.rewardedAds
+import com.prafull.chatbuddy.homeScreen.ui.ChatViewModel
 import com.prafull.chatbuddy.ui.theme.gold
 
 @Composable
-fun AdWindow() {
+fun AdWindow(viewModel: ChatViewModel, watchAd: () -> Unit){
+    val activity = LocalContext.current as Activity
     Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -48,9 +53,7 @@ fun AdWindow() {
                 Text(text = "Watch a video ad to earn 5000 tokens!")
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
-                        onClick = {
-
-                        },
+                        onClick = watchAd,
                         colors = ButtonDefaults.buttonColors(containerColor = gold),
                         modifier = Modifier
                             .fillMaxWidth()
@@ -67,3 +70,4 @@ fun AdWindow() {
         }
     }
 }
+
