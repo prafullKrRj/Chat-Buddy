@@ -9,38 +9,53 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
+import com.prafull.chatbuddy.COIN_EARNING_REWARD_AD
+import com.prafull.chatbuddy.getDetails
 
 fun rewardedAds(activity: Activity, adWatched: () -> Unit) {
+    val attempts = 0
+    loadRewardAd(activity, attempts) {
+        adWatched()
+    }
+}
+
+private fun loadRewardAd(activity: Activity, attempts: Int, adWatched: () -> Unit) {
+    if (attempts >= 10) {
+        Toast.makeText(activity, "Ad failed to load", Toast.LENGTH_SHORT).show()
+        adWatched()
+        return
+    }
     RewardedAd.load(
             activity,
-            "ca-app-pub-3940256099942544/5224354917",
-            AdRequest.Builder().build(),
+            COIN_EARNING_REWARD_AD,
+            AdRequest.Builder().addKeyword(getDetails()).build(),
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    Log.e("TAG", "Ad failed to load")
+                    if (attempts < 10) {
+                        loadRewardAd(activity, attempts + 1, adWatched)
+                    }
                 }
 
                 override fun onAdLoaded(rewardedAd: RewardedAd) {
-                    super.onAdLoaded(rewardedAd)
                     rewardedAd.fullScreenContentCallback = object : FullScreenContentCallback() {
                         override fun onAdDismissedFullScreenContent() {
-                            Log.d("TAG", "Ad was dismissed.")
-                            rewardedAds(activity, adWatched)
-                            onAdDismissedFullScreenContent()
+                            Log.d("TAG", "Ad was dismissed")
+                        }
+
+                        override fun onAdShowedFullScreenContent() {
+                            Log.d("TAG", "Ad showed fullscreen content")
                         }
 
                         override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                             super.onAdFailedToShowFullScreenContent(p0)
-                        }
-
-                        override fun onAdShowedFullScreenContent() {
-                            Log.d("TAG", "Ad showed fullscreen content.")
+                            Toast.makeText(activity, "Ad failed to show", Toast.LENGTH_SHORT).show()
+                            //        rewardedAds(activity, adWatched)
                         }
                     }
                     rewardedAd.show(activity) {
-                        Toast.makeText(activity, "You earned 10 coins", Toast.LENGTH_SHORT).show()
+                        adWatched()
                     }
                 }
-
-            })
+            },
+    )
 }

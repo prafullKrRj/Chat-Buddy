@@ -82,7 +82,7 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
     }
     if (watchAd) {
         rewardedAds(LocalContext.current as Activity) {
-            viewModel.addCoins()
+            viewModel.adWatched()
             watchAd = false
         }
     }

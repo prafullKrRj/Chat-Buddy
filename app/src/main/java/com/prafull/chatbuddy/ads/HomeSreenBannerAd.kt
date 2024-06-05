@@ -5,6 +5,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
+import com.prafull.chatbuddy.HOME_SCREEN_BANNER_AD_TEST
 
 @Composable
 fun BannerAd() {
@@ -12,7 +13,7 @@ fun BannerAd() {
             factory = { context ->
                 AdView(context).apply {
                     setAdSize(AdSize.FULL_BANNER)
-                    adUnitId = "ca-app-pub-3940256099942544/9214589741"
+                    adUnitId = HOME_SCREEN_BANNER_AD_TEST
                     loadAd(AdRequest.Builder().build())
                 }
             }

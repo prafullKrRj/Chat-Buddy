@@ -19,6 +19,9 @@ class ChatViewModel : ViewModel(), KoinComponent {
             history = listOf()
     )
 
+    private val _adButtonEnabled = MutableStateFlow(true)
+    val adButtonEnabled = _adButtonEnabled.asStateFlow()
+
     private val _uiState: MutableStateFlow<ChatUiState> =
         MutableStateFlow(ChatUiState(chat.history.map { content ->
             ChatMessage(
@@ -37,6 +40,10 @@ class ChatViewModel : ViewModel(), KoinComponent {
 
     private val _coins = MutableStateFlow(2000L)
     val coins = _coins.asStateFlow()
+
+    private val _watchedAd = MutableStateFlow(false)
+    val watchedAd = _watchedAd.asStateFlow()
+
     fun sendMessage(userMessage: String, images: List<Bitmap>) {
         _chatting.update {
             true
@@ -88,9 +95,23 @@ class ChatViewModel : ViewModel(), KoinComponent {
         }*/
     }
 
-    fun addCoins() {
+    fun adWatched() {
+        _watchedAd.update {
+            true
+        }
+        if (watchedAd.value) addCoins()
+    }
+
+    private fun addCoins() {
         _coins.update {
             it + 5000
+        }
+        updateAdButtonState(true)
+    }
+
+    fun updateAdButtonState(enabled: Boolean) {
+        _adButtonEnabled.update {
+            enabled
         }
     }
 }
