@@ -81,7 +81,9 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
         }
     }
     if (watchAd) {
-        rewardedAds(LocalContext.current as Activity) {
+        rewardedAds(LocalContext.current as Activity, failed = {
+            watchAd = false
+        }) {
             viewModel.adWatched()
             watchAd = false
         }

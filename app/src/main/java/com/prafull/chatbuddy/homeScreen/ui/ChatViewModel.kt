@@ -104,8 +104,9 @@ class ChatViewModel : ViewModel(), KoinComponent {
 
     private fun addCoins() {
         _coins.update {
-            it + 5000
+            it + 2000
         }
+        _watchedAd.update { false }
         updateAdButtonState(true)
     }
 

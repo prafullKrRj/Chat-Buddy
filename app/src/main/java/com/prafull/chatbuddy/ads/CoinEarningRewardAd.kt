@@ -12,17 +12,22 @@ import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
 import com.prafull.chatbuddy.COIN_EARNING_REWARD_AD
 import com.prafull.chatbuddy.getDetails
 
-fun rewardedAds(activity: Activity, adWatched: () -> Unit) {
+fun rewardedAds(activity: Activity, failed: () -> Unit, adWatched: () -> Unit) {
     val attempts = 0
-    loadRewardAd(activity, attempts) {
+    loadRewardAd(activity, attempts, failed = failed) {
         adWatched()
     }
 }
 
-private fun loadRewardAd(activity: Activity, attempts: Int, adWatched: () -> Unit) {
+private fun loadRewardAd(
+    activity: Activity,
+    attempts: Int,
+    failed: () -> Unit,
+    adWatched: () -> Unit
+) {
     if (attempts >= 10) {
         Toast.makeText(activity, "Ad failed to load", Toast.LENGTH_SHORT).show()
-        adWatched()
+        failed()
         return
     }
     RewardedAd.load(
@@ -32,7 +37,7 @@ private fun loadRewardAd(activity: Activity, attempts: Int, adWatched: () -> Uni
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     if (attempts < 10) {
-                        loadRewardAd(activity, attempts + 1, adWatched)
+                        loadRewardAd(activity, attempts + 1, failed = {}, adWatched = adWatched)
                     }
                 }
 
