@@ -21,7 +21,7 @@ import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         MobileAds.initialize(this)
-       FirebaseApp.initializeApp(this)
+        FirebaseApp.initializeApp(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
