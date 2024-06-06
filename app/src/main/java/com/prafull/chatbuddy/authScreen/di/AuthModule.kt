@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.di
+package com.prafull.chatbuddy.authScreen.di
 
 import com.prafull.chatbuddy.authScreen.AuthViewModel
 import com.prafull.chatbuddy.authScreen.repo.AuthRepository

@@ -15,7 +15,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
-import com.prafull.chatbuddy.homeScreen.ui.HomeScreen
+import com.prafull.chatbuddy.homeScreen.ui.homescreen.HomeScreen
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 
 class MainActivity : ComponentActivity() {

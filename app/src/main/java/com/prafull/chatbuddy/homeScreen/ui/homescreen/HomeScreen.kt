@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.homeScreen.ui
+package com.prafull.chatbuddy.homeScreen.ui.homescreen
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -22,30 +22,34 @@ import com.prafull.chatbuddy.homeScreen.ui.components.AdWindow
 import com.prafull.chatbuddy.homeScreen.ui.components.MessageBubble
 import com.prafull.chatbuddy.homeScreen.ui.components.PromptField
 import com.prafull.chatbuddy.homeScreen.ui.components.TopAppBar
+import com.prafull.chatbuddy.homeScreen.ui.viewmodels.ChatViewModel
+import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun HomeScreen() {
-    val viewModel: ChatViewModel = getViewModel()
+    val chatViewModel: ChatViewModel = getViewModel()
+    val homeViewModel: HomeViewModel = getViewModel()
     Scaffold(
             topBar = {
-                TopAppBar(viewModel = viewModel)
+                TopAppBar(viewModel = homeViewModel)
             }
     ) { paddingValues ->
-        MainUI(modifier = Modifier.padding(paddingValues), viewModel)
+        MainUI(modifier = Modifier.padding(paddingValues), chatViewModel, homeViewModel)
     }
 }
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
+fun MainUI(modifier: Modifier, chatViewModel: ChatViewModel, homeViewModel: HomeViewModel) {
     val mA = FirebaseAuth.getInstance()
 
-    val state = viewModel.uiState.collectAsState()
+    val state = chatViewModel.uiState.collectAsState()
 
-    val isChatting by viewModel.chatting.collectAsState()
+    val isChatting by chatViewModel.chatting.collectAsState()
 
-    val adButtonState by viewModel.adButtonEnabled.collectAsState()
+    val adButtonState by homeViewModel.adButtonEnabled.collectAsState()
+
     Column(
             modifier = modifier
                 .fillMaxSize()
@@ -56,10 +60,10 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceBetween
             ) {
-                AdWindow(viewModel) {
-                    viewModel.updateAdButtonState(false)
+                AdWindow(homeViewModel) {
+                    homeViewModel.updateAdButtonState(false)
                 }
-                PromptField(viewModel)
+                PromptField(chatViewModel)
             }
         } else {
             LazyColumn(
@@ -73,16 +77,16 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
                 }
             }
             Column(Modifier.padding(8.dp)) {
-                PromptField(viewModel)
+                PromptField(chatViewModel)
             }
         }
     }
     if (!adButtonState) {
         rewardedAds(LocalContext.current as Activity, failed = {
-            viewModel.updateAdButtonState(true)
+            homeViewModel.updateAdButtonState(true)
         }) {
-            viewModel.adWatched()
-            viewModel.updateAdButtonState(true)
+            homeViewModel.adWatched()
+            homeViewModel.updateAdButtonState(true)
         }
     }
 }

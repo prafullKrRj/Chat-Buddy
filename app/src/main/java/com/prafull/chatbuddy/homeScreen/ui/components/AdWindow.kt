@@ -25,11 +25,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.prafull.chatbuddy.homeScreen.ui.ChatViewModel
+import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
 import com.prafull.chatbuddy.ui.theme.gold
 
 @Composable
-fun AdWindow(viewModel: ChatViewModel, watchAd: () -> Unit) {
+fun AdWindow(viewModel: HomeViewModel, watchAd: () -> Unit) {
     val buttonEnabled by viewModel.adButtonEnabled.collectAsState()
     Card(
             modifier = Modifier

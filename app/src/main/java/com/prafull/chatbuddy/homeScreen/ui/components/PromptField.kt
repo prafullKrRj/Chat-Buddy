@@ -37,14 +37,14 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.ads.BannerAd
-import com.prafull.chatbuddy.homeScreen.ui.ChatViewModel
+import com.prafull.chatbuddy.homeScreen.ui.viewmodels.ChatViewModel
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun PromptField(viewModel: ChatViewModel) {
+fun PromptField(chatViewModel: ChatViewModel) {
     var prompt by rememberSaveable {
         mutableStateOf("")
     }
@@ -115,7 +115,7 @@ fun PromptField(viewModel: ChatViewModel) {
                                 val bitmaps = imageUris.mapNotNull {
                                     it.toBitmaps(context)
                                 }
-                                viewModel.sendMessage(prompt, bitmaps)
+                                chatViewModel.sendMessage(prompt, bitmaps)
                                 imageUris.clear()
                                 focusManager.clearFocus()
                                 prompt = ""

@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
-import com.prafull.chatbuddy.homeScreen.ui.ChatMessage
-import com.prafull.chatbuddy.homeScreen.ui.Participant
+import com.prafull.chatbuddy.homeScreen.models.ChatMessage
+import com.prafull.chatbuddy.homeScreen.models.Participant
 
 @Composable
 fun MessageBubble(message: ChatMessage, mA: FirebaseAuth) {
