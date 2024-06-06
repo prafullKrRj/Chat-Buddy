@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.homeScreen.ui
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ fun HomeScreen() {
     }
 }
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
     val mA = FirebaseAuth.getInstance()
@@ -81,11 +83,12 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
         }
     }
     if (watchAd) {
+        watchAd = false
         rewardedAds(LocalContext.current as Activity, failed = {
-            watchAd = false
+            watchAd = true
         }) {
             viewModel.adWatched()
-            watchAd = false
         }
+        viewModel.updateAdButtonState(viewModel.adButtonEnabled.value && watchAd)
     }
 }

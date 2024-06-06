@@ -49,7 +49,7 @@ fun AdWindow(viewModel: ChatViewModel, watchAd: () -> Unit) {
             ) {
                 Text(text = "Watch Video Ad", fontSize = 24.sp, fontWeight = FontWeight.Bold)
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(text = "Watch a video ad to earn 5000 tokens!")
+                Text(text = "Watch a video ad to earn 2000 tokens!")
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
                         onClick = {
