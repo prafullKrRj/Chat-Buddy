@@ -12,9 +12,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -48,9 +45,7 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
 
     val isChatting by viewModel.chatting.collectAsState()
 
-    var watchAd by rememberSaveable {
-        mutableStateOf(false)
-    }
+    val adButtonState by viewModel.adButtonEnabled.collectAsState()
     Column(
             modifier = modifier
                 .fillMaxSize()
@@ -62,7 +57,7 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
                     verticalArrangement = Arrangement.SpaceBetween
             ) {
                 AdWindow(viewModel) {
-                    watchAd = true
+                    viewModel.updateAdButtonState(false)
                 }
                 PromptField(viewModel)
             }
@@ -82,13 +77,12 @@ fun MainUI(modifier: Modifier, viewModel: ChatViewModel) {
             }
         }
     }
-    if (watchAd) {
-        watchAd = false
+    if (!adButtonState) {
         rewardedAds(LocalContext.current as Activity, failed = {
-            watchAd = true
+            viewModel.updateAdButtonState(true)
         }) {
             viewModel.adWatched()
+            viewModel.updateAdButtonState(true)
         }
-        viewModel.updateAdButtonState(viewModel.adButtonEnabled.value && watchAd)
     }
 }

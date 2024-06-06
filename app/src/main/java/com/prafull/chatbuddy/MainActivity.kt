@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.MobileAds
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.homeScreen.ui.HomeScreen
@@ -20,6 +21,7 @@ import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         MobileAds.initialize(this)
+       FirebaseApp.initializeApp(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -35,7 +37,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun NavGraph(modifier: Modifier = Modifier, startDestination: String) {
+fun NavGraph(startDestination: String) {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = startDestination) {
         composable(route = MajorScreens.Auth.name) {

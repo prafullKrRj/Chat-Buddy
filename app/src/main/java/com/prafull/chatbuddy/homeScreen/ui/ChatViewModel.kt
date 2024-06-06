@@ -107,7 +107,6 @@ class ChatViewModel : ViewModel(), KoinComponent {
             it + 2000
         }
         _watchedAd.update { false }
-        updateAdButtonState(true)
     }
 
     fun updateAdButtonState(enabled: Boolean) {

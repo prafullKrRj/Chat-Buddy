@@ -9,7 +9,7 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.prafull.chatbuddy.COIN_EARNING_REWARD_AD
+import com.prafull.chatbuddy.COIN_EARNING_REWARD_AD_TEST
 import com.prafull.chatbuddy.getDetails
 
 fun rewardedAds(activity: Activity, failed: () -> Unit, adWatched: () -> Unit) {
@@ -32,12 +32,14 @@ private fun loadRewardAd(
     }
     RewardedAd.load(
             activity,
-            COIN_EARNING_REWARD_AD,
+            COIN_EARNING_REWARD_AD_TEST,
             AdRequest.Builder().addKeyword(getDetails()).build(),
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
                     if (attempts < 10) {
                         loadRewardAd(activity, attempts + 1, failed = {}, adWatched = adWatched)
+                    } else {
+                        Log.d("Ad Failed Reward", "$adError")
                     }
                 }
 
@@ -54,6 +56,7 @@ private fun loadRewardAd(
                         override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                             super.onAdFailedToShowFullScreenContent(p0)
                             Toast.makeText(activity, "Ad failed to show", Toast.LENGTH_SHORT).show()
+                            Log.d("Ad Failed Reward", "$p0")
                             //        rewardedAds(activity, adWatched)
                         }
                     }
