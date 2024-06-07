@@ -8,13 +8,22 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
+import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.ModalDrawerSheet
+import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.ads.rewardedAds
@@ -22,20 +31,74 @@ import com.prafull.chatbuddy.homeScreen.ui.components.AdWindow
 import com.prafull.chatbuddy.homeScreen.ui.components.MessageBubble
 import com.prafull.chatbuddy.homeScreen.ui.components.PromptField
 import com.prafull.chatbuddy.homeScreen.ui.components.TopAppBar
-import com.prafull.chatbuddy.homeScreen.ui.viewmodels.ChatViewModel
 import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
+import com.prafull.chatbuddy.utils.Response
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 @Composable
 fun HomeScreen() {
     val chatViewModel: ChatViewModel = getViewModel()
     val homeViewModel: HomeViewModel = getViewModel()
-    Scaffold(
-            topBar = {
-                TopAppBar(viewModel = homeViewModel)
-            }
-    ) { paddingValues ->
-        MainUI(modifier = Modifier.padding(paddingValues), chatViewModel, homeViewModel)
+    val scope = rememberCoroutineScope()
+
+    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+
+    val previousChats by homeViewModel.previousChats.collectAsState()
+
+    ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet {
+                    when (val result = previousChats) {
+                        is Response.Initial -> {
+                            Button(onClick = { homeViewModel.getPreviousChats() }) {
+                                Text("Load Chats")
+                            }
+                        }
+
+                        is Response.Success -> {
+                            LazyColumn {
+                                items(result.data) { chatHistory ->
+                                    NavigationDrawerItem(
+                                            label = {
+                                                Text(
+                                                        text = chatHistory.messages.first().text,
+                                                        maxLines = 1,
+                                                        overflow = TextOverflow.Ellipsis
+                                                )
+                                            },
+                                            selected = false,
+                                            onClick = { /*TODO*/ })
+                                }
+                            }
+                        }
+
+                        is Response.Error -> {
+                            Button(onClick = { homeViewModel.getPreviousChats() }) {
+                                Text("Retry")
+                            }
+                        }
+                    }
+                }
+            },
+    ) {
+        Scaffold(
+                topBar = {
+                    TopAppBar(viewModel = homeViewModel) {
+                        scope.launch {
+                            drawerState.apply {
+                                drawerState.open()
+                                delay(1000)
+                                homeViewModel.getPreviousChats()
+                            }
+                        }
+                    }
+                }
+        ) { paddingValues ->
+            MainUI(modifier = Modifier.padding(paddingValues), chatViewModel, homeViewModel)
+        }
     }
 }
 

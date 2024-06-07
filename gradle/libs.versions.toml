@@ -1,4 +1,5 @@
 [versions]
+aescrypt = "0.0.1"
 agp = "8.4.0"
 firebaseAds = "23.1.0"
 firebaseBom = "33.1.0"
@@ -47,6 +48,7 @@ material3Android = "1.2.1"
 
 [libraries]
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
+aescrypt = { module = "com.scottyab:aescrypt", version.ref = "aescrypt" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose-v240 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }

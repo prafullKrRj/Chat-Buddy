@@ -10,6 +10,7 @@ data class ChatMessage(
     val participant: Participant = Participant.USER,
     var isPending: Boolean = false
 )
+
 enum class Participant {
     USER, MODEL, ERROR
 }

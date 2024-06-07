@@ -29,6 +29,12 @@ android {
                 name = "WEB_CLIENT_ID",
                 value = project.findProperty("WEB_CLIENT_ID").toString()
         )
+        buildConfigField(
+                type = "String",
+                name = "CRYPTO_KEY",
+                value = project.findProperty("CRYPTO_KEY").toString()
+        )
+
     }
 
     buildFeatures {
@@ -111,4 +117,5 @@ dependencies {
     implementation(libs.play.services.auth.v2060)
 
     implementation(libs.play.services.ads)
+    implementation(libs.aescrypt)
 }

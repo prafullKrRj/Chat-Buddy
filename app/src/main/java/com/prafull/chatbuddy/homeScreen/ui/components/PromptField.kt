@@ -37,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.ads.BannerAd
-import com.prafull.chatbuddy.homeScreen.ui.viewmodels.ChatViewModel
+import com.prafull.chatbuddy.homeScreen.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
 import kotlinx.coroutines.launch

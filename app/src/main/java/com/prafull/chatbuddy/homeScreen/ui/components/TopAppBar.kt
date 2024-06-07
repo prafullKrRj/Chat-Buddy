@@ -22,7 +22,7 @@ import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(viewModel: HomeViewModel) {
+fun TopAppBar(viewModel: HomeViewModel, navigationIconClicked: () -> Unit) {
     val coins by viewModel.coins.collectAsState()
     TopAppBar(
             title = {
@@ -52,7 +52,7 @@ fun TopAppBar(viewModel: HomeViewModel) {
                 )
             },
             navigationIcon = {
-                IconButton(onClick = { /*TODO*/ }) {
+                IconButton(onClick = navigationIconClicked) {
                     Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = "Navigation Drawer Icon",
