@@ -34,7 +34,7 @@ class ChatViewModel : ViewModel(), KoinComponent {
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
 
-    private val chat = ChatHistory(id = currChatUUID.value)         // current chat
+    private var chat = ChatHistory(id = currChatUUID.value)         // current chat
 
     fun sendMessage(userMessage: String, images: List<Bitmap>) {
         _chatting.update {
@@ -111,6 +111,19 @@ class ChatViewModel : ViewModel(), KoinComponent {
         }
         _loading.update {
             false
+        }
+    }
+
+    fun loadNewChat() {
+        println(chatting.value)
+        if (chatting.value) {
+            _currChatUUID.update { UUID.randomUUID().toString() }
+            chat = ChatHistory(id = currChatUUID.value)
+            _chatting.update { false }
+            _loading.update { false }
+            _uiState.update {
+                ChatUiState()
+            }
         }
     }
 }

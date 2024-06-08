@@ -60,7 +60,7 @@ fun HomeScreen() {
     ) {
         Scaffold(
                 topBar = {
-                    TopAppBar(viewModel = homeViewModel) {
+                    TopAppBar(homeViewModel = homeViewModel, chatViewModel = chatViewModel) {
                         scope.launch {
                             drawerState.apply {
                                 drawerState.open()

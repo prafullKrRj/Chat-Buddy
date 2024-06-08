@@ -20,12 +20,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.prafull.chatbuddy.homeScreen.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(viewModel: HomeViewModel, navigationIconClicked: () -> Unit) {
-    val coins by viewModel.coins.collectAsState()
+fun TopAppBar(
+    homeViewModel: HomeViewModel,
+    chatViewModel: ChatViewModel,
+    navigationIconClicked: () -> Unit
+) {
+    val coins by homeViewModel.coins.collectAsState()
     TopAppBar(
             title = {
                 Row(
@@ -39,7 +44,7 @@ fun TopAppBar(viewModel: HomeViewModel, navigationIconClicked: () -> Unit) {
             },
             actions = {
                 IconButton(onClick = {
-
+                    chatViewModel.loadNewChat()
                 }) {
                     Text(text = "\uD83D\uDD8A")
                 }
