@@ -37,7 +37,7 @@ fun HomeScreen() {
     val chatViewModel: ChatViewModel = getViewModel()
     val homeViewModel: HomeViewModel = getViewModel()
     val scope = rememberCoroutineScope()
-
+    val currChatUUID by chatViewModel.currChatUUID.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val previousChats by homeViewModel.previousChats.collectAsState()
@@ -47,8 +47,15 @@ fun HomeScreen() {
             drawerContent = {
                 DrawerContent(
                         previousChats = previousChats,
-                        homeViewModel = homeViewModel
-                )
+                        homeViewModel = homeViewModel,
+                        currChatUUID = currChatUUID
+                ) { chatHistory ->
+                    scope.launch {
+                        chatViewModel.chatFromHistory(chatHistory)
+                        delay(500L)
+                        drawerState.close()
+                    }
+                }
             },
     ) {
         Scaffold(
@@ -64,6 +71,7 @@ fun HomeScreen() {
                     }
                 }
         ) { paddingValues ->
+
             MainUI(modifier = Modifier.padding(paddingValues), chatViewModel, homeViewModel)
         }
     }

@@ -1,7 +1,6 @@
 package com.prafull.chatbuddy.homeScreen.ui.homescreen
 
 import android.graphics.Bitmap
-import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
@@ -17,21 +16,26 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.UUID
 
 class ChatViewModel : ViewModel(), KoinComponent {
     private val chatRepository: ChatRepository by inject()
 
+    private val _currChatUUID = MutableStateFlow(UUID.randomUUID().toString())  // Default value
+    val currChatUUID = _currChatUUID.asStateFlow()
+
     private val _uiState: MutableStateFlow<ChatUiState> =
-        MutableStateFlow(ChatUiState())
-    val uiState: StateFlow<ChatUiState> =
-        _uiState.asStateFlow()
+        MutableStateFlow(ChatUiState())   // UI state
+    val uiState: StateFlow<ChatUiState> = _uiState.asStateFlow()
 
     private val _chatting = MutableStateFlow(false)
     val chatting = _chatting.asStateFlow()
 
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
-    private val chat = ChatHistory()
+
+    private val chat = ChatHistory(id = currChatUUID.value)         // current chat
+
     fun sendMessage(userMessage: String, images: List<Bitmap>) {
         _chatting.update {
             true
@@ -87,15 +91,26 @@ class ChatViewModel : ViewModel(), KoinComponent {
         }
          */
     }
-}
 
-
-class ChatUiState(
-    messages: List<ChatMessage> = emptyList()
-) {
-    private val _messages: MutableList<ChatMessage> = messages.toMutableStateList()
-    val messages: List<ChatMessage> = _messages
-    fun addMessage(msg: ChatMessage) {
-        _messages.add(msg)
+    fun chatFromHistory(chatHistory: ChatHistory) {
+        chatRepository.clearChat()
+        _currChatUUID.update {
+            chatHistory.id
+        }
+        chat.apply {
+            id = chatHistory.id
+            messages = chatHistory.messages.toMutableList()
+            lastModified = chatHistory.lastModified
+            model = chatHistory.model
+        }
+        _uiState.update {
+            ChatUiState(messages = chatHistory.messages)
+        }
+        _chatting.update {
+            true
+        }
+        _loading.update {
+            false
+        }
     }
 }

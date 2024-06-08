@@ -46,7 +46,7 @@ class ChatRepository : KoinComponent {
             } catch (e: Exception) {
                 trySend(
                         ChatMessage(
-                                text = e.localizedMessage,
+                                text = e.localizedMessage ?: "Error",
                                 participant = Participant.ERROR
                         )
                 )
@@ -68,5 +68,9 @@ class ChatRepository : KoinComponent {
                     ),
                     SetOptions.merge()
             )
+    }
+
+    fun clearChat() {
+        chat.history.clear()
     }
 }

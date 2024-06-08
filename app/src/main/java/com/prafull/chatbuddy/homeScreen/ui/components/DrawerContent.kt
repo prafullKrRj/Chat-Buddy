@@ -28,8 +28,11 @@ import com.prafull.chatbuddy.utils.Response
 @Composable
 fun DrawerContent(
     previousChats: Response<List<ChatHistory>>,
-    homeViewModel: HomeViewModel
-) {
+    homeViewModel: HomeViewModel,
+    currChatUUID: String,
+    onChatClicked: (ChatHistory) -> Unit,
+
+    ) {
     ModalDrawerSheet(
             Modifier.padding(end = 100.dp),
     ) {
@@ -102,13 +105,19 @@ fun DrawerContent(
                         }
                     }
                     items(previousChats.data) { chatHistory ->
-                        NavigationDrawerItem(label = {
-                            Text(
-                                    text = chatHistory.messages.first().text,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                            )
-                        }, selected = false, onClick = { /*TODO*/ })
+                        NavigationDrawerItem(
+                                label = {
+                                    Text(
+                                            text = chatHistory.messages.first().text,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                    )
+                                },
+                                selected = chatHistory.id == currChatUUID,
+                                onClick = {
+                                    onChatClicked(chatHistory)
+                                }
+                        )
                     }
                 }
             }
