@@ -20,17 +20,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.ads.rewardedAds
 import com.prafull.chatbuddy.homeScreen.ui.components.AdWindow
 import com.prafull.chatbuddy.homeScreen.ui.components.DrawerContent
 import com.prafull.chatbuddy.homeScreen.ui.components.MessageBubble
 import com.prafull.chatbuddy.homeScreen.ui.components.PromptField
 import com.prafull.chatbuddy.homeScreen.ui.components.TopAppBar
+import com.prafull.chatbuddy.homeScreen.ui.modelscreen.ModelsScreen
+import com.prafull.chatbuddy.homeScreen.ui.promplibraryscreen.PromptScreen
 import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
+
 
 @Composable
 fun HomeScreen() {
@@ -41,6 +48,7 @@ fun HomeScreen() {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
     val previousChats by homeViewModel.previousChats.collectAsState()
+    val mainNavController = rememberNavController()
 
     ModalNavigationDrawer(
             drawerState = drawerState,
@@ -48,6 +56,8 @@ fun HomeScreen() {
                 DrawerContent(
                         previousChats = previousChats,
                         homeViewModel = homeViewModel,
+                        navController = mainNavController,
+                        closeDrawer = { scope.launch { drawerState.close() } },
                         currChatUUID = currChatUUID
                 ) { chatHistory ->
                     scope.launch {
@@ -72,7 +82,21 @@ fun HomeScreen() {
                 }
         ) { paddingValues ->
 
-            MainUI(modifier = Modifier.padding(paddingValues), chatViewModel, homeViewModel)
+            NavHost(navController = mainNavController, startDestination = AppScreens.HOME.name) {
+                composable(route = AppScreens.HOME.name) {
+                    MainUI(
+                            modifier = Modifier.padding(paddingValues),
+                            chatViewModel,
+                            homeViewModel
+                    )
+                }
+                composable(route = AppScreens.MODELS.name) {
+                    ModelsScreen(mainNavController)
+                }
+                composable(route = AppScreens.PROMPT.name) {
+                    PromptScreen(mainNavController)
+                }
+            }
         }
     }
 }

@@ -20,6 +20,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.homeScreen.models.ChatHistory
 import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
@@ -30,9 +32,10 @@ fun DrawerContent(
     previousChats: Response<List<ChatHistory>>,
     homeViewModel: HomeViewModel,
     currChatUUID: String,
+    navController: NavController,
+    closeDrawer: () -> Unit,
     onChatClicked: (ChatHistory) -> Unit,
-
-    ) {
+) {
     ModalDrawerSheet(
             Modifier.padding(end = 100.dp),
     ) {
@@ -46,39 +49,48 @@ fun DrawerContent(
             is Response.Success -> {
                 LazyColumn(contentPadding = PaddingValues(8.dp)) {
                     item {
-
-                    }
-                    item {
-                        NavigationDrawerItem(label = {
-                            Row(
-                                    Modifier.fillMaxWidth(),
-                                    verticalAlignment = CenterVertically
-                            ) {
-                                Icon(
-                                        painter = painterResource(id = R.drawable.outline_apps_24),
-                                        contentDescription = stringResource(
-                                                R.string.prompt_library_access_button
+                        NavigationDrawerItem(
+                                label = {
+                                    Row(
+                                            Modifier.fillMaxWidth(),
+                                            verticalAlignment = CenterVertically
+                                    ) {
+                                        Icon(
+                                                painter = painterResource(id = R.drawable.outline_apps_24),
+                                                contentDescription = stringResource(
+                                                        R.string.prompt_library_access_button
+                                                )
                                         )
-                                )
-                                Spacer(modifier = Modifier.padding(8.dp))
-                                Text("Prompt Library")
-                            }
-                        }, selected = false, onClick = { /*TODO*/ })
+                                        Spacer(modifier = Modifier.padding(8.dp))
+                                        Text("Prompt Library")
+                                    }
+                                },
+                                selected = navController.currentDestination?.route == AppScreens.PROMPT.name,
+                                onClick = {
+                                    navController.navigate(AppScreens.PROMPT.name)
+                                    closeDrawer()
+                                })
                     }
                     item {
-                        NavigationDrawerItem(label = {
-                            Row(
-                                    Modifier.fillMaxWidth(),
-                                    verticalAlignment = CenterVertically
-                            ) {
-                                Icon(
-                                        painter = painterResource(id = R.drawable.baseline_explore_24),
-                                        contentDescription = stringResource(R.string.explore_models)
-                                )
-                                Spacer(modifier = Modifier.padding(8.dp))
-                                Text("Models")
-                            }
-                        }, selected = false, onClick = { /*TODO*/ })
+                        NavigationDrawerItem(
+                                label = {
+                                    Row(
+                                            Modifier.fillMaxWidth(),
+                                            verticalAlignment = CenterVertically
+                                    ) {
+                                        Icon(
+                                                painter = painterResource(id = R.drawable.baseline_explore_24),
+                                                contentDescription = stringResource(R.string.explore_models)
+                                        )
+                                        Spacer(modifier = Modifier.padding(8.dp))
+                                        Text("Models")
+                                    }
+                                },
+                                selected = navController.currentDestination?.route == AppScreens.MODELS.name,
+                                onClick = {
+                                    navController.navigate(AppScreens.MODELS.name)
+                                    closeDrawer()
+                                })
                     }
                     item {
                         HorizontalDivider(

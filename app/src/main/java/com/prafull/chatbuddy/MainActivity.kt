@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -31,26 +30,27 @@ class MainActivity : ComponentActivity() {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val destination =
                         if (mAuth.currentUser == null) MajorScreens.Auth.name else MajorScreens.App.name
-                    NavGraph(startDestination = destination)
+                    val navController = rememberNavController()
+                    NavHost(navController = navController, startDestination = destination) {
+                        composable(route = MajorScreens.Auth.name) {
+                            AuthScreen(
+                                    navController = navController,
+                                    mAuth = FirebaseAuth.getInstance()
+                            )
+                        }
+                        composable(route = MajorScreens.App.name) {
+                            HomeScreen()
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-@Composable
-fun NavGraph(startDestination: String) {
-    val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = startDestination) {
-        composable(route = MajorScreens.Auth.name) {
-            AuthScreen(navController = navController, mAuth = FirebaseAuth.getInstance())
-        }
-        composable(route = MajorScreens.App.name) {
-            HomeScreen()
-        }
-    }
+enum class AppScreens {
+    HOME, MODELS, PROMPT
 }
-
 
 enum class MajorScreens {
     Auth,
