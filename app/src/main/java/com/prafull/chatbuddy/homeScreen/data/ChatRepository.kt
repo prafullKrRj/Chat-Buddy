@@ -57,7 +57,7 @@ class ChatRepository : KoinComponent {
 
     fun saveMessage(chat: ChatHistory, chatMessage: ChatMessage) {
         val encryptedText = CryptoEncryption.encrypt(chatMessage.text)
-        val encryptedMessage = chatMessage.copy(text = encryptedText)
+        val encryptedMessage = chatMessage.copy(text = encryptedText, imageUri = mutableListOf())
         fireStore.collection("users").document(firebaseAuth.currentUser?.email!!)
             .collection("history").document(chat.id).set(
                     mapOf(

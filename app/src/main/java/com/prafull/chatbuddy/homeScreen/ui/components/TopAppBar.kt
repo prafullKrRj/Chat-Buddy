@@ -3,9 +3,11 @@ package com.prafull.chatbuddy.homeScreen.ui.components
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,7 +49,13 @@ fun TopAppBar(viewModel: HomeViewModel, navigationIconClicked: () -> Unit) {
 
                         },
                         label = {
-                            Text(text = "✨ $coins")
+                            if (coins.initial) {
+                                Text(text = "✨")
+                                Spacer(modifier = Modifier.width(4.dp))
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp))
+                            } else {
+                                Text(text = "✨ ${coins.currCoins}")
+                            }
                         },
                 )
             },

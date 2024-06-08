@@ -6,7 +6,7 @@ import java.util.UUID
 data class ChatMessage(
     val id: String = UUID.randomUUID().toString(),
     var text: String = "",
-    var imageUri: List<Bitmap> = emptyList(),
+    var imageUri: MutableList<Bitmap> = mutableListOf(),
     val participant: Participant = Participant.USER,
     var isPending: Boolean = false
 )

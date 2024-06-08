@@ -19,7 +19,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
     private val _adButtonEnabled = MutableStateFlow(true)
     val adButtonEnabled = _adButtonEnabled.asStateFlow()
 
-    private val _coins = MutableStateFlow(2000L)
+    private val _coins = MutableStateFlow(CoinState())
     val coins = _coins.asStateFlow()
 
     private val _watchedAd = MutableStateFlow(false)
@@ -28,14 +28,50 @@ class HomeViewModel : ViewModel(), KoinComponent {
         _watchedAd.update {
             true
         }
-        if (watchedAd.value) addCoins()
+        if (watchedAd.value) {
+            viewModelScope.launch(Dispatchers.IO) {
+                homeRepository.updateCoins(coins.value.currCoins).collect {
+                    if (it) {
+                        getCoins()
+                    }
+                }
+                _watchedAd.update { false }
+            }
+        }
     }
 
-    private fun addCoins() {
-        _coins.update {
-            it + 2000
+    init {
+        getCoins()
+    }
+
+    private fun getCoins() {
+        viewModelScope.launch(Dispatchers.IO) {
+            homeRepository.getCoins().collect { resp ->
+                when (resp) {
+                    is Response.Success -> {
+                        _coins.update {
+                            CoinState(
+                                    currCoins = resp.data,
+                                    initial = false
+                            )
+                        }
+                    }
+
+                    is Response.Initial -> {
+                        _coins.update {
+                            CoinState(
+                                    currCoins = 2000L,
+                                    initial = true
+                            )
+                        }
+                    }
+
+                    is Response.Error -> {
+                        _coins.update { CoinState(initial = false) }
+                    }
+                }
+            }
         }
-        _watchedAd.update { false }
     }
 
     fun updateAdButtonState(enabled: Boolean) {
@@ -70,3 +106,8 @@ class HomeViewModel : ViewModel(), KoinComponent {
         }
     }
 }
+
+data class CoinState(
+    val currCoins: Long = 2000L,
+    val initial: Boolean = true
+)

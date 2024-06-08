@@ -3,8 +3,10 @@ package com.prafull.chatbuddy.homeScreen.ui.components
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
@@ -12,20 +14,23 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Send
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Alignment.Companion.TopEnd
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -59,6 +64,7 @@ fun PromptField(chatViewModel: ChatViewModel) {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
+    val isLoading by chatViewModel.loading.collectAsState()
     Column {
         LazyRow(
                 modifier = Modifier.padding(horizontal = 8.dp)
@@ -88,52 +94,57 @@ fun PromptField(chatViewModel: ChatViewModel) {
                 }
             }
         }
-        OutlinedTextField(
-                value = prompt,
-                onValueChange = {
-                    prompt = it
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                leadingIcon = {
+        Row(
+                Modifier.fillMaxWidth(),
+                verticalAlignment = CenterVertically,
+                horizontalArrangement = SpaceBetween
+        ) {
+            OutlinedTextField(value = prompt, onValueChange = {
+                prompt = it
+            }, modifier = Modifier
+                .weight(.9f)
+                .padding(8.dp), leadingIcon = {
+                IconButton(onClick = {
+                    pickMedia.launch(
+                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)   // Launch the media picker
+                    )
+                }) {
+                    Icon(
+                            painter = painterResource(id = R.drawable.baseline_image_24),
+                            contentDescription = "Add Image"
+                    )
+                }
+            }, trailingIcon = {
+                if (prompt.isNotEmpty()) {
                     IconButton(onClick = {
-                        pickMedia.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)   // Launch the media picker
-                        )
+                        scope.launch {
+                            val bitmaps = imageUris.mapNotNull {
+                                it.toBitmaps(context)
+                            }
+                            chatViewModel.sendMessage(prompt, bitmaps)
+                            imageUris.clear()
+                            focusManager.clearFocus()
+                            prompt = ""
+                        }
+
                     }) {
                         Icon(
-                                painter = painterResource(id = R.drawable.baseline_image_24),
-                                contentDescription = "Add Image"
+                                imageVector = Icons.AutoMirrored.Default.Send,
+                                contentDescription = "Send"
                         )
                     }
-                },
-                trailingIcon = {
-                    if (prompt.isNotEmpty()) {
-                        IconButton(onClick = {
-                            scope.launch {
-                                val bitmaps = imageUris.mapNotNull {
-                                    it.toBitmaps(context)
-                                }
-                                chatViewModel.sendMessage(prompt, bitmaps)
-                                imageUris.clear()
-                                focusManager.clearFocus()
-                                prompt = ""
-                            }
-
-                        }) {
-                            Icon(imageVector = Icons.Default.Send, contentDescription = "Send")
-                        }
-                    }
-                },
-                shape = RoundedCornerShape(35),
-                colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-                        unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-                        focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-        )
+                }
+            }, shape = RoundedCornerShape(35), colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer
+            )
+            )
+            if (isLoading) {
+                CircularProgressIndicator(Modifier.weight(.1f))
+            }
+        }
         BannerAd()
     }
 

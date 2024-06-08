@@ -17,6 +17,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.homeScreen.ui.homescreen.HomeScreen
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -24,11 +25,12 @@ class MainActivity : ComponentActivity() {
         FirebaseApp.initializeApp(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val mAuth by inject<FirebaseAuth>()
         setContent {
             ChatBuddyTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     val destination =
-                        if (FirebaseAuth.getInstance().currentUser == null) MajorScreens.Auth.name else MajorScreens.App.name
+                        if (mAuth.currentUser == null) MajorScreens.Auth.name else MajorScreens.App.name
                     NavGraph(startDestination = destination)
                 }
             }
@@ -48,6 +50,7 @@ fun NavGraph(startDestination: String) {
         }
     }
 }
+
 
 enum class MajorScreens {
     Auth,

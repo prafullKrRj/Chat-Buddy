@@ -39,4 +39,34 @@ class HomeRepository : KoinComponent {
             awaitClose { }
         }
     }
+
+    suspend fun updateCoins(currValue: Long): Flow<Boolean> {
+        return callbackFlow {
+            try {
+                firestore.collection("users")
+                    .document(firebaseAuth.currentUser?.email.toString())
+                    .update("currCoins", currValue + 2000)
+                    .await()
+                trySend(true)
+            } catch (e: Exception) {
+                trySend(false)
+            }
+            awaitClose { }
+        }
+    }
+
+    suspend fun getCoins(): Flow<Response<Long>> {
+        return callbackFlow {
+            try {
+                val response = firestore.collection("users")
+                    .document(firebaseAuth.currentUser?.email.toString())
+                    .get().await()
+                val coins = response.getLong("currCoins") ?: 2000
+                trySend(Response.Success(coins))
+            } catch (e: Exception) {
+                trySend(Response.Error(e))
+            }
+            awaitClose { }
+        }
+    }
 }
