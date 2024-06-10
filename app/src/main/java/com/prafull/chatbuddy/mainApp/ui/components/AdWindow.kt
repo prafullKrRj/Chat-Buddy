@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.homeScreen.ui.components
+package com.prafull.chatbuddy.mainApp.ui.components
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
+import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel
 import com.prafull.chatbuddy.ui.theme.gold
 
 @Composable

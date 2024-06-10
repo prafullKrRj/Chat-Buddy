@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.homeScreen.ui.components
+package com.prafull.chatbuddy.mainApp.ui.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -15,8 +15,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
-import com.prafull.chatbuddy.homeScreen.models.ChatMessage
-import com.prafull.chatbuddy.homeScreen.models.Participant
+import com.prafull.chatbuddy.mainApp.models.ChatMessage
+import com.prafull.chatbuddy.mainApp.models.Participant
 
 @Composable
 fun MessageBubble(message: ChatMessage, mA: FirebaseAuth) {

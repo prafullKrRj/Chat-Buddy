@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.homeScreen.ui.components
+package com.prafull.chatbuddy.mainApp.ui.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.shape.CircleShape

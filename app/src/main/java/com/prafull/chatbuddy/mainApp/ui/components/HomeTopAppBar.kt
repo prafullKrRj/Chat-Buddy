@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.homeScreen.ui.components
+package com.prafull.chatbuddy.mainApp.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,12 +20,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.prafull.chatbuddy.homeScreen.ui.homescreen.ChatViewModel
-import com.prafull.chatbuddy.homeScreen.ui.viewmodels.HomeViewModel
+import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopAppBar(
+fun HomeTopAppBar(
     homeViewModel: HomeViewModel,
     chatViewModel: ChatViewModel,
     navigationIconClicked: () -> Unit

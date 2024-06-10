@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -14,7 +15,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
-import com.prafull.chatbuddy.homeScreen.ui.homescreen.HomeScreen
+import com.prafull.chatbuddy.mainApp.ui.MainNavigation
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 import org.koin.android.ext.android.inject
 
@@ -39,13 +40,18 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(route = MajorScreens.App.name) {
-                            HomeScreen()
+                            MainNavigation()
                         }
                     }
                 }
             }
         }
     }
+}
+
+fun NavController.navigateAndPopBackStack(route: String) {
+    popBackStack()
+    navigate(route)
 }
 
 enum class AppScreens {

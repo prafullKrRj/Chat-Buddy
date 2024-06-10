@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.homeScreen.models
+package com.prafull.chatbuddy.mainApp.models
 
 import android.graphics.Bitmap
 import java.util.UUID

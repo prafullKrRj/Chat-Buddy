@@ -1,10 +1,10 @@
-package com.prafull.chatbuddy.homeScreen.data
+package com.prafull.chatbuddy.mainApp.data
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.prafull.chatbuddy.homeScreen.models.ChatHistory
+import com.prafull.chatbuddy.mainApp.models.ChatHistory
 import com.prafull.chatbuddy.utils.CryptoEncryption
-import com.prafull.chatbuddy.utils.Response
+import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -16,7 +16,7 @@ class HomeRepository : KoinComponent {
 
     private val firebaseAuth by inject<FirebaseAuth>()
     private val firestore by inject<FirebaseFirestore>()
-    suspend fun getPreviousChats(): Flow<Response<List<ChatHistory>>> {
+    suspend fun getPreviousChats(): Flow<Resource<List<ChatHistory>>> {
         return callbackFlow {
             try {
                 val response = firestore.collection("users")
@@ -32,9 +32,9 @@ class HomeRepository : KoinComponent {
                     }
                     chatHistory
                 }
-                trySend(Response.Success(chatHistoryList.sortedByDescending { it.lastModified }))
+                trySend(Resource.Success(chatHistoryList.sortedByDescending { it.lastModified }))
             } catch (e: Exception) {
-                trySend(Response.Error(e))
+                trySend(Resource.Error(e))
             }
             awaitClose { }
         }
@@ -55,16 +55,16 @@ class HomeRepository : KoinComponent {
         }
     }
 
-    suspend fun getCoins(): Flow<Response<Long>> {
+    suspend fun getCoins(): Flow<Resource<Long>> {
         return callbackFlow {
             try {
                 val response = firestore.collection("users")
                     .document(firebaseAuth.currentUser?.email.toString())
                     .get().await()
                 val coins = response.getLong("currCoins") ?: 2000
-                trySend(Response.Success(coins))
+                trySend(Resource.Success(coins))
             } catch (e: Exception) {
-                trySend(Response.Error(e))
+                trySend(Resource.Error(e))
             }
             awaitClose { }
         }

@@ -3,4 +3,5 @@
     <string name="prompt_library_access_button">Prompt Library Access Button</string>
     <string name="explore_models">Explore Models</string>
     <string name="no_recent_chats">No recent chats</string>
+    <string name="story_telling_sidekick">You are an AI assistant with a passion for creative writing and storytelling. Your task is to collaborate with users to create engaging stories, offering imaginative plot twists and dynamic character development. Encourage the user to contribute their ideas and build upon them to create a captivating narrative.</string>
 </resources>

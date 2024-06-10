@@ -1,10 +1,10 @@
-package com.prafull.chatbuddy.homeScreen.ui.viewmodels
+package com.prafull.chatbuddy.mainApp.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafull.chatbuddy.homeScreen.data.HomeRepository
-import com.prafull.chatbuddy.homeScreen.models.ChatHistory
-import com.prafull.chatbuddy.utils.Response
+import com.prafull.chatbuddy.mainApp.data.HomeRepository
+import com.prafull.chatbuddy.mainApp.models.ChatHistory
+import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -48,7 +48,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
         viewModelScope.launch(Dispatchers.IO) {
             homeRepository.getCoins().collect { resp ->
                 when (resp) {
-                    is Response.Success -> {
+                    is Resource.Success -> {
                         _coins.update {
                             CoinState(
                                     currCoins = resp.data,
@@ -57,7 +57,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
                         }
                     }
 
-                    is Response.Initial -> {
+                    is Resource.Initial -> {
                         _coins.update {
                             CoinState(
                                     currCoins = 2000L,
@@ -66,7 +66,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
                         }
                     }
 
-                    is Response.Error -> {
+                    is Resource.Error -> {
                         _coins.update { CoinState(initial = false) }
                     }
                 }
@@ -84,22 +84,22 @@ class HomeViewModel : ViewModel(), KoinComponent {
         getPreviousChats()
     }
 
-    private val _previousChats = MutableStateFlow<Response<List<ChatHistory>>>(Response.Initial)
+    private val _previousChats = MutableStateFlow<Resource<List<ChatHistory>>>(Resource.Initial)
     val previousChats = _previousChats.asStateFlow()
     fun getPreviousChats() {
         viewModelScope.launch(Dispatchers.IO) {
             homeRepository.getPreviousChats().collect { resp ->
                 when (resp) {
-                    is Response.Success -> {
-                        _previousChats.update { Response.Success(resp.data) }
+                    is Resource.Success -> {
+                        _previousChats.update { Resource.Success(resp.data) }
                     }
 
-                    is Response.Initial -> {
-                        _previousChats.update { Response.Initial }
+                    is Resource.Initial -> {
+                        _previousChats.update { Resource.Initial }
                     }
 
-                    is Response.Error -> {
-                        _previousChats.update { Response.Error(resp.exception) }
+                    is Resource.Error -> {
+                        _previousChats.update { Resource.Error(resp.exception) }
                     }
                 }
             }
