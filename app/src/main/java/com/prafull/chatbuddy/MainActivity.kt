@@ -58,6 +58,11 @@ fun NavController.navigateAndPopBackStack(route: String) {
     navigate(route)
 }
 
+fun NavController.navigateIfNotCurrent(route: String) {
+    if (currentDestination?.route == route) return
+    navigateAndPopBackStack(route)
+}
+
 enum class AppScreens {
     HOME, MODELS, PROMPT
 }

@@ -26,6 +26,7 @@ import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.models.ChatHistory
 import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
+import com.prafull.chatbuddy.navigateIfNotCurrent
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -66,7 +67,7 @@ fun DrawerContent(
                 selected = false,
                 onClick = {
                     scope.launch {
-                        navController.navigateAndPopBackStack(AppScreens.HOME.name)
+                        navController.navigateIfNotCurrent(AppScreens.HOME.name)
                         delay(250L)
                         closeDrawer()
                     }

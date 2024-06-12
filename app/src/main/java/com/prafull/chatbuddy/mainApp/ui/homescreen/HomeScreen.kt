@@ -7,12 +7,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.ads.BannerAd
 import com.prafull.chatbuddy.ads.rewardedAds
@@ -51,10 +55,17 @@ fun HomeScreen(
     // Main layout of the HomeScreen
     Column(
             modifier = modifier
-                .fillMaxSize()
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Scrollable list for displaying messages, ad window, and premium plan component
-        BannerAd()
+        if (promptType.isNotEmpty()) {
+            Text(text = promptType.name, fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
+        }
+        if (!isChatting) {
+            BannerAd()
+        }
+
         LazyColumn(
                 modifier = Modifier
                     .weight(1f),
@@ -80,6 +91,7 @@ fun HomeScreen(
         // Display the prompt field for user input
         Column(Modifier.padding(8.dp)) {
             PromptField(chatViewModel)
+            if (isChatting) BannerAd()
         }
     }
     // If the ad button is not enabled, display the rewarded ads

@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
@@ -45,7 +46,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.prafull.chatbuddy.AppScreens
+import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.ads.BannerAd
+import com.prafull.chatbuddy.ads.loadInterstitialAd
 import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
 import com.prafull.chatbuddy.navigateAndPopBackStack
 import kotlinx.coroutines.launch
@@ -79,7 +82,9 @@ fun PromptScreen(modifier: Modifier, paddingValues: PaddingValues, navController
         var selectedPrompt by remember {
             mutableStateOf(PromptLibraryItem("", "", ""))
         }
+        val context = LocalContext.current
         var showPromptDialog by remember { mutableStateOf(false) }
+        val activity = context as MainActivity
         Column(
                 Modifier
                     .padding(paddingValues)
@@ -135,17 +140,38 @@ fun PromptScreen(modifier: Modifier, paddingValues: PaddingValues, navController
             BannerAd()
         }
         if (showPromptDialog) {
+            var isLoading by remember {
+                mutableStateOf(false)
+            }
+            if (isLoading) {
+                CircularProgressIndicator()
+            }
             DialogContent(promptLibraryItem = selectedPrompt,
                     onDismiss = { showPromptDialog = false },
                     confirmButton = { promptLibraryItem ->
-                        showPromptDialog = false
-                        navController.navigateAndPopBackStack(
-                                AppScreens.HOME.name + "/${promptLibraryItem.name}/${promptLibraryItem.description}/${promptLibraryItem.system}/${promptLibraryItem.user}"
-                        )
+                        isLoading = true
+                        scope.launch {
+                            loadInterstitialAd(context, activity, onAdFailedToLoad = {
+                                isLoading = false
+                                showPromptDialog = false
+                                navController.navigateHomeWithArgs(promptLibraryItem)
+                            }, onAdLoaded = {
+                                navController.navigateHomeWithArgs(promptLibraryItem)
+                                isLoading = false
+                                showPromptDialog = false
+                            })
+                        }
                     }
             )
+
         }
     }
+}
+
+fun NavController.navigateHomeWithArgs(promptLibraryItem: PromptLibraryItem) {
+    navigateAndPopBackStack(
+            AppScreens.HOME.name + "/${promptLibraryItem.name}/${promptLibraryItem.description}/${promptLibraryItem.system}/${promptLibraryItem.user}"
+    )
 }
 
 @Composable
