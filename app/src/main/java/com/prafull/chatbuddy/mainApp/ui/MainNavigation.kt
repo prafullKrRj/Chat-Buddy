@@ -59,6 +59,7 @@ fun MainNavigation() {
                         previousChats = previousChats,
                         homeViewModel = homeViewModel,
                         navController = mainNavController,
+                        chatViewModel = chatViewModel,
                         closeDrawer = { scope.launch { drawerState.close() } },
                         scope = scope,
                         currChatUUID = currChatUUID

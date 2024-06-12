@@ -18,6 +18,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.ui.MainNavigation
+import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 import org.koin.android.ext.android.inject
 
@@ -65,8 +66,9 @@ fun NavController.navigateHomeWithArgs(promptLibraryItem: PromptLibraryItem) {
     )
 }
 
-fun NavController.navigateIfNotCurrent(route: String) {
+fun NavController.navigateIfNotCurrent(route: String, chatViewModel: ChatViewModel) {
     if (currentDestination?.route == route) return
+    chatViewModel.loadNewChat()
     navigateAndPopBackStack(route)
 }
 

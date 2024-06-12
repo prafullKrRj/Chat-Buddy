@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.models.ChatHistory
+import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
 import com.prafull.chatbuddy.navigateIfNotCurrent
@@ -38,6 +39,7 @@ fun DrawerContent(
     homeViewModel: HomeViewModel,
     currChatUUID: String,
     navController: NavController,
+    chatViewModel: ChatViewModel,
     closeDrawer: () -> Unit,
     scope: CoroutineScope,
     onChatClicked: (ChatHistory) -> Unit,
@@ -67,7 +69,7 @@ fun DrawerContent(
                 selected = false,
                 onClick = {
                     scope.launch {
-                        navController.navigateIfNotCurrent(AppScreens.HOME.name)
+                        navController.navigateIfNotCurrent(AppScreens.HOME.name, chatViewModel)
                         delay(250L)
                         closeDrawer()
                     }
