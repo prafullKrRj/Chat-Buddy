@@ -31,6 +31,7 @@ import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeScreen
 import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.ui.homescreen.components.HomeTopAppBar
 import com.prafull.chatbuddy.mainApp.ui.modelscreen.ModelsScreen
+import com.prafull.chatbuddy.mainApp.ui.paymentsScreen.PaymentsScreen
 import com.prafull.chatbuddy.mainApp.ui.promplibraryscreen.PromptScreen
 import com.prafull.chatbuddy.navigateAndPopBackStack
 import com.prafull.chatbuddy.navigateHomeWithArgs
@@ -127,6 +128,7 @@ fun MainNavigation() {
                 composable(route = AppScreens.HOME.name) {
                     HomeScreen(
                             modifier = Modifier.padding(paddingValues),
+                            mainNavController,
                             chatViewModel,
                             homeViewModel,
                             PromptLibraryItem()
@@ -143,6 +145,7 @@ fun MainNavigation() {
                 ) { backStackEntry ->
                     HomeScreen(
                             modifier = Modifier.padding(paddingValues),
+                            mainNavController,
                             chatViewModel,
                             homeViewModel,
                             PromptLibraryItem(
@@ -166,6 +169,9 @@ fun MainNavigation() {
                         mainNavController.navigateHomeWithArgs(promptLibraryItem)
                         chatViewModel.loadNewChat()
                     }
+                }
+                composable(route = AppScreens.PAYMENTS.name) {
+                    PaymentsScreen(mainNavController)
                 }
             }
         }

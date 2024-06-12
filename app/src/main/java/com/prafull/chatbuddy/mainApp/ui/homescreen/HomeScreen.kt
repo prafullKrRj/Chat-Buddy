@@ -18,7 +18,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.ads.BannerAd
 import com.prafull.chatbuddy.ads.rewardedAds
 import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
@@ -36,6 +38,7 @@ import com.prafull.chatbuddy.mainApp.ui.homescreen.components.PromptField
 @Composable
 fun HomeScreen(
     modifier: Modifier,
+    navController: NavController,
     chatViewModel: ChatViewModel,
     homeViewModel: HomeViewModel,
     promptType: PromptLibraryItem
@@ -88,7 +91,9 @@ fun HomeScreen(
                     }
                 }
                 item {
-                    PremiumPlanComp()
+                    PremiumPlanComp {
+                        navController.navigate(AppScreens.PAYMENTS.name)
+                    }
                 }
             }
 

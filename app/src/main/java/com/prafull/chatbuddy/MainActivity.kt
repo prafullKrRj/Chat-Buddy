@@ -8,6 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -71,9 +72,13 @@ fun NavController.navigateIfNotCurrent(route: String, chatViewModel: ChatViewMod
     chatViewModel.loadNewChat()
     navigateAndPopBackStack(route)
 }
-
+fun NavController.goBackStack() {
+    if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
+        popBackStack()
+    }
+}
 enum class AppScreens {
-    HOME, MODELS, PROMPT
+    HOME, MODELS, PROMPT, PAYMENTS, SETTINGS
 }
 
 enum class MajorScreens {
