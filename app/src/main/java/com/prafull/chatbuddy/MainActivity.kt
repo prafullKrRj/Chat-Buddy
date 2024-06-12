@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -20,6 +21,7 @@ import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+    @SuppressLint("CoroutineCreationDuringComposition")
     override fun onCreate(savedInstanceState: Bundle?) {
         MobileAds.initialize(this)
         FirebaseApp.initializeApp(this)
@@ -32,6 +34,8 @@ class MainActivity : ComponentActivity() {
                     val destination =
                         if (mAuth.currentUser == null) MajorScreens.Auth.name else MajorScreens.App.name
                     val navController = rememberNavController()
+
+
                     NavHost(navController = navController, startDestination = destination) {
                         composable(route = MajorScreens.Auth.name) {
                             AuthScreen(

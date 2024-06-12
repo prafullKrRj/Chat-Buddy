@@ -22,7 +22,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.prafull.chatbuddy.AppScreens
+import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.ui.components.DrawerContent
 import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeScreen
@@ -72,6 +74,20 @@ fun MainNavigation() {
         Scaffold(
                 topBar = {
                     when (currDestination) {
+                        AppScreens.HOME.name + "/{name}/{description}/{system}/{user}" -> {
+                            HomeTopAppBar(
+                                    homeViewModel = homeViewModel,
+                                    chatViewModel = chatViewModel
+                            ) {
+                                scope.launch {
+                                    drawerState.apply {
+                                        drawerState.open()
+                                        homeViewModel.getPreviousChats()
+                                    }
+                                }
+                            }
+                        }
+
                         AppScreens.HOME.name -> {
                             HomeTopAppBar(
                                     homeViewModel = homeViewModel,
@@ -100,12 +116,38 @@ fun MainNavigation() {
                     }
                 }
         ) { paddingValues ->
-            NavHost(navController = mainNavController, startDestination = AppScreens.HOME.name) {
+            NavHost(
+                    navController = mainNavController,
+                    startDestination = AppScreens.HOME.name
+            ) {
                 composable(route = AppScreens.HOME.name) {
                     HomeScreen(
                             modifier = Modifier.padding(paddingValues),
                             chatViewModel,
-                            homeViewModel
+                            homeViewModel,
+                            PromptLibraryItem()
+                    )
+                }
+                composable(
+                        route = AppScreens.HOME.name + "/{name}/{description}/{system}/{user}",
+                        arguments = listOf(
+                                navArgument("name") { defaultValue = "" },
+                                navArgument("description") { defaultValue = "" },
+                                navArgument("system") { defaultValue = "" },
+                                navArgument("user") { defaultValue = "" }
+                        )
+                ) { backStackEntry ->
+                    HomeScreen(
+                            modifier = Modifier.padding(paddingValues),
+                            chatViewModel,
+                            homeViewModel,
+                            PromptLibraryItem(
+                                    name = backStackEntry.arguments?.getString("name") ?: "",
+                                    description = backStackEntry.arguments?.getString("description")
+                                        ?: "",
+                                    system = backStackEntry.arguments?.getString("system") ?: "",
+                                    user = backStackEntry.arguments?.getString("user") ?: ""
+                            )
                     )
                 }
                 composable(route = AppScreens.MODELS.name) {

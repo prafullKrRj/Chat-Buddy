@@ -44,8 +44,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
+import com.prafull.chatbuddy.navigateAndPopBackStack
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -135,7 +137,13 @@ fun PromptScreen(modifier: Modifier, paddingValues: PaddingValues, navController
         if (showPromptDialog) {
             DialogContent(promptLibraryItem = selectedPrompt,
                     onDismiss = { showPromptDialog = false },
-                    confirmButton = {})
+                    confirmButton = { promptLibraryItem ->
+                        showPromptDialog = false
+                        navController.navigateAndPopBackStack(
+                                AppScreens.HOME.name + "/${promptLibraryItem.name}/${promptLibraryItem.description}/${promptLibraryItem.system}/${promptLibraryItem.user}"
+                        )
+                    }
+            )
         }
     }
 }
@@ -162,7 +170,12 @@ fun DialogContent(
                     .padding(12.dp)
                     .verticalScroll(sheetScroll)
         ) {
-            Text(text = promptLibraryItem.name, fontWeight = FontWeight.Bold, fontSize = 24.sp, textDecoration = TextDecoration.Underline)
+            Text(
+                    text = promptLibraryItem.name,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 24.sp,
+                    textDecoration = TextDecoration.Underline
+            )
             Spacer(modifier = Modifier.height(12.dp))
             Text(text = "Description", fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
             Text(text = promptLibraryItem.description)

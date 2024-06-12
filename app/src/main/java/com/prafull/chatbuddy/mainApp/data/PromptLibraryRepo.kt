@@ -27,7 +27,6 @@ class PromptLibraryRepo : KoinComponent {
                     Log.d("PromptLibraryRepo", "documents: ${document.data}")
                     item
                 }
-                Log.d("PromptLibraryRepo", "getAllPrompts: $personal")
                 trySend(
                         Resource.Success(
                                 Pair(

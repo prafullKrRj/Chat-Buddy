@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.ads.BannerAd
 import com.prafull.chatbuddy.ads.rewardedAds
+import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.ui.homescreen.components.AdWindow
 import com.prafull.chatbuddy.mainApp.ui.homescreen.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.ui.homescreen.components.PremiumPlanComp
@@ -29,7 +30,12 @@ import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel
  */
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun HomeScreen(modifier: Modifier, chatViewModel: ChatViewModel, homeViewModel: HomeViewModel) {
+fun HomeScreen(
+    modifier: Modifier,
+    chatViewModel: ChatViewModel,
+    homeViewModel: HomeViewModel,
+    promptType: PromptLibraryItem
+) {
     // Firebase Authentication instance
     val mA = FirebaseAuth.getInstance()
 
