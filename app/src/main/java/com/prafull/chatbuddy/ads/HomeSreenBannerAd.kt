@@ -18,7 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun BannerAd() {
+fun BannerAd(id: String = "") {
 
     AndroidView(
             factory = { context ->
@@ -38,7 +38,7 @@ fun BannerAd() {
 
                 adView
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
     )
 }
 

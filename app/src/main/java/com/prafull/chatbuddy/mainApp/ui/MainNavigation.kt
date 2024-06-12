@@ -24,9 +24,9 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.mainApp.ui.components.DrawerContent
-import com.prafull.chatbuddy.mainApp.ui.components.HomeTopAppBar
 import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeScreen
+import com.prafull.chatbuddy.mainApp.ui.homescreen.components.HomeTopAppBar
 import com.prafull.chatbuddy.mainApp.ui.modelscreen.ModelsScreen
 import com.prafull.chatbuddy.mainApp.ui.promplibraryscreen.PromptScreen
 import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel

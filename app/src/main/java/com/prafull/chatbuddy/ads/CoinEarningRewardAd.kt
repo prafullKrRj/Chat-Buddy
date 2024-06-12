@@ -36,11 +36,7 @@ private fun loadRewardAd(
             AdRequest.Builder().addKeyword(getDetails()).build(),
             object : RewardedAdLoadCallback() {
                 override fun onAdFailedToLoad(adError: LoadAdError) {
-                    if (attempts < 10) {
-                        loadRewardAd(activity, attempts + 1, failed = {}, adWatched = adWatched)
-                    } else {
-                        Log.d("Ad Failed Reward", "$adError")
-                    }
+                    loadRewardAd(activity, attempts + 1, failed = {}, adWatched = adWatched)
                 }
 
                 override fun onAdLoaded(rewardedAd: RewardedAd) {
@@ -57,7 +53,6 @@ private fun loadRewardAd(
                             super.onAdFailedToShowFullScreenContent(p0)
                             Toast.makeText(activity, "Ad failed to show", Toast.LENGTH_SHORT).show()
                             Log.d("Ad Failed Reward", "$p0")
-                            //        rewardedAds(activity, adWatched)
                         }
                     }
                     rewardedAd.show(activity) {
@@ -65,5 +60,6 @@ private fun loadRewardAd(
                     }
                 }
             },
-    )
+
+            )
 }

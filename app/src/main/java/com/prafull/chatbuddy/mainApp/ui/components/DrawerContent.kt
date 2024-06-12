@@ -48,7 +48,9 @@ fun DrawerContent(
         NavigationDrawerItem(
                 label = {
                     Row(
-                            Modifier.fillMaxWidth(),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
                             verticalAlignment = CenterVertically
                     ) {
                         Icon(
@@ -73,7 +75,9 @@ fun DrawerContent(
         NavigationDrawerItem(
                 label = {
                     Row(
-                            Modifier.fillMaxWidth(),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
                             verticalAlignment = CenterVertically
                     ) {
                         Icon(
@@ -98,7 +102,9 @@ fun DrawerContent(
         NavigationDrawerItem(
                 label = {
                     Row(
-                            Modifier.fillMaxWidth(),
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
                             verticalAlignment = CenterVertically
                     ) {
                         Icon(

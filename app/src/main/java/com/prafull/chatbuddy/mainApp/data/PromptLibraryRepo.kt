@@ -20,8 +20,8 @@ class PromptLibraryRepo : KoinComponent {
                 val response = firestore.collection("personalPromptLibrary").get().await()
                 val businessPrompts = firestore.collection("businessPromptLibrary").get()
                     .await().documents.mapNotNull {
-                    it.toObject(PromptLibraryItem::class.java)
-                }
+                        it.toObject(PromptLibraryItem::class.java)
+                    }
                 val personal = response.documents.mapNotNull { document ->
                     val item = document.toObject(PromptLibraryItem::class.java)
                     Log.d("PromptLibraryRepo", "documents: ${document.data}")

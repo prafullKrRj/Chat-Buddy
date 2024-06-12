@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui.components
+package com.prafull.chatbuddy.mainApp.ui.homescreen.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
