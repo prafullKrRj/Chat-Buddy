@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp.ui.homescreen.components
 
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -12,18 +13,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -65,30 +71,31 @@ fun PromptField(chatViewModel: ChatViewModel) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val isLoading by chatViewModel.loading.collectAsState()
+    val listState = rememberLazyListState()
+    LaunchedEffect(key1 = imageUris.size) {
+        if (imageUris.size > 0) listState.animateScrollToItem(imageUris.size)
+    }
     Column {
         LazyRow(
-                modifier = Modifier.padding(horizontal = 8.dp)
+                modifier = Modifier.padding(horizontal = 8.dp),
+                verticalAlignment = CenterVertically,
+                reverseLayout = false,
+                state = listState
         ) {
             items(imageUris) { imageUri ->
-                Box(
-                        modifier = Modifier
-                            .padding(4.dp)
-                            .requiredSize(100.dp)
-                ) {
-                    AsyncImage(
-                            model = imageUri,
-                            contentDescription = null,
-                            contentScale = ContentScale.FillWidth,
-                            modifier = Modifier.padding(4.dp)
-                    )
-                    IconButton(
-                            onClick = { imageUris.remove(imageUri) },
-                            modifier = Modifier.align(TopEnd)
-                    ) {
+                SelectedImage(imageUri = imageUri) {
+                    imageUris.remove(it)
+                }
+            }
+            if (imageUris.isNotEmpty()) {
+                item {
+                    FilledTonalIconButton(onClick = {
+                        pickMedia.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)   // Launch the media picker
+                        )
+                    }) {
                         Icon(
-                                imageVector = Icons.Filled.Clear,
-                                contentDescription = "Remove image",
-                                tint = Color.Red
+                                imageVector = Icons.Default.Add, contentDescription = "Add Image"
                         )
                     }
                 }
@@ -99,54 +106,97 @@ fun PromptField(chatViewModel: ChatViewModel) {
                 verticalAlignment = CenterVertically,
                 horizontalArrangement = SpaceBetween
         ) {
-            OutlinedTextField(value = prompt, onValueChange = {
-                prompt = it
-            }, modifier = Modifier
-                .weight(.9f)
-                .padding(8.dp), leadingIcon = {
-                IconButton(onClick = {
-                    pickMedia.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)   // Launch the media picker
-                    )
-                }) {
-                    Icon(
-                            painter = painterResource(id = R.drawable.baseline_image_24),
-                            contentDescription = "Add Image"
-                    )
-                }
-            }, trailingIcon = {
-                if (prompt.isNotEmpty()) {
-                    IconButton(onClick = {
-                        scope.launch {
-                            val bitmaps = imageUris.mapNotNull {
-                                it.toBitmaps(context)
-                            }
-                            chatViewModel.sendMessage(prompt, bitmaps)
-                            imageUris.clear()
-                            focusManager.clearFocus()
-                            prompt = ""
+            OutlinedTextField(value = prompt,
+                    onValueChange = {
+                        prompt = it
+                    },
+                    modifier = Modifier
+                        .weight(.9f)
+                        .padding(8.dp),
+                    leadingIcon = {
+                        IconButton(onClick = {
+                            pickMedia.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)   // Launch the media picker
+                            )
+                        }) {
+                            Icon(
+                                    painter = painterResource(id = R.drawable.baseline_image_24),
+                                    contentDescription = "Add Image"
+                            )
                         }
-
-                    }) {
-                        Icon(
-                                imageVector = Icons.AutoMirrored.Default.Send,
-                                contentDescription = "Send"
-                        )
-                    }
-                }
-            }, shape = RoundedCornerShape(35), colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
-                    focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                    unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer
-            ), label = {
-                Text("Type a message")
-            }
-            )
+                    },
+                    trailingIcon = {
+                        if (prompt.isNotEmpty()) {
+                            IconButton(onClick = {
+                                scope.launch {
+                                    val bitmaps = imageUris.mapNotNull {
+                                        it.toBitmaps(context)
+                                    }
+                                    chatViewModel.sendMessage(prompt, bitmaps)
+                                    imageUris.clear()
+                                    focusManager.clearFocus()
+                                    prompt = ""
+                                }
+                            }) {
+                                Icon(
+                                        imageVector = Icons.AutoMirrored.Default.Send,
+                                        contentDescription = "Send"
+                                )
+                            }
+                        } else {
+                            IconButton(onClick = { TODO() }) {
+                                Icon(
+                                        painter = painterResource(id = R.drawable.baseline_keyboard_voice_24),
+                                        contentDescription = "Record Voice"
+                                )
+                            }
+                        }
+                    },
+                    shape = RoundedCornerShape(35),
+                    colors = OutlinedTextFieldDefaults.promptFieldColors(),
+                    label = {
+                        Text("Type a message")
+                    })
             if (isLoading) {
                 CircularProgressIndicator(Modifier.weight(.1f))
             }
         }
     }
+}
 
+@Composable
+private fun SelectedImage(
+    modifier: Modifier = Modifier, imageUri: Uri, removeImage: (Uri) -> Unit
+) {
+    Box(
+            modifier = Modifier
+                .padding(4.dp)
+                .requiredSize(100.dp)
+    ) {
+        AsyncImage(
+                model = imageUri,
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier.padding(4.dp)
+        )
+        IconButton(
+                onClick = { removeImage(imageUri) }, modifier = Modifier.align(TopEnd)
+        ) {
+            Icon(
+                    imageVector = Icons.Filled.Clear,
+                    contentDescription = "Remove image",
+                    tint = Color.Red
+            )
+        }
+    }
+}
+
+@Composable
+fun OutlinedTextFieldDefaults.promptFieldColors(): TextFieldColors {
+    return colors(
+            focusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+            unfocusedBorderColor = MaterialTheme.colorScheme.primaryContainer,
+            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer
+    )
 }

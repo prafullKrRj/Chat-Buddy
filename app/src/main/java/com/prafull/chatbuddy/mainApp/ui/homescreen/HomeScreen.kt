@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,7 +26,6 @@ import com.prafull.chatbuddy.mainApp.ui.homescreen.components.AdWindow
 import com.prafull.chatbuddy.mainApp.ui.homescreen.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.ui.homescreen.components.PremiumPlanComp
 import com.prafull.chatbuddy.mainApp.ui.homescreen.components.PromptField
-import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel
 
 /**
  * HomeScreen is the main screen of the application.
@@ -51,29 +51,37 @@ fun HomeScreen(
 
     // Checking if the ad button is enabled
     val adButtonState by homeViewModel.adButtonEnabled.collectAsState()
-
     // Main layout of the HomeScreen
     Column(
             modifier = modifier
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Scrollable list for displaying messages, ad window, and premium plan component
+        if (!isChatting) BannerAd()
         if (promptType.isNotEmpty()) {
-            Text(text = promptType.name, fontWeight = FontWeight.SemiBold, fontSize = 20.sp)
+            Card(modifier = Modifier.padding(8.dp)) {
+                Text(
+                        text = promptType.name,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(8.dp)
+                )
+                if (!isChatting) {
+                    Text(
+                            text = "Description: ${promptType.description}",
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(8.dp)
+                    )
+                }
+            }
         }
-        if (!isChatting) {
-            BannerAd()
-        }
-
         LazyColumn(
-                modifier = Modifier
-                    .weight(1f),
+                modifier = Modifier.weight(1f),
                 userScrollEnabled = true,
-                reverseLayout = true
+                reverseLayout = isChatting
         ) {
             // If the user is not chatting, display the ad window and premium plan component
-            if (!isChatting) {
+            if (!isChatting && promptType.isEmpty()) {
                 item {
                     AdWindow(homeViewModel) {
                         homeViewModel.updateAdButtonState(false)
@@ -83,6 +91,7 @@ fun HomeScreen(
                     PremiumPlanComp()
                 }
             }
+
             // Display the chat messages
             items(state.value.messages.reversed()) { message ->
                 MessageBubble(message = message, mA = mA)

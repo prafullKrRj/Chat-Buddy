@@ -16,6 +16,7 @@ import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
+import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.ui.MainNavigation
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 import org.koin.android.ext.android.inject
@@ -56,6 +57,12 @@ class MainActivity : ComponentActivity() {
 fun NavController.navigateAndPopBackStack(route: String) {
     popBackStack()
     navigate(route)
+}
+
+fun NavController.navigateHomeWithArgs(promptLibraryItem: PromptLibraryItem) {
+    navigateAndPopBackStack(
+            AppScreens.HOME.name + "/${promptLibraryItem.name}/${promptLibraryItem.description}/${promptLibraryItem.system}/${promptLibraryItem.user}"
+    )
 }
 
 fun NavController.navigateIfNotCurrent(route: String) {

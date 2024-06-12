@@ -24,7 +24,7 @@ import androidx.navigation.NavController
 import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.models.ChatHistory
-import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel
+import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
 import com.prafull.chatbuddy.navigateIfNotCurrent
 import com.prafull.chatbuddy.utils.Resource

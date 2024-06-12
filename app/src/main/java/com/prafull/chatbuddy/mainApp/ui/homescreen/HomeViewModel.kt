@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui.viewmodels
+package com.prafull.chatbuddy.mainApp.ui.homescreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

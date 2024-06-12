@@ -45,12 +45,11 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.ads.BannerAd
 import com.prafull.chatbuddy.ads.loadInterstitialAd
 import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
-import com.prafull.chatbuddy.navigateAndPopBackStack
+import com.prafull.chatbuddy.navigateHomeWithArgs
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -59,7 +58,12 @@ import org.koin.androidx.compose.koinViewModel
         ExperimentalComposeUiApi::class
 )
 @Composable
-fun PromptScreen(modifier: Modifier, paddingValues: PaddingValues, navController: NavController) {
+fun PromptScreen(
+    modifier: Modifier,
+    paddingValues: PaddingValues,
+    navController: NavController,
+    navigateToHome: (PromptLibraryItem) -> Unit
+) {
     val promptViewModel: PromptLibraryViewModel = koinViewModel()
     val state by promptViewModel.uiState.collectAsState()
     if (state.isLoading) {
@@ -168,11 +172,6 @@ fun PromptScreen(modifier: Modifier, paddingValues: PaddingValues, navController
     }
 }
 
-fun NavController.navigateHomeWithArgs(promptLibraryItem: PromptLibraryItem) {
-    navigateAndPopBackStack(
-            AppScreens.HOME.name + "/${promptLibraryItem.name}/${promptLibraryItem.description}/${promptLibraryItem.system}/${promptLibraryItem.user}"
-    )
-}
 
 @Composable
 fun DialogContent(

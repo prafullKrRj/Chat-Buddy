@@ -10,8 +10,8 @@ import com.prafull.chatbuddy.mainApp.data.ChatRepository
 import com.prafull.chatbuddy.mainApp.data.HomeRepository
 import com.prafull.chatbuddy.mainApp.data.PromptLibraryRepo
 import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.ui.promplibraryscreen.PromptLibraryViewModel
-import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

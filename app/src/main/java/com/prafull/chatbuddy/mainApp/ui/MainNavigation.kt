@@ -28,11 +28,12 @@ import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.ui.components.DrawerContent
 import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeScreen
+import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.ui.homescreen.components.HomeTopAppBar
 import com.prafull.chatbuddy.mainApp.ui.modelscreen.ModelsScreen
 import com.prafull.chatbuddy.mainApp.ui.promplibraryscreen.PromptScreen
-import com.prafull.chatbuddy.mainApp.ui.viewmodels.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
+import com.prafull.chatbuddy.navigateHomeWithArgs
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -77,7 +78,8 @@ fun MainNavigation() {
                         AppScreens.HOME.name + "/{name}/{description}/{system}/{user}" -> {
                             HomeTopAppBar(
                                     homeViewModel = homeViewModel,
-                                    chatViewModel = chatViewModel
+                                    chatViewModel = chatViewModel,
+                                    navController = mainNavController
                             ) {
                                 scope.launch {
                                     drawerState.apply {
@@ -91,6 +93,7 @@ fun MainNavigation() {
                         AppScreens.HOME.name -> {
                             HomeTopAppBar(
                                     homeViewModel = homeViewModel,
+                                    navController = mainNavController,
                                     chatViewModel = chatViewModel
                             ) {
                                 scope.launch {
@@ -154,7 +157,14 @@ fun MainNavigation() {
                     ModelsScreen(mainNavController)
                 }
                 composable(route = AppScreens.PROMPT.name) {
-                    PromptScreen(Modifier.padding(), paddingValues, mainNavController)
+                    PromptScreen(
+                            Modifier.padding(),
+                            paddingValues,
+                            mainNavController
+                    ) { promptLibraryItem ->
+                        mainNavController.navigateHomeWithArgs(promptLibraryItem)
+                        chatViewModel.loadNewChat()
+                    }
                 }
             }
         }
