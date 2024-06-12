@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui
+package com.prafull.chatbuddy.mainApp
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -24,15 +24,15 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.prafull.chatbuddy.AppScreens
-import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
-import com.prafull.chatbuddy.mainApp.ui.components.DrawerContent
-import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
-import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeScreen
-import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
-import com.prafull.chatbuddy.mainApp.ui.homescreen.components.HomeTopAppBar
-import com.prafull.chatbuddy.mainApp.ui.modelscreen.ModelsScreen
-import com.prafull.chatbuddy.mainApp.ui.paymentsScreen.PaymentsScreen
-import com.prafull.chatbuddy.mainApp.ui.promplibraryscreen.PromptScreen
+import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.HomeScreen
+import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.components.HomeTopAppBar
+import com.prafull.chatbuddy.mainApp.models.ModelsScreen
+import com.prafull.chatbuddy.mainApp.payments.PaymentsScreen
+import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
+import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptScreen
+import com.prafull.chatbuddy.mainApp.ui.DrawerContent
 import com.prafull.chatbuddy.navigateAndPopBackStack
 import com.prafull.chatbuddy.navigateHomeWithArgs
 import kotlinx.coroutines.CoroutineScope

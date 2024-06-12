@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui.homescreen.components
+package com.prafull.chatbuddy.mainApp.home.ui.components
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -48,7 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
-import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
 import kotlinx.coroutines.launch

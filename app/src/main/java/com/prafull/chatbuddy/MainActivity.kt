@@ -17,9 +17,9 @@ import com.google.android.gms.ads.MobileAds
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
-import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
-import com.prafull.chatbuddy.mainApp.ui.MainNavigation
-import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.mainApp.MainNavigation
+import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
+import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 import org.koin.android.ext.android.inject
 
@@ -72,11 +72,13 @@ fun NavController.navigateIfNotCurrent(route: String, chatViewModel: ChatViewMod
     chatViewModel.loadNewChat()
     navigateAndPopBackStack(route)
 }
+
 fun NavController.goBackStack() {
     if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
         popBackStack()
     }
 }
+
 enum class AppScreens {
     HOME, MODELS, PROMPT, PAYMENTS, SETTINGS
 }

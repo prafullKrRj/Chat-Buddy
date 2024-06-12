@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui.components
+package com.prafull.chatbuddy.mainApp.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.R
-import com.prafull.chatbuddy.mainApp.models.ChatHistory
-import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
-import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
+import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
+import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
 import com.prafull.chatbuddy.navigateIfNotCurrent
 import com.prafull.chatbuddy.utils.Resource

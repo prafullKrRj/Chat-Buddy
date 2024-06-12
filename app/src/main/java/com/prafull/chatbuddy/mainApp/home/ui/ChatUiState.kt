@@ -1,7 +1,7 @@
-package com.prafull.chatbuddy.mainApp.ui.homescreen
+package com.prafull.chatbuddy.mainApp.home.ui
 
 import androidx.compose.runtime.toMutableStateList
-import com.prafull.chatbuddy.mainApp.models.ChatMessage
+import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 
 class ChatUiState(
     messages: List<ChatMessage> = emptyList()

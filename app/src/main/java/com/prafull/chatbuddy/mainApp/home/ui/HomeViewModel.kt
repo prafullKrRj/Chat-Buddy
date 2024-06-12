@@ -1,9 +1,9 @@
-package com.prafull.chatbuddy.mainApp.ui.homescreen
+package com.prafull.chatbuddy.mainApp.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafull.chatbuddy.mainApp.data.HomeRepository
-import com.prafull.chatbuddy.mainApp.models.ChatHistory
+import com.prafull.chatbuddy.mainApp.home.data.HomeRepository
+import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

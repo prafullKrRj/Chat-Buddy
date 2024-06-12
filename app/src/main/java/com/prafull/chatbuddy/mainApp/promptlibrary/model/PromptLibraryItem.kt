@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.models
+package com.prafull.chatbuddy.mainApp.promptlibrary.model
 
 data class PromptLibraryItem(
     val name: String = "",

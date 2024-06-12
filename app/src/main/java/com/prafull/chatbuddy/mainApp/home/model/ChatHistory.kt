@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.models
+package com.prafull.chatbuddy.mainApp.home.model
 
 import com.google.firebase.Timestamp
 import java.util.UUID

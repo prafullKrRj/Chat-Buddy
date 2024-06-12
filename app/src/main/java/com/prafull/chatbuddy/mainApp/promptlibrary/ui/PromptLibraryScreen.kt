@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui.promplibraryscreen
+package com.prafull.chatbuddy.mainApp.promptlibrary.ui
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -48,7 +48,7 @@ import androidx.navigation.NavController
 import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.ads.BannerAd
 import com.prafull.chatbuddy.ads.loadInterstitialAd
-import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
+import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.navigateHomeWithArgs
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel

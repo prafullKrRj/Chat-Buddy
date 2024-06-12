@@ -11,7 +11,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
-import com.prafull.chatbuddy.HOME_SCREEN_BANNER_AD_TEST
+import com.prafull.chatbuddy.mainApp.HOME_SCREEN_BANNER_AD_TEST
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

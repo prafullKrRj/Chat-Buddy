@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui.modelscreen
+package com.prafull.chatbuddy.mainApp.models
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController

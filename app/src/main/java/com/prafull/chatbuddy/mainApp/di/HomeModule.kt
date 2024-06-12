@@ -6,12 +6,12 @@ import com.google.ai.client.generativeai.type.generationConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.BuildConfig
-import com.prafull.chatbuddy.mainApp.data.ChatRepository
-import com.prafull.chatbuddy.mainApp.data.HomeRepository
-import com.prafull.chatbuddy.mainApp.data.PromptLibraryRepo
-import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
-import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
-import com.prafull.chatbuddy.mainApp.ui.promplibraryscreen.PromptLibraryViewModel
+import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
+import com.prafull.chatbuddy.mainApp.home.data.HomeRepository
+import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
+import com.prafull.chatbuddy.mainApp.promptlibrary.data.PromptLibraryRepo
+import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptLibraryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

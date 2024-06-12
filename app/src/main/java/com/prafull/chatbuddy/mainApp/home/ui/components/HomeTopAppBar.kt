@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui.homescreen.components
+package com.prafull.chatbuddy.mainApp.home.ui.components
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,8 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prafull.chatbuddy.AppScreens
-import com.prafull.chatbuddy.mainApp.ui.homescreen.ChatViewModel
-import com.prafull.chatbuddy.mainApp.ui.homescreen.HomeViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
 
 @OptIn(ExperimentalMaterial3Api::class)

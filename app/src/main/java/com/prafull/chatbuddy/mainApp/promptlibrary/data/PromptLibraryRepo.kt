@@ -1,8 +1,8 @@
-package com.prafull.chatbuddy.mainApp.data
+package com.prafull.chatbuddy.mainApp.promptlibrary.data
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
+import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

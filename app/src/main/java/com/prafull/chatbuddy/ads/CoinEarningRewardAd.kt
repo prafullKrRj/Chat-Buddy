@@ -9,8 +9,8 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.rewarded.RewardedAd
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback
-import com.prafull.chatbuddy.COIN_EARNING_REWARD_AD_TEST
-import com.prafull.chatbuddy.getDetails
+import com.prafull.chatbuddy.mainApp.COIN_EARNING_REWARD_AD_TEST
+import com.prafull.chatbuddy.mainApp.getDetails
 
 fun rewardedAds(activity: Activity, failed: () -> Unit, adWatched: () -> Unit) {
     val attempts = 0

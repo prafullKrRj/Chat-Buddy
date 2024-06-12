@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.data
+package com.prafull.chatbuddy.mainApp.home.data
 
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
@@ -6,9 +6,9 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.prafull.chatbuddy.mainApp.models.ChatHistory
-import com.prafull.chatbuddy.mainApp.models.ChatMessage
-import com.prafull.chatbuddy.mainApp.models.Participant
+import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
+import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
+import com.prafull.chatbuddy.mainApp.home.model.Participant
 import com.prafull.chatbuddy.utils.CryptoEncryption
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

@@ -1,13 +1,13 @@
-package com.prafull.chatbuddy.mainApp.ui.homescreen
+package com.prafull.chatbuddy.mainApp.home.ui
 
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.prafull.chatbuddy.mainApp.data.ChatRepository
-import com.prafull.chatbuddy.mainApp.models.ChatHistory
-import com.prafull.chatbuddy.mainApp.models.ChatMessage
-import com.prafull.chatbuddy.mainApp.models.Participant
+import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
+import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
+import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
+import com.prafull.chatbuddy.mainApp.home.model.Participant
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

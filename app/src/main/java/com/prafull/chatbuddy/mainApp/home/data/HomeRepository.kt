@@ -1,8 +1,8 @@
-package com.prafull.chatbuddy.mainApp.data
+package com.prafull.chatbuddy.mainApp.home.data
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.prafull.chatbuddy.mainApp.models.ChatHistory
+import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.utils.CryptoEncryption
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.channels.awaitClose

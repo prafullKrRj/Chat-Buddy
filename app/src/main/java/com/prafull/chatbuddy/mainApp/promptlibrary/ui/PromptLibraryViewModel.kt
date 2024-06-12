@@ -1,9 +1,9 @@
-package com.prafull.chatbuddy.mainApp.ui.promplibraryscreen
+package com.prafull.chatbuddy.mainApp.promptlibrary.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafull.chatbuddy.mainApp.data.PromptLibraryRepo
-import com.prafull.chatbuddy.mainApp.models.PromptLibraryItem
+import com.prafull.chatbuddy.mainApp.promptlibrary.data.PromptLibraryRepo
+import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

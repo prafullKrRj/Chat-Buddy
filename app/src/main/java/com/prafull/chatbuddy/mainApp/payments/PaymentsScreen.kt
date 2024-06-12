@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui.paymentsScreen
+package com.prafull.chatbuddy.mainApp.payments
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +25,11 @@ fun PaymentsScreen(navController: NavController) {
     BackHandler {
         showDialog = true
     }
-    Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+            Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Text(text = "Payments Screen")
     }
     if (showDialog) {
@@ -38,7 +42,11 @@ fun PaymentsScreen(navController: NavController) {
 }
 
 @Composable
-private fun ExitDialog(modifier: Modifier = Modifier, onDismiss: () -> Unit, onConfirm: () -> Unit){
+private fun ExitDialog(
+    modifier: Modifier = Modifier,
+    onDismiss: () -> Unit,
+    onConfirm: () -> Unit
+) {
     AlertDialog(onDismissRequest = onDismiss, confirmButton = {
         TextButton(onClick = onConfirm) {
             Text(text = "Yes")
@@ -47,7 +55,7 @@ private fun ExitDialog(modifier: Modifier = Modifier, onDismiss: () -> Unit, onC
         TextButton(onClick = onDismiss) {
             Text(text = "No")
         }
-    },  text = {
+    }, text = {
         Text(text = "Are you sure you want to exit payments?")
     })
 }
