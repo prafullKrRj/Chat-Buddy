@@ -20,6 +20,7 @@ import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.mainApp.MainNavigation
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
+import com.prafull.chatbuddy.settings.SettingsScreen
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 import org.koin.android.ext.android.inject
 
@@ -46,7 +47,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                         composable(route = MajorScreens.App.name) {
-                            MainNavigation()
+                            MainNavigation(navController)
+                        }
+                        composable(AppScreens.SETTINGS.name) {
+                            SettingsScreen()
                         }
                     }
                 }
