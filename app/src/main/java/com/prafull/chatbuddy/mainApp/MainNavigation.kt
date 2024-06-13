@@ -28,7 +28,7 @@ import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeScreen
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.components.HomeTopAppBar
-import com.prafull.chatbuddy.mainApp.models.ModelsScreen
+import com.prafull.chatbuddy.mainApp.modelsScreen.ModelsScreen
 import com.prafull.chatbuddy.mainApp.payments.PaymentsScreen
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptScreen
@@ -158,7 +158,7 @@ fun MainNavigation() {
                     )
                 }
                 composable(route = AppScreens.MODELS.name) {
-                    ModelsScreen(mainNavController)
+                    ModelsScreen(paddingValues)
                 }
                 composable(route = AppScreens.PROMPT.name) {
                     PromptScreen(

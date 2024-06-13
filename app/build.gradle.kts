@@ -84,6 +84,7 @@ dependencies {
     //   implementation(libs.firebase.analytics)
     implementation(libs.firebase.ads)
     implementation(libs.androidx.material3.android)
+    implementation(libs.firebase.storage)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -118,4 +119,7 @@ dependencies {
 
     implementation(libs.play.services.ads)
     implementation(libs.aescrypt)
+
+    implementation(libs.facebook)
+    implementation(libs.mediation.test.suite)
 }

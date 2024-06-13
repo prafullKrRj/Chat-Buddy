@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.ads
+package com.prafull.chatbuddy.mainApp.ads
 
 import android.content.Context
 import android.util.Log
@@ -32,7 +32,7 @@ fun BannerAd(id: String = "") {
                 CoroutineScope(Dispatchers.Main).launch {
                     while (true) {
                         loadAd(adView, adRequest, 0, context)
-                        delay(120000) // Delay for 2 minutes
+                        delay(300000) // Delay for 5 minutes
                     }
                 }
 
@@ -43,7 +43,7 @@ fun BannerAd(id: String = "") {
 }
 
 fun loadAd(adView: AdView, adRequest: AdRequest, attempt: Int, context: Context) {
-    if (attempt >= 15) { // Limit the number of retry attempts to 15
+    if (attempt >= 5) { // Limit the number of retry attempts to 15
         Log.d("Ad Failed Banner", "Failed to load ad after 15 attempts")
         return
     }
@@ -54,7 +54,7 @@ fun loadAd(adView: AdView, adRequest: AdRequest, attempt: Int, context: Context)
             super.onAdFailedToLoad(adError)
             // Retry loading the ad after a delay
             CoroutineScope(Dispatchers.Main).launch {
-                delay(3000) // Delay for 5 seconds
+                delay(5000) // Delay for 5 seconds
                 loadAd(adView, adRequest, attempt + 1, context)
             }
         }

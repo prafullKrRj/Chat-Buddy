@@ -10,6 +10,7 @@ import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
 import com.prafull.chatbuddy.mainApp.home.data.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
+import com.prafull.chatbuddy.mainApp.modelsScreen.ModelViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.data.PromptLibraryRepo
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptLibraryViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -49,4 +50,5 @@ val chatModule = module {
     single<PromptLibraryRepo> { PromptLibraryRepo() }
     viewModel<ChatViewModel> { ChatViewModel() }
     viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }
+    viewModel<ModelViewModel> { ModelViewModel() }
 }

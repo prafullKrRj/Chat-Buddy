@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.AppScreens
-import com.prafull.chatbuddy.ads.BannerAd
-import com.prafull.chatbuddy.ads.rewardedAds
+import com.prafull.chatbuddy.mainApp.ads.BannerAd
+import com.prafull.chatbuddy.mainApp.ads.rewardedAds
 import com.prafull.chatbuddy.mainApp.home.ui.components.AdWindow
 import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.ui.components.PremiumPlanComp

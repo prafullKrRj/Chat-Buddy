@@ -46,8 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.prafull.chatbuddy.MainActivity
-import com.prafull.chatbuddy.ads.BannerAd
-import com.prafull.chatbuddy.ads.loadInterstitialAd
+import com.prafull.chatbuddy.mainApp.ads.BannerAd
+import com.prafull.chatbuddy.mainApp.ads.loadInterstitialAd
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.navigateHomeWithArgs
 import kotlinx.coroutines.launch

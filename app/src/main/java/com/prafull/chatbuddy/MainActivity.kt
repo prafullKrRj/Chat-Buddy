@@ -38,7 +38,6 @@ class MainActivity : ComponentActivity() {
                         if (mAuth.currentUser == null) MajorScreens.Auth.name else MajorScreens.App.name
                     val navController = rememberNavController()
 
-
                     NavHost(navController = navController, startDestination = destination) {
                         composable(route = MajorScreens.Auth.name) {
                             AuthScreen(
@@ -55,6 +54,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
+
 
 fun NavController.navigateAndPopBackStack(route: String) {
     popBackStack()
