@@ -4,7 +4,7 @@ import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
+import com.prafull.chatbuddy.mainApp.home.data.GeminiRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
@@ -19,7 +19,7 @@ import org.koin.core.component.inject
 import java.util.UUID
 
 class ChatViewModel : ViewModel(), KoinComponent {
-    private val chatRepository: ChatRepository by inject()
+    private val geminiRepository: GeminiRepository by inject()
 
     private val _currChatUUID = MutableStateFlow(UUID.randomUUID().toString())  // Default value
     val currChatUUID = _currChatUUID.asStateFlow()
@@ -55,7 +55,7 @@ class ChatViewModel : ViewModel(), KoinComponent {
             messages.add(_uiState.value.messages.last())
             lastModified = Timestamp.now()
         }
-        chatRepository.saveMessage(chat, _uiState.value.messages.last())
+        geminiRepository.saveMessage(chat, _uiState.value.messages.last())
 
         viewModelScope.launch {
             delay(2000L)
@@ -70,7 +70,7 @@ class ChatViewModel : ViewModel(), KoinComponent {
                 messages.add(_uiState.value.messages.last())
                 lastModified = Timestamp.now()
             }
-            chatRepository.saveMessage(chat, _uiState.value.messages.last())
+            geminiRepository.saveMessage(chat, _uiState.value.messages.last())
             _loading.update {
                 false
             }
@@ -93,7 +93,7 @@ class ChatViewModel : ViewModel(), KoinComponent {
     }
 
     fun chatFromHistory(chatHistory: ChatHistory) {
-        chatRepository.clearChat()
+        geminiRepository.clearChat()
         _currChatUUID.update {
             chatHistory.id
         }

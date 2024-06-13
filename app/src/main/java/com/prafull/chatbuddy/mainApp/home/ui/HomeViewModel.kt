@@ -1,9 +1,13 @@
 package com.prafull.chatbuddy.mainApp.home.ui
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.prafull.chatbuddy.mainApp.home.data.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
+import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +28,13 @@ class HomeViewModel : ViewModel(), KoinComponent {
 
     private val _watchedAd = MutableStateFlow(false)
     val watchedAd = _watchedAd.asStateFlow()
+
+    private val _previousChats = MutableStateFlow<Resource<List<ChatHistory>>>(Resource.Initial)
+    val previousChats = _previousChats.asStateFlow()
+
+    private val _dialogState = MutableStateFlow<Resource<List<Model>>>(Resource.Initial)
+    var modelButtonClicked by mutableStateOf(false)
+    val modelDialogState = _dialogState.asStateFlow()
     fun adWatched() {
         _watchedAd.update {
             true
@@ -47,27 +58,17 @@ class HomeViewModel : ViewModel(), KoinComponent {
     private fun getCoins() {
         viewModelScope.launch(Dispatchers.IO) {
             homeRepository.getCoins().collect { resp ->
-                when (resp) {
-                    is Resource.Success -> {
-                        _coins.update {
-                            CoinState(
-                                    currCoins = resp.data,
+                resp.also { response ->
+                    _coins.update { _ ->
+                        when (response) {
+                            is Resource.Success -> CoinState(
+                                    currCoins = response.data,
                                     initial = false
                             )
-                        }
-                    }
 
-                    is Resource.Initial -> {
-                        _coins.update {
-                            CoinState(
-                                    currCoins = 2000L,
-                                    initial = true
-                            )
+                            is Resource.Initial -> CoinState(currCoins = 2000L, initial = true)
+                            is Resource.Error -> CoinState(initial = false)
                         }
-                    }
-
-                    is Resource.Error -> {
-                        _coins.update { CoinState(initial = false) }
                     }
                 }
             }
@@ -84,23 +85,22 @@ class HomeViewModel : ViewModel(), KoinComponent {
         getPreviousChats()
     }
 
-    private val _previousChats = MutableStateFlow<Resource<List<ChatHistory>>>(Resource.Initial)
-    val previousChats = _previousChats.asStateFlow()
+
     fun getPreviousChats() {
         viewModelScope.launch(Dispatchers.IO) {
             homeRepository.getPreviousChats().collect { resp ->
-                when (resp) {
-                    is Resource.Success -> {
-                        _previousChats.update { Resource.Success(resp.data) }
-                    }
+                _previousChats.update {
+                    resp
+                }
+            }
+        }
+    }
 
-                    is Resource.Initial -> {
-                        _previousChats.update { Resource.Initial }
-                    }
-
-                    is Resource.Error -> {
-                        _previousChats.update { Resource.Error(resp.exception) }
-                    }
+    fun getModels() {
+        viewModelScope.launch(Dispatchers.IO) {
+            homeRepository.getModels().collect { resp ->
+                _dialogState.update {
+                    resp
                 }
             }
         }

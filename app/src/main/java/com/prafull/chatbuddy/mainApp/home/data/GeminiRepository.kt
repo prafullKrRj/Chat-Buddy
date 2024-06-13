@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.callbackFlow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class ChatRepository : KoinComponent {
+class GeminiRepository : KoinComponent {
 
     private val generativeModel: GenerativeModel by inject()
 

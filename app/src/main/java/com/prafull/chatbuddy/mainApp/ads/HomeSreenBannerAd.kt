@@ -42,6 +42,31 @@ fun BannerAd(id: String = "") {
     )
 }
 
+@Composable
+fun ModelScreenBannerAd(id: String = "") {
+
+    AndroidView(
+            factory = { context ->
+                val adView = AdView(context).apply {
+                    setAdSize(AdSize.FULL_BANNER)
+                    adUnitId = HOME_SCREEN_BANNER_AD_TEST
+                }
+                val adRequest = AdRequest.Builder().build()
+
+                // Start a coroutine to load a new ad every 2 minutes
+                CoroutineScope(Dispatchers.Main).launch {
+                    while (true) {
+                        loadAd(adView, adRequest, 0, context)
+                        delay(300000) // Delay for 5 minutes
+                    }
+                }
+
+                adView
+            },
+            modifier = Modifier.fillMaxWidth(),
+    )
+}
+
 fun loadAd(adView: AdView, adRequest: AdRequest, attempt: Int, context: Context) {
     if (attempt >= 5) { // Limit the number of retry attempts to 15
         Log.d("Ad Failed Banner", "Failed to load ad after 15 attempts")

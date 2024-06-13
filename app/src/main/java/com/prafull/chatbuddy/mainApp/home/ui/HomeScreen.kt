@@ -27,6 +27,7 @@ import com.prafull.chatbuddy.mainApp.home.ui.components.AdWindow
 import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.ui.components.PremiumPlanComp
 import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
+import com.prafull.chatbuddy.mainApp.home.ui.components.SelectModelDialogBox
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 
 /**
@@ -47,20 +48,26 @@ fun HomeScreen(
     val mA = FirebaseAuth.getInstance()
 
     // Collecting the chat view model state
-    val state = chatViewModel.uiState.collectAsState()
+    val chatUiState = chatViewModel.uiState.collectAsState()
 
     // Checking if the user is currently chatting
     val isChatting by chatViewModel.chatting.collectAsState()
 
     // Checking if the ad button is enabled
     val adButtonState by homeViewModel.adButtonEnabled.collectAsState()
+
+    val modelsState by homeViewModel.modelDialogState.collectAsState()
+    if (homeViewModel.modelButtonClicked) {
+        SelectModelDialogBox(modelsState = modelsState, onModelSelect = {}, onDismissRequest = {
+            homeViewModel.modelButtonClicked = false
+        })
+    }
     // Main layout of the HomeScreen
     Column(
-            modifier = modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
     ) {
         if (!isChatting) BannerAd()
+
         if (promptType.isNotEmpty()) {
             Card(modifier = Modifier.padding(8.dp)) {
                 Text(
@@ -79,9 +86,7 @@ fun HomeScreen(
             }
         }
         LazyColumn(
-                modifier = Modifier.weight(1f),
-                userScrollEnabled = true,
-                reverseLayout = isChatting
+                modifier = Modifier.weight(1f), userScrollEnabled = true, reverseLayout = isChatting
         ) {
             // If the user is not chatting, display the ad window and premium plan component
             if (!isChatting && promptType.isEmpty()) {
@@ -98,7 +103,7 @@ fun HomeScreen(
             }
 
             // Display the chat messages
-            items(state.value.messages.reversed()) { message ->
+            items(chatUiState.value.messages.reversed()) { message ->
                 MessageBubble(message = message, mA = mA)
             }
         }

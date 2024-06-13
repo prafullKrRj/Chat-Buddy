@@ -41,7 +41,10 @@ fun HomeTopAppBar(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(8.dp)
                 ) {
-                    ElevatedAssistChip(onClick = { /*TODO*/ }, label = {
+                    ElevatedAssistChip(onClick = {
+                        homeViewModel.getModels()
+                        homeViewModel.modelButtonClicked = true
+                    }, label = {
                         Text(text = "Models")
                     })
                 }

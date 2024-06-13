@@ -20,7 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.prafull.chatbuddy.R
-import com.prafull.chatbuddy.mainApp.ads.BannerAd
+import com.prafull.chatbuddy.mainApp.ads.ModelScreenBannerAd
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -28,7 +28,7 @@ fun ModelsScreen(paddingValues: PaddingValues) {
     val modelViewModel: ModelViewModel = koinViewModel()
     val uiState by modelViewModel.state.collectAsState()
     Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-        BannerAd()
+        ModelScreenBannerAd()
         if (uiState.loading) {
             CircularProgressIndicator()
         } else if (uiState.error) {

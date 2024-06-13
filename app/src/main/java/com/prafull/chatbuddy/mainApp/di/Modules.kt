@@ -6,7 +6,8 @@ import com.google.ai.client.generativeai.type.generationConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.BuildConfig
-import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
+import com.prafull.chatbuddy.mainApp.home.data.ClaudeRepository
+import com.prafull.chatbuddy.mainApp.home.data.GeminiRepository
 import com.prafull.chatbuddy.mainApp.home.data.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
@@ -17,15 +18,32 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 
-val homeModule = module {
+val repositories = module {
     single<HomeRepository> {
         HomeRepository()
     }
+    single<PromptLibraryRepo> { PromptLibraryRepo() }
+    single<GeminiRepository> {
+        GeminiRepository()
+    }
+    single<ClaudeRepository> {
+        ClaudeRepository()
+    }
+    single<FirebaseFirestore> {
+        FirebaseFirestore.getInstance()
+    }
+    single<FirebaseAuth> {
+        FirebaseAuth.getInstance()
+    }
+}
+val viewModels = module {
     viewModel<HomeViewModel> {
         HomeViewModel()
     }
-}
-val chatModule = module {
+    viewModel<ChatViewModel> { ChatViewModel() }
+    viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }
+    viewModel<ModelViewModel> { ModelViewModel() }
+
     single<GenerativeModel> {
         GenerativeModel(
                 modelName = "gemini-1.5-flash-latest",
@@ -38,17 +56,4 @@ val chatModule = module {
                 }
         )
     }
-    single<ChatRepository> {
-        ChatRepository()
-    }
-    single<FirebaseFirestore> {
-        FirebaseFirestore.getInstance()
-    }
-    single<FirebaseAuth> {
-        FirebaseAuth.getInstance()
-    }
-    single<PromptLibraryRepo> { PromptLibraryRepo() }
-    viewModel<ChatViewModel> { ChatViewModel() }
-    viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }
-    viewModel<ModelViewModel> { ModelViewModel() }
 }

@@ -3,6 +3,7 @@ package com.prafull.chatbuddy.mainApp.home.data
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
+import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.CryptoEncryption
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.channels.awaitClose
@@ -63,6 +64,21 @@ class HomeRepository : KoinComponent {
                     .get().await()
                 val coins = response.getLong("currCoins") ?: 2000
                 trySend(Resource.Success(coins))
+            } catch (e: Exception) {
+                trySend(Resource.Error(e))
+            }
+            awaitClose { }
+        }
+    }
+
+    fun getModels(): Flow<Resource<List<Model>>> {
+        return callbackFlow {
+            try {
+                val response = firestore.collection("models").get().await()
+                val models = response.documents.mapNotNull { document ->
+                    document.toObject(Model::class.java)
+                }
+                trySend(Resource.Success(models))
             } catch (e: Exception) {
                 trySend(Resource.Error(e))
             }
