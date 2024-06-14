@@ -100,7 +100,8 @@ fun DrawerContent(
                 HorizontalDivider(
                         Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 8.dp))
+                            .padding(vertical = 8.dp)
+                )
                 ChatHistorySection(previousChats, homeViewModel, currChatUUID, onChatClicked)
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {

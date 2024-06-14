@@ -49,7 +49,6 @@ import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.ads.loadInterstitialAd
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
-import com.prafull.chatbuddy.navigateHomeWithArgs
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -158,9 +157,9 @@ fun PromptScreen(
                             loadInterstitialAd(context, activity, onAdFailedToLoad = {
                                 isLoading = false
                                 showPromptDialog = false
-                                navController.navigateHomeWithArgs(promptLibraryItem)
+                                navigateToHome(promptLibraryItem)
                             }, onAdLoaded = {
-                                navController.navigateHomeWithArgs(promptLibraryItem)
+                                navigateToHome(promptLibraryItem)
                                 isLoading = false
                                 showPromptDialog = false
                             })

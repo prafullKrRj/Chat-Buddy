@@ -47,11 +47,6 @@ fun HomeScreen(
     promptType: PromptLibraryItem
 ) {
     val mA = FirebaseAuth.getInstance()
-
-    if (promptType.isNotEmpty()) {
-        chatViewModel.loadFromPromptLibrary(promptType)
-    }
-
     val chatUiState = chatViewModel.uiState.collectAsState()
     val isChatting by chatViewModel.chatting.collectAsState()
     val adButtonState by homeViewModel.adButtonEnabled.collectAsState()

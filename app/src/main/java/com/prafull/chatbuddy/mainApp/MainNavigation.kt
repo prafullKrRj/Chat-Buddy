@@ -172,6 +172,7 @@ fun MainNavigation(appNavController: NavController) {
                             paddingValues,
                             mainNavController
                     ) { promptLibraryItem ->
+                        chatViewModel.loadFromPromptLibrary(promptLibraryItem)
                         mainNavController.navigateHomeWithArgs(promptLibraryItem)
                     }
                 }

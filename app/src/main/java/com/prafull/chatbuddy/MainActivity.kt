@@ -51,7 +51,8 @@ class MainActivity : ComponentActivity() {
                         }
                         composable(AppScreens.SETTINGS.name) {
                             SettingsScreen(navController = navController) {
-                                navController.goBackStack()
+                                navController.popBackStack()
+                                navController.navigate(MajorScreens.App.name)
                             }
                         }
                     }

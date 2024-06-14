@@ -116,6 +116,5 @@ class ChatViewModel : ViewModel(), KoinComponent {
             ChatUiState()
         }
         Log.d("ChatViewModel", "Loading from prompt library: ${chat.systemPrompt}")
-        geminiRepository.setGenerativeModel(chat.systemPrompt)
     }
 }
