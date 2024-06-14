@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -217,7 +216,6 @@ fun CodeSnippetBox(language: String, code: String) {
 @Composable
 fun ClickableText(modifier: Modifier = Modifier, text: AnnotatedString) {
     val context = LocalContext.current
-    val uriHandler = LocalUriHandler.current
 
     Text(
             text = text,

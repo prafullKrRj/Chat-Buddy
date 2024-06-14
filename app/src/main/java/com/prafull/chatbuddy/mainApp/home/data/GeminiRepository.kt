@@ -91,8 +91,4 @@ class GeminiRepository : KoinComponent {
                     SetOptions.merge()
             )
     }
-
-    fun setGenerativeModel(systemPrompt: String) {
-
-    }
 }
