@@ -52,6 +52,7 @@ fun HomeTopAppBar(
             actions = {
                 IconButton(onClick = {
                     navController.navigateAndPopBackStack(AppScreens.HOME.name)
+                    chatViewModel.loadNewChat()
                 }) {
                     Text(text = "\uD83D\uDD8A")
                 }

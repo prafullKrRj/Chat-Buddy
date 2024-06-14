@@ -7,4 +7,21 @@
     <string name="premium_text">Harness the full power of ai with our premium plan!</string>
     <string name="premium_heading">Premium Plan and Buy coins</string>
     <string name="upgrade_to_premium">Upgrade to Premium</string>
+    <string name="settings">Settings</string>
+    <string name="user">User</string>
+    <string name="account">Account</string>
+    <string name="Clear_Data">Clear Data</string>
+    <string name="app">App</string>
+    <string name="color_scheme">Color Scheme</string>
+    <string name="system_default">System (Default)</string>
+    <string name="About">About</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="mail">Email</string>
+    <string name="email_not_set">Email Not Set</string>
+    <string name="subscriptions">Subscriptions</string>
+    <string name="clear_data_confirmation">All your data will be cleared.</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="delete_account">Delete Account</string>
 </resources>

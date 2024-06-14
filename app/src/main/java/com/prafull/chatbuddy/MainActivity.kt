@@ -50,7 +50,9 @@ class MainActivity : ComponentActivity() {
                             MainNavigation(navController)
                         }
                         composable(AppScreens.SETTINGS.name) {
-                            SettingsScreen()
+                            SettingsScreen(navController = navController) {
+                                navController.goBackStack()
+                            }
                         }
                     }
                 }
@@ -83,11 +85,16 @@ fun NavController.goBackStack() {
     }
 }
 
+fun NavController.signOutAndNavigateToAuth() {
+    popBackStack(graph.startDestinationId, true)
+    navigate(MajorScreens.Auth.name)
+}
+
 enum class AppScreens {
     HOME, MODELS, PROMPT, PAYMENTS, SETTINGS
 }
 
 enum class MajorScreens {
     Auth,
-    App
+    App,
 }

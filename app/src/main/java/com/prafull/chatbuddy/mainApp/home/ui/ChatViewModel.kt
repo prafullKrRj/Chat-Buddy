@@ -102,10 +102,8 @@ class ChatViewModel : ViewModel(), KoinComponent {
     }
 
     fun loadFromPromptLibrary(promptLibraryItem: PromptLibraryItem) {
-        println("Loading from prompt library: ${promptLibraryItem}")
         _chatting.update { true }
         _currChatUUID.update { UUID.randomUUID().toString() }
-        Log.d("ChatViewModel", "Loading from prompt library: ${promptLibraryItem}")
         chat.apply {
             id = currChatUUID.value
             messages = mutableListOf()

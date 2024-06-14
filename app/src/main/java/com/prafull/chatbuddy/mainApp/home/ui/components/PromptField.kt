@@ -1,16 +1,18 @@
 package com.prafull.chatbuddy.mainApp.home.ui.components
 
 import android.net.Uri
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Arrangement.Absolute.SpaceBetween
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -37,8 +39,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment.Companion.CenterVertically
-import androidx.compose.ui.Alignment.Companion.TopEnd
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -54,126 +55,134 @@ import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
 import kotlinx.coroutines.launch
 
-
 @Composable
 fun PromptField(chatViewModel: ChatViewModel) {
-    var prompt by rememberSaveable {
-        mutableStateOf("")
-    }
+    var prompt by rememberSaveable { mutableStateOf("") }
+
     val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
-    val pickMedia = rememberLauncherForActivityResult(      // Create a launcher for picking media
+    val pickMedia = rememberLauncherForActivityResult(
             ActivityResultContracts.PickVisualMedia()
     ) { imageUri ->
-        imageUri?.let {
-            imageUris.add(it)
-        }
+        imageUri?.let { imageUris.add(it) }
     }
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val isLoading by chatViewModel.loading.collectAsState()
     val listState = rememberLazyListState()
-    LaunchedEffect(key1 = imageUris.size) {
-        if (imageUris.size > 0) listState.animateScrollToItem(imageUris.size)
+
+    LaunchedEffect(imageUris.size) {
+        if (imageUris.isNotEmpty()) listState.animateScrollToItem(imageUris.size)
     }
     Column {
-        LazyRow(
-                modifier = Modifier.padding(horizontal = 8.dp),
-                verticalAlignment = CenterVertically,
-                reverseLayout = false,
-                state = listState
-        ) {
-            items(imageUris) { imageUri ->
-                SelectedImage(imageUri = imageUri) {
-                    imageUris.remove(it)
-                }
-            }
-            if (imageUris.isNotEmpty()) {
-                item {
-                    FilledTonalIconButton(onClick = {
-                        pickMedia.launch(
-                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)   // Launch the media picker
+        ImagePickerRow(imageUris, pickMedia, listState)
+        MessageInputRow(
+                prompt,
+                onPromptChange = { prompt = it },
+                onSend = {
+                    scope.launch {
+                        val bitmaps = imageUris.mapNotNull { it.toBitmaps(context) }
+                        chatViewModel.sendMessage(
+                                ChatMessage(
+                                        text = prompt,
+                                        imageBitmaps = bitmaps.toMutableList()
+                                )
                         )
-                    }) {
-                        Icon(
-                                imageVector = Icons.Default.Add, contentDescription = "Add Image"
-                        )
+                        imageUris.clear()
+                        focusManager.clearFocus()
+                        prompt = ""
                     }
-                }
-            }
+                },
+                onPickImage = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                isLoading
+        )
+    }
+}
+
+@Composable
+fun ImagePickerRow(
+    imageUris: MutableList<Uri>,
+    pickMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    listState: LazyListState
+) {
+    LazyRow(
+            modifier = Modifier.padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            state = listState
+    ) {
+        items(imageUris) { imageUri ->
+            SelectedImage(imageUri = imageUri) { imageUris.remove(it) }
         }
-        Row(
-                Modifier.fillMaxWidth(),
-                verticalAlignment = CenterVertically,
-                horizontalArrangement = SpaceBetween
-        ) {
-            OutlinedTextField(value = prompt,
-                    onValueChange = {
-                        prompt = it
-                    },
-                    modifier = Modifier
-                        .weight(.9f)
-                        .padding(8.dp),
-                    leadingIcon = {
-                        IconButton(onClick = {
-                            pickMedia.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)   // Launch the media picker
-                            )
-                        }) {
-                            Icon(
-                                    painter = painterResource(id = R.drawable.baseline_image_24),
-                                    contentDescription = "Add Image"
-                            )
-                        }
-                    },
-                    trailingIcon = {
-                        if (prompt.isNotEmpty()) {
-                            IconButton(onClick = {
-                                scope.launch {
-                                    val bitmaps = imageUris.mapNotNull {
-                                        it.toBitmaps(context)
-                                    }
-                                    chatViewModel.sendMessage(
-                                            ChatMessage(
-                                                    text = prompt,
-                                                    imageUri = bitmaps.toMutableList()
-                                            )
-                                    )
-                                    imageUris.clear()
-                                    focusManager.clearFocus()
-                                    prompt = ""
-                                }
-                            }) {
-                                Icon(
-                                        imageVector = Icons.AutoMirrored.Default.Send,
-                                        contentDescription = "Send"
-                                )
-                            }
-                        } else {
-                            IconButton(onClick = { TODO() }) {
-                                Icon(
-                                        painter = painterResource(id = R.drawable.baseline_keyboard_voice_24),
-                                        contentDescription = "Record Voice"
-                                )
-                            }
-                        }
-                    },
-                    shape = RoundedCornerShape(35),
-                    colors = OutlinedTextFieldDefaults.promptFieldColors(),
-                    label = {
-                        Text("Type a message")
-                    })
-            if (isLoading) {
-                CircularProgressIndicator(Modifier.weight(.1f))
+        if (imageUris.isNotEmpty()) {
+            item {
+                FilledTonalIconButton(onClick = {
+                    pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }) {
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Add Image")
+                }
             }
         }
     }
 }
 
 @Composable
-private fun SelectedImage(
-    modifier: Modifier = Modifier, imageUri: Uri, removeImage: (Uri) -> Unit
+fun MessageInputRow(
+    prompt: String,
+    onPromptChange: (String) -> Unit,
+    onSend: () -> Unit,
+    onPickImage: () -> Unit,
+    isLoading: Boolean
 ) {
+    Row(
+            Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        OutlinedTextField(
+                value = prompt,
+                onValueChange = onPromptChange,
+                modifier = Modifier
+                    .weight(0.9f)
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = 8.dp)
+                    .padding(top = 2.dp),
+                leadingIcon = {
+                    IconButton(onClick = onPickImage) {
+                        Icon(
+                                painter = painterResource(id = R.drawable.baseline_image_24),
+                                contentDescription = "Add Image"
+                        )
+                    }
+                },
+                trailingIcon = {
+                    if (prompt.isNotEmpty()) {
+                        IconButton(onClick = onSend) {
+                            Icon(
+                                    imageVector = Icons.AutoMirrored.Default.Send,
+                                    contentDescription = "Send"
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = { /* Handle voice input */ }) {
+                            Icon(
+                                    painter = painterResource(id = R.drawable.baseline_keyboard_voice_24),
+                                    contentDescription = "Record Voice"
+                            )
+                        }
+                    }
+                },
+                shape = RoundedCornerShape(35),
+                colors = OutlinedTextFieldDefaults.promptFieldColors(),
+                label = { Text("Type a message") }
+        )
+        if (isLoading) {
+            CircularProgressIndicator(Modifier.weight(0.1f))
+        }
+    }
+}
+
+@Composable
+private fun SelectedImage(imageUri: Uri, removeImage: (Uri) -> Unit) {
     Box(
             modifier = Modifier
                 .padding(4.dp)
@@ -186,7 +195,8 @@ private fun SelectedImage(
                 modifier = Modifier.padding(4.dp)
         )
         IconButton(
-                onClick = { removeImage(imageUri) }, modifier = Modifier.align(TopEnd)
+                onClick = { removeImage(imageUri) },
+                modifier = Modifier.align(Alignment.TopEnd)
         ) {
             Icon(
                     imageVector = Icons.Filled.Clear,
