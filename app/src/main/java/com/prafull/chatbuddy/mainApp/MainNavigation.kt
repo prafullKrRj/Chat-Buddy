@@ -173,7 +173,6 @@ fun MainNavigation(appNavController: NavController) {
                             mainNavController
                     ) { promptLibraryItem ->
                         mainNavController.navigateHomeWithArgs(promptLibraryItem)
-                        chatViewModel.loadNewChat()
                     }
                 }
                 composable(route = AppScreens.PAYMENTS.name) {

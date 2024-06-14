@@ -1,6 +1,5 @@
 package com.prafull.chatbuddy.mainApp.promptlibrary.data
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.utils.Resource
@@ -24,7 +23,6 @@ class PromptLibraryRepo : KoinComponent {
                     }
                 val personal = response.documents.mapNotNull { document ->
                     val item = document.toObject(PromptLibraryItem::class.java)
-                    Log.d("PromptLibraryRepo", "documents: ${document.data}")
                     item
                 }
                 trySend(

@@ -1,14 +1,13 @@
 package com.prafull.chatbuddy.mainApp.home.ui
 
-import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
 import com.prafull.chatbuddy.mainApp.home.data.GeminiRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
-import com.prafull.chatbuddy.mainApp.home.model.Participant
-import kotlinx.coroutines.delay
+import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -33,67 +32,36 @@ class ChatViewModel : ViewModel(), KoinComponent {
 
     private val _loading = MutableStateFlow(false)
     val loading = _loading.asStateFlow()
+    private var chat =
+        ChatHistory(id = currChatUUID.value)         // current chat
 
-    private var chat = ChatHistory(id = currChatUUID.value)         // current chat
 
-    fun sendMessage(userMessage: String, images: List<Bitmap>) {
+    fun sendMessage(prompt: ChatMessage) {
         _chatting.update {
             true
         }
         _loading.update {
             true
         }
-        _uiState.value.addMessage(
-                ChatMessage(
-                        text = userMessage,
-                        participant = Participant.USER,
-                        isPending = true,
-                        imageUri = images.toMutableList()
-                )
-        )
-        chat.apply {
-            messages.add(_uiState.value.messages.last())
-            lastModified = Timestamp.now()
-        }
-        geminiRepository.saveMessage(chat, _uiState.value.messages.last())
+        _uiState.value.addMessage(prompt)
+        geminiRepository.saveMessage(chat, prompt)
 
         viewModelScope.launch {
-            delay(2000L)
-            _uiState.value.addMessage(
-                    ChatMessage(
-                            text = "oobrbneroibneriobe\noiwvonorbnoerb\noiwniwnbiernerinerb\niwnviwnieniernbernbirnbierb\noiwnvininbinbinbinwerinwiniwer\niowdnviwdniniwrnbwrwer",
-                            participant = Participant.MODEL,
-                            isPending = false
-                    )
-            )
-            chat.apply {
-                messages.add(_uiState.value.messages.last())
-                lastModified = Timestamp.now()
-            }
-            geminiRepository.saveMessage(chat, _uiState.value.messages.last())
-            _loading.update {
-                false
+            geminiRepository.getResponse(chat, prompt).collect { chatMessageResponse ->
+                chat.apply {
+                    messages.add(chatMessageResponse)
+                    lastModified = Timestamp.now()
+                }
+                _uiState.value.addMessage(chatMessageResponse)
+                geminiRepository.saveMessage(chat, chatMessageResponse)
+                _loading.update {
+                    false
+                }
             }
         }
-
-        /*
-        viewModelScope.launch {
-            chatRepository.getResponse(
-                    ChatMessage(
-                            text = userMessage,
-                            participant = Participant.USER,
-                            isPending = true,
-                            imageUri = images
-                    )
-            ).collect {
-                _uiState.value.addMessage(it)
-            }
-        }
-         */
     }
 
     fun chatFromHistory(chatHistory: ChatHistory) {
-        geminiRepository.clearChat()
         _currChatUUID.update {
             chatHistory.id
         }
@@ -102,6 +70,10 @@ class ChatViewModel : ViewModel(), KoinComponent {
             messages = chatHistory.messages.toMutableList()
             lastModified = chatHistory.lastModified
             model = chatHistory.model
+
+            systemPrompt = chatHistory.systemPrompt
+            promptDescription = chatHistory.promptDescription
+            promptName = chatHistory.promptName
         }
         _uiState.update {
             ChatUiState(messages = chatHistory.messages)
@@ -115,15 +87,37 @@ class ChatViewModel : ViewModel(), KoinComponent {
     }
 
     fun loadNewChat() {
-        println(chatting.value)
         if (chatting.value) {
             _currChatUUID.update { UUID.randomUUID().toString() }
-            chat = ChatHistory(id = currChatUUID.value)
+            chat.apply {
+                id = currChatUUID.value
+                messages = mutableListOf()
+            }
             _chatting.update { false }
             _loading.update { false }
             _uiState.update {
                 ChatUiState()
             }
         }
+    }
+
+    fun loadFromPromptLibrary(promptLibraryItem: PromptLibraryItem) {
+        println("Loading from prompt library: ${promptLibraryItem}")
+        _chatting.update { true }
+        _currChatUUID.update { UUID.randomUUID().toString() }
+        Log.d("ChatViewModel", "Loading from prompt library: ${promptLibraryItem}")
+        chat.apply {
+            id = currChatUUID.value
+            messages = mutableListOf()
+            systemPrompt = promptLibraryItem.system
+            promptDescription = promptLibraryItem.description
+            promptName = promptLibraryItem.name
+        }
+        _loading.update { false }
+        _uiState.update {
+            ChatUiState()
+        }
+        Log.d("ChatViewModel", "Loading from prompt library: ${chat.systemPrompt}")
+        geminiRepository.setGenerativeModel(chat.systemPrompt)
     }
 }

@@ -1,11 +1,14 @@
 package com.prafull.chatbuddy.mainApp.home.data
 
+import android.util.Log
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
+import com.google.ai.client.generativeai.type.generationConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.prafull.chatbuddy.BuildConfig
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
@@ -17,23 +20,27 @@ import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
 class GeminiRepository : KoinComponent {
-
-    private val generativeModel: GenerativeModel by inject()
-
-    private val chat = generativeModel.startChat(
-            history = listOf()
-    )
     private val fireStore by inject<FirebaseFirestore>()
     private val firebaseAuth by inject<FirebaseAuth>()
-    suspend fun getResponse(prompt: ChatMessage): Flow<ChatMessage> {
-        return callbackFlow {
-            try {
-                val response = chat.sendMessage(content {
-                    for (image in prompt.imageUri) {
-                        image(image)
+    suspend fun getResponse(history: ChatHistory, prompt: ChatMessage): Flow<ChatMessage> {
+        val generativeModel =
+            GenerativeModel(
+                    modelName = "gemini-1.5-flash-latest",
+                    apiKey = BuildConfig.GEMINI_API_KEY,
+                    generationConfig = generationConfig {
+                        temperature = 0.7f
+                    },
+                    systemInstruction = content {
+                        text(history.systemPrompt)
                     }
-                    text(prompt.text)
-                })
+            )
+        Log.d("GeminiRepository", "getResponse: ${history.systemPrompt}")
+        return callbackFlow {
+            val chat = generativeModel.startChat(
+                    history = history.messages.map { it.toGeminiContent() },
+            )
+            try {
+                val response = chat.sendMessage(prompt.toGeminiContent())
                 response.text?.let { modelResponse ->
                     trySend(
                             ChatMessage(
@@ -70,7 +77,7 @@ class GeminiRepository : KoinComponent {
             )
     }
 
-    fun clearChat() {
-        chat.history.clear()
+    fun setGenerativeModel(systemPrompt: String) {
+
     }
 }

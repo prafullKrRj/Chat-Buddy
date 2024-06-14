@@ -1,14 +1,10 @@
 package com.prafull.chatbuddy.mainApp.di
 
-import com.google.ai.client.generativeai.GenerativeModel
-import com.google.ai.client.generativeai.type.content
-import com.google.ai.client.generativeai.type.generationConfig
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.prafull.chatbuddy.BuildConfig
-import com.prafull.chatbuddy.mainApp.home.data.ClaudeRepository
 import com.prafull.chatbuddy.mainApp.home.data.GeminiRepository
 import com.prafull.chatbuddy.mainApp.home.data.HomeRepository
+import com.prafull.chatbuddy.mainApp.home.data.claude.ClaudeRepository
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelViewModel
@@ -35,6 +31,7 @@ val repositories = module {
     single<FirebaseAuth> {
         FirebaseAuth.getInstance()
     }
+    single { }
 }
 val viewModels = module {
     viewModel<HomeViewModel> {
@@ -44,16 +41,4 @@ val viewModels = module {
     viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }
     viewModel<ModelViewModel> { ModelViewModel() }
 
-    single<GenerativeModel> {
-        GenerativeModel(
-                modelName = "gemini-1.5-flash-latest",
-                apiKey = BuildConfig.GEMINI_API_KEY,
-                generationConfig = generationConfig {
-                    temperature = 0.7f
-                },
-                systemInstruction = content {
-
-                }
-        )
-    }
 }

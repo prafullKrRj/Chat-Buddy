@@ -48,6 +48,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
@@ -132,7 +133,12 @@ fun PromptField(chatViewModel: ChatViewModel) {
                                     val bitmaps = imageUris.mapNotNull {
                                         it.toBitmaps(context)
                                     }
-                                    chatViewModel.sendMessage(prompt, bitmaps)
+                                    chatViewModel.sendMessage(
+                                            ChatMessage(
+                                                    text = prompt,
+                                                    imageUri = bitmaps.toMutableList()
+                                            )
+                                    )
                                     imageUris.clear()
                                     focusManager.clearFocus()
                                     prompt = ""

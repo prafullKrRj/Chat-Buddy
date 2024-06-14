@@ -47,6 +47,9 @@ fun HomeScreen(
     // Firebase Authentication instance
     val mA = FirebaseAuth.getInstance()
 
+    if (promptType.isNotEmpty()) {
+        chatViewModel.loadFromPromptLibrary(promptType)
+    }
     // Collecting the chat view model state
     val chatUiState = chatViewModel.uiState.collectAsState()
 
