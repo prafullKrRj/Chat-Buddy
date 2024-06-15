@@ -73,10 +73,6 @@ class HomeViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    fun updateAdButtonState(enabled: Boolean) {
-        adButtonEnabled = enabled
-    }
-
     init {
         getPreviousChats()
     }
