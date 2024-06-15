@@ -19,8 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -30,7 +28,6 @@ import com.prafull.chatbuddy.ui.theme.gold
 
 @Composable
 fun AdWindow(viewModel: HomeViewModel, watchAd: () -> Unit) {
-    val buttonEnabled by viewModel.adButtonEnabled.collectAsState()
     Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -54,12 +51,11 @@ fun AdWindow(viewModel: HomeViewModel, watchAd: () -> Unit) {
                 Button(
                         onClick = {
                             watchAd()
-                            viewModel.updateAdButtonState(false)
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = gold),
                         modifier = Modifier
                             .fillMaxWidth(),
-                        enabled = buttonEnabled
+                        enabled = viewModel.adButtonEnabled
                 ) {
                     Icon(
                             imageVector = Icons.Default.AccountCircle,

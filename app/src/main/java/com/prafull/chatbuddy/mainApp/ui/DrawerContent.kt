@@ -15,9 +15,11 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text
@@ -37,7 +39,6 @@ import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
-import com.prafull.chatbuddy.navigateIfNotCurrent
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -64,10 +65,8 @@ fun DrawerContent(
                         iconRes = drawable.sharp_chat_bubble_outline_24,
                         onClick = {
                             scope.launch {
-                                navController.navigateIfNotCurrent(
-                                        AppScreens.HOME.name,
-                                        chatViewModel
-                                )
+                                navController.navigateAndPopBackStack(AppScreens.HOME.name)
+                                chatViewModel.loadNewChat()
                                 delay(250L)
                                 closeDrawer()
                             }
@@ -102,7 +101,13 @@ fun DrawerContent(
                             .fillMaxWidth()
                             .padding(vertical = 8.dp)
                 )
-                ChatHistorySection(previousChats, homeViewModel, currChatUUID, onChatClicked)
+                ChatHistorySection(
+                        previousChats,
+                        homeViewModel,
+                        chatViewModel,
+                        currChatUUID,
+                        onChatClicked
+                )
             }
             Column(modifier = Modifier.align(Alignment.BottomCenter)) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -119,13 +124,14 @@ fun DrawerItem(
     selected: Boolean = false,
     onClick: () -> Unit
 ) {
+
     NavigationDrawerItem(
             label = {
                 Row(
                         Modifier
                             .fillMaxWidth()
                             .padding(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Icon(
                             painter = painterResource(id = iconRes),
@@ -136,7 +142,7 @@ fun DrawerItem(
                 }
             },
             selected = selected,
-            onClick = onClick
+            onClick = onClick,
     )
 }
 
@@ -144,6 +150,7 @@ fun DrawerItem(
 fun ChatHistorySection(
     previousChats: Resource<List<ChatHistory>>,
     homeViewModel: HomeViewModel,
+    chatViewModel: ChatViewModel,
     currChatUUID: String,
     onChatClicked: (ChatHistory) -> Unit
 ) {
@@ -167,11 +174,30 @@ fun ChatHistorySection(
                     items(previousChats.data, key = { it.id }) { chatHistory ->
                         NavigationDrawerItem(
                                 label = {
-                                    Text(
-                                            text = chatHistory.messages.first().text,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                    )
+                                    Row(
+                                            Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.SpaceBetween,
+                                            verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                                text = chatHistory.messages.first().text,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                                modifier = Modifier.weight(.9f)
+                                        )
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        IconButton(onClick = {
+                                            if (chatHistory.id == currChatUUID) {
+                                                chatViewModel.loadNewChat()
+                                            }
+                                            homeViewModel.deleteChat(chatHistory.id)
+                                        }, modifier = Modifier.weight(.1f)) {
+                                            Icon(
+                                                    imageVector = Icons.Outlined.Delete,
+                                                    contentDescription = "Delete Chat"
+                                            )
+                                        }
+                                    }
                                 },
                                 selected = chatHistory.id == currChatUUID,
                                 onClick = { onChatClicked(chatHistory) }

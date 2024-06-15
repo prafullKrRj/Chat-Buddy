@@ -14,10 +14,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,6 +34,7 @@ import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeScreen
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.components.HomeTopAppBar
+import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelsScreen
 import com.prafull.chatbuddy.mainApp.payments.PaymentsScreen
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
@@ -43,18 +48,23 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MainNavigation(appNavController: NavController) {
     val chatViewModel: ChatViewModel = getViewModel()
     val homeViewModel: HomeViewModel = getViewModel()
     val scope = rememberCoroutineScope()
-    val currChatUUID by chatViewModel.currChatUUID.collectAsState()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
     val previousChats by homeViewModel.previousChats.collectAsState()
     val mainNavController = rememberNavController()
     val currDestination = mainNavController.currentBackStackEntryAsState().value?.destination?.route
     val mAuth = FirebaseAuth.getInstance()
+    LaunchedEffect(drawerState.isOpen) {
+        if (drawerState.isOpen) {
+            homeViewModel.getPreviousChats()
+        }
+    }
+    val focusManager = LocalFocusManager.current
     ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
@@ -69,7 +79,7 @@ fun MainNavigation(appNavController: NavController) {
                         },
                         closeDrawer = { scope.launch { drawerState.close() } },
                         scope = scope,
-                        currChatUUID = currChatUUID
+                        currChatUUID = chatViewModel.currChatUUID
                 ) { chatHistory ->
                     scope.launch {
                         mainNavController.navigateAndPopBackStack(AppScreens.HOME.name)
@@ -79,8 +89,15 @@ fun MainNavigation(appNavController: NavController) {
                     }
                 }
             },
+            modifier = Modifier.pointerInteropFilter(
+                    onTouchEvent = {
+                        focusManager.clearFocus()
+                        false
+                    }
+            )
     ) {
         Scaffold(
+                modifier = Modifier,
                 topBar = {
                     when (currDestination) {
                         AppScreens.HOME.name + "/{name}/{description}/{system}/{user}" -> {
@@ -92,7 +109,6 @@ fun MainNavigation(appNavController: NavController) {
                                 scope.launch {
                                     drawerState.apply {
                                         drawerState.open()
-                                        homeViewModel.getPreviousChats()
                                     }
                                 }
                             }
@@ -107,7 +123,6 @@ fun MainNavigation(appNavController: NavController) {
                                 scope.launch {
                                     drawerState.apply {
                                         drawerState.open()
-                                        homeViewModel.getPreviousChats()
                                     }
                                 }
                             }
@@ -125,6 +140,11 @@ fun MainNavigation(appNavController: NavController) {
                             }
                         }
                     }
+                },
+                bottomBar = {
+                    if (currDestination == AppScreens.HOME.name || currDestination == AppScreens.HOME.name + "/{name}/{description}/{system}/{user}") {
+                        PromptField(chatViewModel = chatViewModel)
+                    }
                 }
         ) { paddingValues ->
             NavHost(
@@ -133,7 +153,7 @@ fun MainNavigation(appNavController: NavController) {
             ) {
                 composable(route = AppScreens.HOME.name) {
                     HomeScreen(
-                            modifier = Modifier.padding(paddingValues),
+                            paddingValues,
                             mainNavController,
                             chatViewModel,
                             homeViewModel,
@@ -150,7 +170,7 @@ fun MainNavigation(appNavController: NavController) {
                         )
                 ) { backStackEntry ->
                     HomeScreen(
-                            modifier = Modifier.padding(paddingValues),
+                            paddingValues,
                             mainNavController,
                             chatViewModel,
                             homeViewModel,

@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
@@ -34,7 +35,11 @@ class MainActivity : ComponentActivity() {
         val mAuth by inject<FirebaseAuth>()
         setContent {
             ChatBuddyTheme {
-                Surface(modifier = Modifier.fillMaxSize()) {
+                Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .systemBarsPadding()
+                ) {
                     val destination =
                         if (mAuth.currentUser == null) MajorScreens.Auth.name else MajorScreens.App.name
                     val navController = rememberNavController()

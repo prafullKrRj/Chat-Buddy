@@ -1,43 +1,19 @@
-package com.prafull.chatbuddy.mainApp.home.data
+package com.prafull.chatbuddy.mainApp.home.data.gemini
 
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.prafull.chatbuddy.BuildConfig
+import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
-import com.prafull.chatbuddy.utils.CryptoEncryption
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
-class GeminiRepository : KoinComponent {
-    private val fireStore by inject<FirebaseFirestore>()
-    private val firebaseAuth by inject<FirebaseAuth>()
-
-    suspend fun getResponseTest(history: ChatHistory, prompt: ChatMessage): Flow<ChatMessage> {
-        return callbackFlow {
-            trySend(
-                    ChatMessage(
-                            text = "Hello I am Assistant",
-                            participant = Participant.MODEL,
-                            isPending = false
-                    )
-            )
-            awaitClose { }
-        }
-    }
-
-    suspend fun getResponse(history: ChatHistory, prompt: ChatMessage): Flow<ChatMessage> {
-
-        //     Log.d("GeminiRepository", "getResponse: ${history.systemPrompt}")
+class GeminiRepository : ChatRepository() {
+    override suspend fun getResponse(history: ChatHistory, prompt: ChatMessage): Flow<ChatMessage> {
         return callbackFlow {
             val generativeModel =
                 GenerativeModel(
@@ -74,21 +50,5 @@ class GeminiRepository : KoinComponent {
             }
             awaitClose { }
         }
-    }
-
-    fun saveMessage(chat: ChatHistory, chatMessage: ChatMessage) {
-        val encryptedText = CryptoEncryption.encrypt(chatMessage.text)
-        val encryptedMessage =
-            chatMessage.copy(text = encryptedText, imageBitmaps = mutableListOf())
-        fireStore.collection("users").document(firebaseAuth.currentUser?.email!!)
-            .collection("history").document(chat.id).set(
-                    mapOf(
-                            "id" to chat.id,
-                            "model" to chat.model,
-                            "messages" to FieldValue.arrayUnion(encryptedMessage),
-                            "lastModified" to chat.lastModified
-                    ),
-                    SetOptions.merge()
-            )
     }
 }

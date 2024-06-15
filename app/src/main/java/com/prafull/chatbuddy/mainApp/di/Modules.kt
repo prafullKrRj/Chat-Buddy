@@ -2,9 +2,10 @@ package com.prafull.chatbuddy.mainApp.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.prafull.chatbuddy.mainApp.home.data.GeminiRepository
-import com.prafull.chatbuddy.mainApp.home.data.HomeRepository
+import com.prafull.chatbuddy.mainApp.home.data.claude.ClaudeApiService
 import com.prafull.chatbuddy.mainApp.home.data.claude.ClaudeRepository
+import com.prafull.chatbuddy.mainApp.home.data.gemini.GeminiRepository
+import com.prafull.chatbuddy.mainApp.home.data.home.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelViewModel
@@ -13,6 +14,8 @@ import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptLibraryViewModel
 import com.prafull.chatbuddy.settings.SettingsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 val repositories = module {
@@ -32,7 +35,12 @@ val repositories = module {
     single<FirebaseAuth> {
         FirebaseAuth.getInstance()
     }
-    single { }
+    single<ClaudeApiService> {
+        Retrofit.Builder()
+            .baseUrl("https://api.anthropic.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build().create(ClaudeApiService::class.java)
+    }
 }
 val viewModels = module {
     viewModel<HomeViewModel> {

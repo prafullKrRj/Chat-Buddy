@@ -10,6 +10,8 @@ import coil.ImageLoader
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import coil.size.Precision
+import java.io.ByteArrayOutputStream
+import java.util.Base64
 
 class UriSaver : Saver<MutableList<Uri>, List<String>> {
     override fun restore(value: List<String>): MutableList<Uri> = value.map {
@@ -38,4 +40,11 @@ suspend fun Uri.toBitmaps(context: Context): Bitmap? {
     } catch (e: Exception) {
         null
     }
+}
+
+fun Bitmap.toBase64(): String? {
+    val outputStream = ByteArrayOutputStream()
+    this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
+    val byteArray = outputStream.toByteArray()
+    return Base64.getEncoder().encodeToString(byteArray)
 }

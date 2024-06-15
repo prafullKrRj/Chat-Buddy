@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafull.chatbuddy.mainApp.home.data.HomeRepository
+import com.prafull.chatbuddy.mainApp.home.data.home.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.Resource
@@ -20,9 +20,7 @@ import org.koin.core.component.inject
 class HomeViewModel : ViewModel(), KoinComponent {
 
     private val homeRepository by inject<HomeRepository>()
-    private val _adButtonEnabled = MutableStateFlow(true)
-    val adButtonEnabled = _adButtonEnabled.asStateFlow()
-
+    var adButtonEnabled by mutableStateOf(true)
     private val _coins = MutableStateFlow(CoinState())
     val coins = _coins.asStateFlow()
 
@@ -76,9 +74,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
     }
 
     fun updateAdButtonState(enabled: Boolean) {
-        _adButtonEnabled.update {
-            enabled
-        }
+        adButtonEnabled = enabled
     }
 
     init {
@@ -102,6 +98,14 @@ class HomeViewModel : ViewModel(), KoinComponent {
                 _dialogState.update {
                     resp
                 }
+            }
+        }
+    }
+
+    fun deleteChat(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            homeRepository.deleteChat(id).collect {
+                getPreviousChats()
             }
         }
     }

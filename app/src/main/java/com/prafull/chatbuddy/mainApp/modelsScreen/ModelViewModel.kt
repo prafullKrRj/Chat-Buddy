@@ -1,9 +1,13 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +23,10 @@ class ModelViewModel : ViewModel(), KoinComponent {
     private val _state = MutableStateFlow(ModelScreenUIState())
     val state = _state.asStateFlow()
 
+    var claudeModels by mutableStateOf(emptyList<Model>())
+    var gptModels by mutableStateOf(emptyList<Model>())
+    var geminiModels by mutableStateOf(emptyList<Model>())
+
     init {
         getModels()
     }
@@ -32,6 +40,15 @@ class ModelViewModel : ViewModel(), KoinComponent {
                 }
                 _state.update {
                     ModelScreenUIState(models = response, loading = false, error = false)
+                }
+                claudeModels = state.value.models.filter {
+                    it.modelGroup == Const.CLAUDE
+                }
+                geminiModels = state.value.models.filter {
+                    it.modelGroup == Const.GEMINI
+                }
+                gptModels = state.value.models.filter {
+                    it.modelGroup == Const.GPT
                 }
             } catch (e: Exception) {
                 ModelScreenUIState(loading = false, error = true)

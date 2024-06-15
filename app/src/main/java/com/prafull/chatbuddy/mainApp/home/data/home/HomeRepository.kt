@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.home.data
+package com.prafull.chatbuddy.mainApp.home.data.home
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,6 +23,7 @@ class HomeRepository : KoinComponent {
                 val response = firestore.collection("users")
                     .document(firebaseAuth.currentUser?.email.toString()).collection("history")
                     .get().await()
+
                 val chatHistoryList = response.documents.mapNotNull { document ->
                     val chatHistory = document.toObject(ChatHistory::class.java)
                     chatHistory?.let {
@@ -33,13 +34,28 @@ class HomeRepository : KoinComponent {
                     }
                     chatHistory
                 }
-                trySend(Resource.Success(chatHistoryList.sortedByDescending { it.lastModified }))
+
+                val sortedChatHistoryList = chatHistoryList.sortedByDescending { it.lastModified }
+
+                // Deleting the chat history if it is more than 20
+                if (sortedChatHistoryList.size > 20) {
+                    val documentsToDelete = sortedChatHistoryList.drop(20)
+                    documentsToDelete.forEach { chatHistory ->
+                        firestore.collection("users")
+                            .document(firebaseAuth.currentUser?.email.toString())
+                            .collection("history")
+                            .document(chatHistory.id)
+                            .delete().await()
+                    }
+                }
+                trySend(Resource.Success(sortedChatHistoryList.take(20)))
             } catch (e: Exception) {
                 trySend(Resource.Error(e))
             }
             awaitClose { }
         }
     }
+
 
     suspend fun updateCoins(currValue: Long): Flow<Boolean> {
         return callbackFlow {
@@ -81,6 +97,22 @@ class HomeRepository : KoinComponent {
                 trySend(Resource.Success(models))
             } catch (e: Exception) {
                 trySend(Resource.Error(e))
+            }
+            awaitClose { }
+        }
+    }
+
+    fun deleteChat(id: String): Flow<Boolean> {
+        return callbackFlow {
+            try {
+                firestore.collection("users")
+                    .document(firebaseAuth.currentUser?.email.toString())
+                    .collection("history")
+                    .document(id)
+                    .delete().await()
+                trySend(true)
+            } catch (e: Exception) {
+                trySend(false)
             }
             awaitClose { }
         }

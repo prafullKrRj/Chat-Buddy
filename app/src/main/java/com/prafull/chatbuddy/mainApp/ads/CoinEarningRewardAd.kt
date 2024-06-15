@@ -42,17 +42,17 @@ private fun loadRewardAd(
                 override fun onAdLoaded(rewardedAd: RewardedAd) {
                     rewardedAd.fullScreenContentCallback = object : FullScreenContentCallback() {
                         override fun onAdDismissedFullScreenContent() {
-                            Log.d("TAG", "Ad was dismissed")
+                            Log.d("Reward", "Ad was dismissed")
                         }
 
                         override fun onAdShowedFullScreenContent() {
-                            Log.d("TAG", "Ad showed fullscreen content")
+                            Log.d("Reward", "Ad showed fullscreen content")
                         }
 
                         override fun onAdFailedToShowFullScreenContent(p0: AdError) {
                             super.onAdFailedToShowFullScreenContent(p0)
                             Toast.makeText(activity, "Ad failed to show", Toast.LENGTH_SHORT).show()
-                            Log.d("Ad Failed Reward", "$p0")
+                            Log.d("Reward", "$p0")
                         }
                     }
                     rewardedAd.show(activity) {

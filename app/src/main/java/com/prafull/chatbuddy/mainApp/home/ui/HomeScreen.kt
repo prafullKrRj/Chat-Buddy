@@ -1,15 +1,18 @@
 package com.prafull.chatbuddy.mainApp.home.ui
 
 import android.annotation.SuppressLint
-import android.app.Activity
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,13 +25,12 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.AppScreens
+import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.ads.rewardedAds
-import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.ui.components.AdWindow
 import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.ui.components.PremiumPlanComp
-import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
 import com.prafull.chatbuddy.mainApp.home.ui.components.SelectModelDialogBox
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 
@@ -40,7 +42,7 @@ import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun HomeScreen(
-    modifier: Modifier,
+    paddingValues: PaddingValues,
     navController: NavController,
     chatViewModel: ChatViewModel,
     homeViewModel: HomeViewModel,
@@ -48,8 +50,6 @@ fun HomeScreen(
 ) {
     val mA = FirebaseAuth.getInstance()
     val chatUiState = chatViewModel.uiState.collectAsState()
-    val isChatting by chatViewModel.chatting.collectAsState()
-    val adButtonState by homeViewModel.adButtonEnabled.collectAsState()
     val modelsState by homeViewModel.modelDialogState.collectAsState()
 
     if (homeViewModel.modelButtonClicked) {
@@ -57,40 +57,54 @@ fun HomeScreen(
             homeViewModel.modelButtonClicked = false
         })
     }
-
-    Column(
-            modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        if (!isChatting) BannerAd()
-
-        if (promptType.isNotEmpty()) {
-            PromptCard(promptType, isChatting)
-        }
-        ChatMessages(
-                Modifier.weight(1f),
-                chatUiState.value.messages.reversed(),
-                mA,
-                isChatting,
-                navController,
-                homeViewModel,
-                promptType
-        )
-        Column(
-                Modifier
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 4.dp)
-        ) {
-            PromptField(chatViewModel)
-            if (isChatting) BannerAd()
-        }
+    val clipboardManager = LocalClipboardManager.current
+    val lazyListState = rememberLazyListState()
+    LaunchedEffect(chatUiState.value.messages.size) {
+        if (chatUiState.value.messages.isNotEmpty()) lazyListState.animateScrollToItem(chatUiState.value.messages.size + 1)
     }
-
-    if (!adButtonState) {
-        rewardedAds(LocalContext.current as Activity, failed = {
-            homeViewModel.updateAdButtonState(true)
-        }) {
-            homeViewModel.adWatched()
-            homeViewModel.updateAdButtonState(true)
+    val context = LocalContext.current
+    Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
+    ) {
+        LazyColumn(
+                contentPadding = paddingValues,
+                userScrollEnabled = true,
+                state = lazyListState,
+                horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (!chatViewModel.chatting && promptType.isEmpty()) {
+                item {
+                    BannerAd()
+                }
+                item {
+                    AdWindow(homeViewModel) {
+                        homeViewModel.adButtonEnabled = false
+                        rewardedAds(context as MainActivity, failed = {
+                            homeViewModel.adButtonEnabled = true
+                        }) {
+                            homeViewModel.adWatched()
+                            homeViewModel.adButtonEnabled = true
+                        }
+                    }
+                }
+                item {
+                    PremiumPlanComp {
+                        navController.navigate(AppScreens.PAYMENTS.name)
+                    }
+                }
+            }
+            item {
+                if (promptType.isNotEmpty()) {
+                    PromptCard(promptType, chatViewModel.chatting)
+                }
+            }
+            items(chatUiState.value.messages, key = {
+                it.id
+            }) { message ->
+                MessageBubble(message = message, mA = mA, clipboardManager)
+            }
         }
     }
 }
@@ -110,40 +124,6 @@ fun PromptCard(promptType: PromptLibraryItem, isChatting: Boolean) {
                     fontSize = 16.sp,
                     modifier = Modifier.padding(8.dp)
             )
-        }
-    }
-}
-
-@Composable
-fun ChatMessages(
-    modifier: Modifier,
-    messages: List<ChatMessage>,
-    mA: FirebaseAuth,
-    isChatting: Boolean,
-    navController: NavController,
-    homeViewModel: HomeViewModel,
-    promptType: PromptLibraryItem
-) {
-    val clipboardManager = LocalClipboardManager.current
-    LazyColumn(
-            modifier = modifier, userScrollEnabled = true, reverseLayout = isChatting
-    ) {
-        if (!isChatting && promptType.isEmpty()) {
-            item {
-                AdWindow(homeViewModel) {
-                    homeViewModel.updateAdButtonState(false)
-                }
-            }
-            item {
-                PremiumPlanComp {
-                    navController.navigate(AppScreens.PAYMENTS.name)
-                }
-            }
-        }
-        items(messages, key = {
-            it.id
-        }) { message ->
-            MessageBubble(message = message, mA = mA, clipboardManager)
         }
     }
 }

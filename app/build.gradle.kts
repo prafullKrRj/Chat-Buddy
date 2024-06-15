@@ -34,7 +34,11 @@ android {
                 name = "CRYPTO_KEY",
                 value = project.findProperty("CRYPTO_KEY").toString()
         )
-
+        buildConfigField(
+                type = "String",
+                name = "CLAUDE_API_KEY",
+                value = project.findProperty("CLAUDE_API_KEY").toString()
+        )
     }
 
     buildFeatures {
