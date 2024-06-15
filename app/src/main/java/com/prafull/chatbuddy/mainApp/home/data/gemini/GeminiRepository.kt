@@ -17,7 +17,7 @@ class GeminiRepository : ChatRepository() {
         return callbackFlow {
             val generativeModel =
                 GenerativeModel(
-                        modelName = "gemini-1.5-flash-latest",
+                        modelName = history.model,
                         apiKey = BuildConfig.GEMINI_API_KEY,
                         generationConfig = generationConfig {
                             temperature = 0.7f
@@ -35,7 +35,7 @@ class GeminiRepository : ChatRepository() {
                     trySend(
                             ChatMessage(
                                     text = modelResponse,
-                                    participant = Participant.MODEL,
+                                    participant = Participant.ASSISTANT,
                                     isPending = false
                             )
                     )

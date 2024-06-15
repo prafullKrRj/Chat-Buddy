@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp.home.data.home
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
@@ -34,7 +35,7 @@ class HomeRepository : KoinComponent {
                     }
                     chatHistory
                 }
-
+                Log.d("HomeRepository", "getPreviousChats: $chatHistoryList")
                 val sortedChatHistoryList = chatHistoryList.sortedByDescending { it.lastModified }
 
                 // Deleting the chat history if it is more than 20
@@ -50,6 +51,7 @@ class HomeRepository : KoinComponent {
                 }
                 trySend(Resource.Success(sortedChatHistoryList.take(20)))
             } catch (e: Exception) {
+                Log.d("HomeRepository", "getPreviousChats: ${e.message}")
                 trySend(Resource.Error(e))
             }
             awaitClose { }

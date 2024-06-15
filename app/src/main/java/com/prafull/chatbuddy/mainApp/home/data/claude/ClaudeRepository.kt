@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp.home.data.claude
 
+import android.util.Log
 import com.prafull.chatbuddy.BuildConfig
 import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
@@ -16,9 +17,10 @@ class ClaudeRepository : ChatRepository() {
     private val claudeApiService: ClaudeApiService by inject()
     override suspend fun getResponse(history: ChatHistory, prompt: ChatMessage): Flow<ChatMessage> {
         return callbackFlow {
+            Log.d("ClaudeRepository", history.toString())
             try {
                 val request = ClaudeRequest(
-                        model = "claude-3-haiku-20240307",
+                        model = history.model,
                         max_tokens = 1024,
                         messages = history.messages.map {
                             it.toClaudeContent()
@@ -30,7 +32,7 @@ class ClaudeRepository : ChatRepository() {
                     trySend(
                             ChatMessage(
                                     text = it,
-                                    participant = Participant.MODEL,
+                                    participant = Participant.ASSISTANT,
                                     isPending = false
                             )
                     )

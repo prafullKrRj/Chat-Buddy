@@ -25,7 +25,7 @@ abstract class ChatRepository : KoinComponent {
                             "id" to chat.id,
                             "model" to chat.model,
                             "messages" to FieldValue.arrayUnion(encryptedMessage),
-                            "lastModified" to chat.lastModified
+                            "lastModified" to chat.lastModified,
                     ),
                     SetOptions.merge()
             )

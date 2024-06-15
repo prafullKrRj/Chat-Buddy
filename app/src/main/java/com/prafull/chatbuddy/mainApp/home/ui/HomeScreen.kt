@@ -53,7 +53,10 @@ fun HomeScreen(
     val modelsState by homeViewModel.modelDialogState.collectAsState()
 
     if (homeViewModel.modelButtonClicked) {
-        SelectModelDialogBox(modelsState = modelsState, onModelSelect = {}, onDismissRequest = {
+        SelectModelDialogBox(modelsState = modelsState, onModelSelect = {
+            homeViewModel.modelButtonClicked = false
+            chatViewModel.onModelSelected(it)
+        }, onDismissRequest = {
             homeViewModel.modelButtonClicked = false
         })
     }

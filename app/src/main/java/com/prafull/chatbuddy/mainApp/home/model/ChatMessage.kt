@@ -1,7 +1,6 @@
 package com.prafull.chatbuddy.mainApp.home.model
 
 import android.graphics.Bitmap
-import android.util.Log
 import com.google.ai.client.generativeai.type.Content
 import com.google.ai.client.generativeai.type.content
 import com.prafull.chatbuddy.utils.toBase64
@@ -24,9 +23,8 @@ data class ChatMessage(
     }
 
     fun toClaudeContent(): ClaudeMessage {
-        Log.d("ChatMessage", "toClaudeContent: ${participant.name}")
         return ClaudeMessage(
-                role = participant.name.toLowerCase(),
+                role = if (participant == Participant.USER) "user" else "assistant",
                 claudeMessageContent = listOf(
                         ClaudeMessageContent(
                                 type = "text",
@@ -47,5 +45,5 @@ data class ChatMessage(
 }
 
 enum class Participant {
-    USER, MODEL, ERROR
+    USER, ASSISTANT, ERROR
 }

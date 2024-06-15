@@ -13,3 +13,7 @@ data class ChatHistory(
     var promptName: String = "",
     var promptDescription: String = ""
 )
+
+fun String.isGeminiModel() = this.contains("gemini")
+fun String.isClaudeModel() = this.contains("claude")
+fun String.isGptModel() = this.contains("gpt")

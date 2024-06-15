@@ -33,6 +33,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
     private val _dialogState = MutableStateFlow<Resource<List<Model>>>(Resource.Initial)
     var modelButtonClicked by mutableStateOf(false)
     val modelDialogState = _dialogState.asStateFlow()
+
     fun adWatched() {
         _watchedAd.update {
             true
@@ -50,6 +51,7 @@ class HomeViewModel : ViewModel(), KoinComponent {
     }
 
     init {
+        getPreviousChats()
         getCoins()
     }
 
@@ -72,11 +74,6 @@ class HomeViewModel : ViewModel(), KoinComponent {
             }
         }
     }
-
-    init {
-        getPreviousChats()
-    }
-
 
     fun getPreviousChats() {
         viewModelScope.launch(Dispatchers.IO) {
