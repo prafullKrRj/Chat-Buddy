@@ -1,5 +1,7 @@
 package com.prafull.chatbuddy.mainApp.promptlibrary.model
 
+import com.prafull.chatbuddy.Routes
+
 data class PromptLibraryItem(
     val name: String = "",
     val description: String = "",
@@ -13,4 +15,6 @@ data class PromptLibraryItem(
     fun isNotEmpty(): Boolean {
         return name.isNotEmpty() || description.isNotEmpty() || system.isNotEmpty() || user.isNotEmpty()
     }
+
+    fun toHomeArgs() = Routes.HomeWithArgs(name, description, system, user)
 }

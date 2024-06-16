@@ -1,13 +1,10 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.model.Model
-import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,39 +20,75 @@ class ModelViewModel : ViewModel(), KoinComponent {
     private val _state = MutableStateFlow(ModelScreenUIState())
     val state = _state.asStateFlow()
 
-    var claudeModels by mutableStateOf(emptyList<Model>())
-    var gptModels by mutableStateOf(emptyList<Model>())
-    var geminiModels by mutableStateOf(emptyList<Model>())
-
     init {
         getModels()
     }
 
+    private var _modelResponse = MutableStateFlow(Response())
+    val modelResponse = _modelResponse.asStateFlow()
     fun getModels() {
         _state.update { ModelScreenUIState(loading = true) }
+        Log.d("ModelViewModel", "Getting Models")
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val response = firestore.collection("models").get().await().documents.mapNotNull {
-                    it.toObject(Model::class.java)
+                val modelDocuments = firestore.collection("models").get().await()
+                val modelResponses = modelDocuments.documents.map { document ->
+                    val type = document.id
+                    val groups = document["groups"] as? List<String> ?: emptyList()
+
+                    val groupList = groups.map { groupName ->
+                        val modelsCollection =
+                            firestore.collection("models").document(type).collection(groupName)
+                                .get().await()
+                        val models = modelsCollection.documents.map { modelDocument ->
+                            modelDocument.toObject(Model::class.java) ?: Model()
+                        }
+                        Group(name = groupName, models = models)
+                    }
+                    ModelResponse(type = type, groups = groupList)
                 }
-                _state.update {
-                    ModelScreenUIState(models = response, loading = false, error = false)
-                }
-                claudeModels = state.value.models.filter {
-                    it.modelGroup == Const.CLAUDE
-                }
-                geminiModels = state.value.models.filter {
-                    it.modelGroup == Const.GEMINI
-                }
-                gptModels = state.value.models.filter {
-                    it.modelGroup == Const.GPT
-                }
+
+                _modelResponse.update { Response(modelResponses) }
+                Log.d("ModelViewModel", "Model Response: $modelResponses")
+                _state.update { ModelScreenUIState(loading = false) }
             } catch (e: Exception) {
                 ModelScreenUIState(loading = false, error = true)
             }
         }
     }
+
+    private fun addModel(model: Model) {
+        viewModelScope.launch(Dispatchers.IO) {
+            firestore.collection("models").document("nlp").collection("Characters")
+                .document("Lucia").set(
+                        Model(
+                                generalName = "Lucia",
+                                actualName = "gemini-1.5-flash",
+                                currPricePerToken = 0.0,
+                                image = "",
+                                hasVision = false,
+                                hasFiles = false,
+                                modelGroup = "Characters",
+                                taskType = "AI Girlfriend"
+                        )
+                ).await()
+        }
+    }
 }
+
+data class Response(
+    val modelResponses: List<ModelResponse> = emptyList()
+)
+
+data class ModelResponse(
+    val type: String = "",
+    val groups: List<Group> = emptyList(),
+)
+
+data class Group(
+    val name: String = "",
+    val models: List<Model> = emptyList()
+)
 
 data class ModelScreenUIState(
     val models: List<Model> = emptyList(),

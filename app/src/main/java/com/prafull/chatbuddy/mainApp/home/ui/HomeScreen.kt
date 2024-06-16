@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
@@ -24,8 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.MainActivity
+import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.ads.rewardedAds
 import com.prafull.chatbuddy.mainApp.home.ui.components.AdWindow
@@ -33,6 +34,7 @@ import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.ui.components.PremiumPlanComp
 import com.prafull.chatbuddy.mainApp.home.ui.components.SelectModelDialogBox
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
+import com.prafull.chatbuddy.model.Model
 
 /**
  * HomeScreen is the main screen of the application.
@@ -52,13 +54,19 @@ fun HomeScreen(
     val chatUiState = chatViewModel.uiState.collectAsState()
     val modelsState by homeViewModel.modelDialogState.collectAsState()
 
+    val selectedModel = remember<(Model) -> Unit> {
+        { model ->
+            homeViewModel.modelButtonClicked = false
+            chatViewModel.onModelSelected(model)
+        }
+    }
     if (homeViewModel.modelButtonClicked) {
-        SelectModelDialogBox(modelsState = modelsState, onModelSelect = {
-            homeViewModel.modelButtonClicked = false
-            chatViewModel.onModelSelected(it)
-        }, onDismissRequest = {
-            homeViewModel.modelButtonClicked = false
-        })
+        SelectModelDialogBox(
+                modelsState = modelsState,
+                onModelSelect = selectedModel,
+                onDismissRequest = {
+                    homeViewModel.modelButtonClicked = false
+                })
     }
     val clipboardManager = LocalClipboardManager.current
     val lazyListState = rememberLazyListState()
@@ -78,10 +86,8 @@ fun HomeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (!chatViewModel.chatting && promptType.isEmpty()) {
-                item {
+                item(key = "ad") {
                     BannerAd()
-                }
-                item {
                     AdWindow(homeViewModel) {
                         homeViewModel.adButtonEnabled = false
                         rewardedAds(context as MainActivity, failed = {
@@ -92,9 +98,9 @@ fun HomeScreen(
                         }
                     }
                 }
-                item {
+                item("premium") {
                     PremiumPlanComp {
-                        navController.navigate(AppScreens.PAYMENTS.name)
+                        navController.navigate(Routes.PaymentsScreen)
                     }
                 }
             }
@@ -121,12 +127,10 @@ fun PromptCard(promptType: PromptLibraryItem, isChatting: Boolean) {
                 fontSize = 20.sp,
                 modifier = Modifier.padding(8.dp)
         )
-        if (!isChatting) {
-            Text(
-                    text = "Description: ${promptType.description}",
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(8.dp)
-            )
-        }
+        Text(
+                text = "Description: ${promptType.description}",
+                fontSize = 16.sp,
+                modifier = Modifier.padding(8.dp)
+        )
     }
 }

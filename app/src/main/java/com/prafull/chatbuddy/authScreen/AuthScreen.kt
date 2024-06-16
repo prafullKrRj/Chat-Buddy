@@ -26,8 +26,8 @@ import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.prafull.chatbuddy.BuildConfig
-import com.prafull.chatbuddy.MajorScreens
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.Routes
 import org.koin.androidx.compose.getViewModel
 
 @Composable
@@ -68,7 +68,7 @@ fun AuthScreen(
                                         "Google SignIn Successful",
                                         Toast.LENGTH_SHORT
                                 ).show()
-                                navController.navigate(MajorScreens.App.name)
+                                navController.navigate(Routes.App)
                             } else {
                                 Toast.makeText(context, "Google SignIn Failed", Toast.LENGTH_SHORT)
                                     .show()

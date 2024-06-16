@@ -20,7 +20,7 @@ class GeminiRepository : ChatRepository() {
                         modelName = history.model,
                         apiKey = BuildConfig.GEMINI_API_KEY,
                         generationConfig = generationConfig {
-                            temperature = 0.7f
+                            temperature = history.temperature
                         },
                         systemInstruction = content {
                             text(history.systemPrompt)

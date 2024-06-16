@@ -32,9 +32,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.firebase.auth.FirebaseAuth
-import com.prafull.chatbuddy.AppScreens
 import com.prafull.chatbuddy.R.drawable
+import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
@@ -57,6 +58,8 @@ fun DrawerContent(
     scope: CoroutineScope,
     onChatClicked: (ChatHistory) -> Unit,
 ) {
+    val currDestination =
+        navController.currentBackStackEntryAsState().value?.destination?.javaClass?.name
     ModalDrawerSheet(Modifier.padding(end = 100.dp)) {
         Box(Modifier.fillMaxHeight()) {
             Column {
@@ -65,7 +68,7 @@ fun DrawerContent(
                         iconRes = drawable.sharp_chat_bubble_outline_24,
                         onClick = {
                             scope.launch {
-                                navController.navigateAndPopBackStack(AppScreens.HOME.name)
+                                navController.navigateAndPopBackStack(Routes.Home)
                                 chatViewModel.loadNewChat()
                                 delay(250L)
                                 closeDrawer()
@@ -75,10 +78,10 @@ fun DrawerContent(
                 DrawerItem(
                         label = "Prompt Library",
                         iconRes = drawable.outline_apps_24,
-                        selected = navController.currentDestination?.route == AppScreens.PROMPT.name,
+                        selected = currDestination == Routes.PromptScreen.javaClass.name,
                         onClick = {
                             scope.launch {
-                                navController.navigateAndPopBackStack(AppScreens.PROMPT.name)
+                                navController.navigateAndPopBackStack(Routes.PromptScreen)
                                 delay(100L)
                                 closeDrawer()
                             }
@@ -87,10 +90,10 @@ fun DrawerContent(
                 DrawerItem(
                         label = "Models",
                         iconRes = drawable.baseline_explore_24,
-                        selected = navController.currentDestination?.route == AppScreens.MODELS.name,
+                        selected = currDestination == Routes.ModelsScreen.javaClass.name,
                         onClick = {
                             scope.launch {
-                                navController.navigateAndPopBackStack(AppScreens.MODELS.name)
+                                navController.navigateAndPopBackStack(Routes.ModelsScreen)
                                 delay(250L)
                                 closeDrawer()
                             }
@@ -124,7 +127,6 @@ fun DrawerItem(
     selected: Boolean = false,
     onClick: () -> Unit
 ) {
-
     NavigationDrawerItem(
             label = {
                 Row(

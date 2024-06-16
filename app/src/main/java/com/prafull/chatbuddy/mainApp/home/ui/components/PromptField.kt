@@ -55,16 +55,16 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
-import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
 import kotlinx.coroutines.launch
 
 
 @Composable
-fun PromptField(chatViewModel: ChatViewModel) {
+fun PromptField(viewModel: ChatViewModelAbstraction) {
 
     val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
     val pickMedia = rememberLauncherForActivityResult(
@@ -75,7 +75,7 @@ fun PromptField(chatViewModel: ChatViewModel) {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val isLoading by chatViewModel.loading.collectAsState()
+    val isLoading by viewModel.loading.collectAsState()
     val listState = rememberLazyListState()
 
     LaunchedEffect(imageUris.size) {
@@ -89,17 +89,17 @@ fun PromptField(chatViewModel: ChatViewModel) {
         ImagePickerRow(imageUris, pickMedia, listState)
         MessageInputRow(
                 modifier = Modifier,
-                prompt = chatViewModel.currPrompt.text,
+                prompt = viewModel.currPrompt.text,
                 onPromptChange = {
-                    chatViewModel.currPrompt = ChatMessage(text = it)
+                    viewModel.currPrompt = ChatMessage(text = it)
                 },
                 onSend = {
                     scope.launch {
                         val bitmaps = imageUris.mapNotNull { it.toBitmaps(context) }
-                        chatViewModel.currPrompt = chatViewModel.currPrompt.copy(
+                        viewModel.currPrompt = viewModel.currPrompt.copy(
                                 imageBitmaps = bitmaps.toMutableList()
                         )
-                        chatViewModel.sendMessage()
+                        viewModel.sendMessage()
                         imageUris.clear()
                         focusManager.clearFocus()
                     }
@@ -107,7 +107,7 @@ fun PromptField(chatViewModel: ChatViewModel) {
                 onPickImage = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                 isLoading
         )
-        if (chatViewModel.chatting) BannerAd()
+        if (viewModel.chatting) BannerAd()
     }
 }
 

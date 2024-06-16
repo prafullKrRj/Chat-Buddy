@@ -21,8 +21,10 @@ import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.mainApp.MainNavigation
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
+import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.settings.SettingsScreen
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
+import kotlinx.serialization.Serializable
 import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
@@ -40,24 +42,24 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                             .systemBarsPadding()
                 ) {
-                    val destination =
-                        if (mAuth.currentUser == null) MajorScreens.Auth.name else MajorScreens.App.name
+                    val destination: Any =
+                        if (mAuth.currentUser == null) Routes.Auth else Routes.App
                     val navController = rememberNavController()
 
                     NavHost(navController = navController, startDestination = destination) {
-                        composable(route = MajorScreens.Auth.name) {
+                        composable<Routes.Auth> {
                             AuthScreen(
                                     navController = navController,
                                     mAuth = FirebaseAuth.getInstance()
                             )
                         }
-                        composable(route = MajorScreens.App.name) {
+                        composable<Routes.App> {
                             MainNavigation(navController)
                         }
-                        composable(AppScreens.SETTINGS.name) {
+                        composable<Routes.SettingsScreen> {
                             SettingsScreen(navController = navController) {
                                 navController.popBackStack()
-                                navController.navigate(MajorScreens.App.name)
+                                navController.navigate(Routes.App)
                             }
                         }
                     }
@@ -68,18 +70,18 @@ class MainActivity : ComponentActivity() {
 }
 
 
-fun NavController.navigateAndPopBackStack(route: String) {
+fun NavController.navigateAndPopBackStack(screen: Any) {
     popBackStack()
-    navigate(route)
+    navigate(screen)
 }
 
 fun NavController.navigateHomeWithArgs(promptLibraryItem: PromptLibraryItem) {
     navigateAndPopBackStack(
-            AppScreens.HOME.name + "/${promptLibraryItem.name}/${promptLibraryItem.description}/${promptLibraryItem.system}/${promptLibraryItem.user}"
+            promptLibraryItem.toHomeArgs()  // HomeWithArgs
     )
 }
 
-fun NavController.navigateIfNotCurrent(route: String, chatViewModel: ChatViewModel) {
+fun NavController.navigateIfNotCurrent(route: Any, chatViewModel: ChatViewModel) {
     if (currentDestination?.route == route) return
     chatViewModel.loadNewChat()
     navigateAndPopBackStack(route)
@@ -93,14 +95,78 @@ fun NavController.goBackStack() {
 
 fun NavController.signOutAndNavigateToAuth() {
     popBackStack(graph.startDestinationId, true)
-    navigate(MajorScreens.Auth.name)
+    navigate(Routes.Auth)
 }
 
-enum class AppScreens {
-    HOME, MODELS, PROMPT, PAYMENTS, SETTINGS
+sealed interface Routes {
+
+
+    @Serializable
+    object SettingsScreen
+
+    @Serializable
+    object Auth
+
+    @Serializable
+    object App
+
+
+    @Serializable
+    object Home
+
+    @Serializable
+    data class HomeWithArgs(
+        val name: String,
+        val description: String,
+        val system: String,
+        val user: String
+    ) {
+        fun toPromptLibraryItem() = PromptLibraryItem(name, description, system, user)
+    }
+
+    @Serializable
+    object ModelsScreen
+
+    @Serializable
+    object PromptScreen
+
+    @Serializable
+    object PaymentsScreen
+
+    @Serializable
+    data class ChatScreen(
+        val generalName: String = "",
+        val actualName: String = "",
+        val currPricePerToken: String = "0.0",
+        val image: String = "",
+        val hasVision: Boolean = false,
+        val hasFiles: Boolean = false,
+        val modelGroup: String = "",
+        val taskType: String = "",
+        val temperature: Float = 0.7f,
+    ) {
+        fun toModel() = Model(
+                generalName,
+                actualName,
+                currPricePerToken.toDouble(),
+                image,
+                hasVision,
+                hasFiles,
+                modelGroup,
+                taskType,
+                temperature
+        )
+    }
 }
 
-enum class MajorScreens {
+enum class RoutesStrings {
+    SettingsScreen,
     Auth,
     App,
+    Home,
+    HomeWithArgs,
+    ModelsScreen,
+    ChatScreen,
+    PromptScreen,
+    PaymentsScreen
 }

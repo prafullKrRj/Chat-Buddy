@@ -9,6 +9,7 @@ import com.prafull.chatbuddy.mainApp.home.data.home.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelViewModel
+import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatVM
 import com.prafull.chatbuddy.mainApp.promptlibrary.data.PromptLibraryRepo
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptLibraryViewModel
 import com.prafull.chatbuddy.settings.SettingsViewModel
@@ -47,6 +48,7 @@ val viewModels = module {
         HomeViewModel()
     }
     viewModel<ChatViewModel> { ChatViewModel() }
+    viewModel<ModelsChatVM> { ModelsChatVM(get()) }
     viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }
     viewModel<ModelViewModel> { ModelViewModel() }
     viewModel<SettingsViewModel> { SettingsViewModel() }

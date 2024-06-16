@@ -6,6 +6,8 @@ import com.google.gson.annotations.SerializedName
 data class ClaudeRequest(
     @SerializedName("model") val model: String,
     @SerializedName("max_tokens") val max_tokens: Int,
+    @SerializedName("system") val system: String,
+    @SerializedName("temperature") val temperature: Float,
     @SerializedName("messages") val messages: List<ClaudeMessage>
 )
 

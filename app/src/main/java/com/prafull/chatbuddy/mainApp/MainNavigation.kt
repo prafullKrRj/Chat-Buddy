@@ -17,25 +17,28 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
-import com.prafull.chatbuddy.AppScreens
+import com.prafull.chatbuddy.Routes
+import com.prafull.chatbuddy.RoutesStrings
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeScreen
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.components.HomeTopAppBar
 import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelsScreen
+import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelChatScreen
+import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatVM
 import com.prafull.chatbuddy.mainApp.payments.PaymentsScreen
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptScreen
@@ -46,9 +49,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
+import org.koin.androidx.compose.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun MainNavigation(appNavController: NavController) {
     val chatViewModel: ChatViewModel = getViewModel()
@@ -57,7 +61,10 @@ fun MainNavigation(appNavController: NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val previousChats by homeViewModel.previousChats.collectAsState()
     val mainNavController = rememberNavController()
-    val currDestination = mainNavController.currentBackStackEntryAsState().value?.destination?.route
+
+    var currDestination by rememberSaveable {
+        mutableStateOf(RoutesStrings.Home.name)
+    }
     val mAuth = FirebaseAuth.getInstance()
     LaunchedEffect(drawerState.isOpen) {
         if (drawerState.isOpen) {
@@ -65,9 +72,16 @@ fun MainNavigation(appNavController: NavController) {
         }
     }
     val focusManager = LocalFocusManager.current
+    LaunchedEffect(currDestination) {
+        focusManager.clearFocus()
+    }
+
     ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
+                if (currDestination == RoutesStrings.ChatScreen.name || currDestination == RoutesStrings.PaymentsScreen.name) {
+                    return@ModalNavigationDrawer
+                }
                 DrawerContent(
                         mAuth = mAuth,
                         previousChats = previousChats,
@@ -75,32 +89,26 @@ fun MainNavigation(appNavController: NavController) {
                         navController = mainNavController,
                         chatViewModel = chatViewModel,
                         onSettingsClicked = {
-                            appNavController.navigate(AppScreens.SETTINGS.name)
+                            appNavController.navigate(Routes.SettingsScreen)
                         },
                         closeDrawer = { scope.launch { drawerState.close() } },
                         scope = scope,
                         currChatUUID = chatViewModel.currChatUUID
                 ) { chatHistory ->
                     scope.launch {
-                        mainNavController.navigateAndPopBackStack(AppScreens.HOME.name)
+                        mainNavController.navigateAndPopBackStack(Routes.Home)
                         chatViewModel.chatFromHistory(chatHistory)
                         delay(500L)
                         drawerState.close()
                     }
                 }
-            },
-            modifier = Modifier.pointerInteropFilter(
-                    onTouchEvent = {
-                        focusManager.clearFocus()
-                        false
-                    }
-            )
+            }
     ) {
         Scaffold(
                 modifier = Modifier,
                 topBar = {
                     when (currDestination) {
-                        AppScreens.HOME.name + "/{name}/{description}/{system}/{user}" -> {
+                        RoutesStrings.Home.name, RoutesStrings.HomeWithArgs.name -> {
                             HomeTopAppBar(
                                     homeViewModel = homeViewModel,
                                     chatViewModel = chatViewModel,
@@ -114,27 +122,13 @@ fun MainNavigation(appNavController: NavController) {
                             }
                         }
 
-                        AppScreens.HOME.name -> {
-                            HomeTopAppBar(
-                                    homeViewModel = homeViewModel,
-                                    navController = mainNavController,
-                                    chatViewModel = chatViewModel
-                            ) {
-                                scope.launch {
-                                    drawerState.apply {
-                                        drawerState.open()
-                                    }
-                                }
-                            }
-                        }
-
-                        AppScreens.MODELS.name -> {
+                        RoutesStrings.ModelsScreen.name -> {
                             ModelsAndPromptTopAppBar(title = "Models", drawerState, scope) {
                                 homeViewModel.getPreviousChats()
                             }
                         }
 
-                        AppScreens.PROMPT.name -> {
+                        RoutesStrings.PromptScreen.name -> {
                             ModelsAndPromptTopAppBar(title = "Prompt", drawerState, scope) {
                                 homeViewModel.getPreviousChats()
                             }
@@ -142,16 +136,17 @@ fun MainNavigation(appNavController: NavController) {
                     }
                 },
                 bottomBar = {
-                    if (currDestination == AppScreens.HOME.name || currDestination == AppScreens.HOME.name + "/{name}/{description}/{system}/{user}") {
-                        PromptField(chatViewModel = chatViewModel)
+                    if (currDestination == RoutesStrings.Home.name || currDestination == RoutesStrings.HomeWithArgs.name) {
+                        PromptField(viewModel = chatViewModel)
                     }
                 }
         ) { paddingValues ->
             NavHost(
                     navController = mainNavController,
-                    startDestination = AppScreens.HOME.name
+                    startDestination = Routes.Home
             ) {
-                composable(route = AppScreens.HOME.name) {
+                composable<Routes.Home> {
+                    currDestination = RoutesStrings.Home.name
                     HomeScreen(
                             paddingValues,
                             mainNavController,
@@ -160,33 +155,23 @@ fun MainNavigation(appNavController: NavController) {
                             PromptLibraryItem()
                     )
                 }
-                composable(
-                        route = AppScreens.HOME.name + "/{name}/{description}/{system}/{user}",
-                        arguments = listOf(
-                                navArgument("name") { defaultValue = "" },
-                                navArgument("description") { defaultValue = "" },
-                                navArgument("system") { defaultValue = "" },
-                                navArgument("user") { defaultValue = "" }
-                        )
-                ) { backStackEntry ->
+                composable<Routes.HomeWithArgs> { backStackEntry ->
+                    val homeWithArgs: Routes.HomeWithArgs = backStackEntry.toRoute()
+                    currDestination = RoutesStrings.HomeWithArgs.name
                     HomeScreen(
                             paddingValues,
                             mainNavController,
                             chatViewModel,
                             homeViewModel,
-                            PromptLibraryItem(
-                                    name = backStackEntry.arguments?.getString("name") ?: "",
-                                    description = backStackEntry.arguments?.getString("description")
-                                        ?: "",
-                                    system = backStackEntry.arguments?.getString("system") ?: "",
-                                    user = backStackEntry.arguments?.getString("user") ?: ""
-                            )
+                            homeWithArgs.toPromptLibraryItem()
                     )
                 }
-                composable(route = AppScreens.MODELS.name) {
-                    ModelsScreen(paddingValues)
+                composable<Routes.ModelsScreen> {
+                    currDestination = RoutesStrings.ModelsScreen.name
+                    ModelsScreen(paddingValues, mainNavController)
                 }
-                composable(route = AppScreens.PROMPT.name) {
+                composable<Routes.PromptScreen> {
+                    currDestination = RoutesStrings.PromptScreen.name
                     PromptScreen(
                             Modifier.padding(),
                             paddingValues,
@@ -196,8 +181,15 @@ fun MainNavigation(appNavController: NavController) {
                         mainNavController.navigateHomeWithArgs(promptLibraryItem)
                     }
                 }
-                composable(route = AppScreens.PAYMENTS.name) {
+                composable<Routes.PaymentsScreen> {
+                    currDestination = RoutesStrings.PaymentsScreen.name
                     PaymentsScreen(mainNavController)
+                }
+                composable<Routes.ChatScreen> { backStackEntry ->
+                    currDestination = RoutesStrings.ChatScreen.name
+                    val model: Routes.ChatScreen = backStackEntry.toRoute()
+                    val viewModel: ModelsChatVM = koinViewModel { parametersOf(model.toModel()) }
+                    ModelChatScreen(viewModel, mainNavController)
                 }
             }
         }

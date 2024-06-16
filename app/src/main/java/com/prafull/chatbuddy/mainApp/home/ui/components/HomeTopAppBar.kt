@@ -21,7 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.prafull.chatbuddy.AppScreens
+import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
@@ -51,7 +51,7 @@ fun HomeTopAppBar(
             },
             actions = {
                 IconButton(onClick = {
-                    navController.navigateAndPopBackStack(AppScreens.HOME.name)
+                    navController.navigateAndPopBackStack(Routes.Home)
                     if (chatViewModel.chatting) chatViewModel.loadNewChat()
                 }) {
                     Text(text = "\uD83D\uDD8A")

@@ -11,7 +11,8 @@ data class ChatHistory(
     var lastModified: Timestamp = Timestamp.now(),
     var systemPrompt: String = Const.GENERAL_SYSTEM_PROMPT,
     var promptName: String = "",
-    var promptDescription: String = ""
+    var promptDescription: String = "",
+    var temperature: Float = 0.7f,
 )
 
 fun String.isGeminiModel() = this.contains("gemini")

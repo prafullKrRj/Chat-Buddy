@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -68,17 +69,14 @@ fun SelectModelDialogBox(
                         }
 
                         is Resource.Success -> {
-                            LazyColumn {
-                                items(modelsState.data) { model ->
-                                    Card(modifier = Modifier
-                                        .padding(8.dp)
-                                        .clickable {
-                                            selectedModel = model
-                                        }) {
+                            LazyColumn(contentPadding = PaddingValues(8.dp)) {
+                                items(modelsState.data, key = { it.actualName }) { model ->
+                                    Card(modifier = Modifier) {
                                         Row(
                                                 Modifier
                                                     .fillMaxWidth()
-                                                    .padding(8.dp),
+                                                    .padding(8.dp)
+                                                    .clickable { selectedModel = model },
                                                 horizontalArrangement = Arrangement.SpaceBetween,
                                                 verticalAlignment = Alignment.CenterVertically
                                         ) {
