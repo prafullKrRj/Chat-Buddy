@@ -4,7 +4,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
-import com.google.gson.Gson
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.utils.CryptoEncryption
@@ -15,7 +14,6 @@ import org.koin.core.component.inject
 abstract class ChatRepository : KoinComponent {
     private val fireStore by inject<FirebaseFirestore>()
     private val firebaseAuth by inject<FirebaseAuth>()
-    private val gson: Gson by inject()
     abstract suspend fun getResponse(history: ChatHistory, prompt: ChatMessage): Flow<ChatMessage>
     fun saveMessage(chat: ChatHistory, chatMessage: ChatMessage) {
         val encryptedText = CryptoEncryption.encrypt(chatMessage.text)

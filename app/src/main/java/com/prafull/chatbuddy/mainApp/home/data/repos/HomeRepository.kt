@@ -3,7 +3,6 @@ package com.prafull.chatbuddy.mainApp.home.data.repos
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.gson.Gson
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.CryptoEncryption
@@ -19,7 +18,6 @@ class HomeRepository : KoinComponent {
 
     private val firebaseAuth by inject<FirebaseAuth>()
     private val firestore by inject<FirebaseFirestore>()
-    private val gson by inject<Gson>()
     suspend fun getPreviousChats(): Flow<Resource<List<ChatHistory>>> {
         return callbackFlow {
             try {

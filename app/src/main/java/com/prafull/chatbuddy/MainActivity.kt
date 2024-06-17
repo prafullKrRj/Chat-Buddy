@@ -19,7 +19,6 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.mainApp.MainNavigation
-import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
@@ -81,12 +80,6 @@ fun NavController.navigateHomeWithArgs(promptLibraryItem: PromptLibraryItem) {
     navigateAndPopBackStack(
             promptLibraryItem.toHomeArgs()
     )
-}
-
-fun NavController.navigateIfNotCurrent(route: Any, chatViewModel: ChatViewModel) {
-    if (currentDestination?.route == route) return
-    chatViewModel.loadNewChat()
-    navigateAndPopBackStack(route)
 }
 
 fun NavController.goBackStack() {
