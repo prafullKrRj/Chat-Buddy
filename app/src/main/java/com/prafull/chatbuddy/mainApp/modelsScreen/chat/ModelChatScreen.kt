@@ -12,7 +12,9 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -95,6 +97,20 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
     ) { paddingValues ->
         if (state.messages.isEmpty()) {
             InitialChatUI(modifier = Modifier.padding(paddingValues), model = viewModel.currModel)
+        }
+        if (viewModel.historyLoading) {
+            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                CircularProgressIndicator()
+            }
+        }
+        if (viewModel.historyError) {
+            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+                Button(onClick = {
+                    viewModel.updateChat()
+                }) {
+                    Text(text = "Retry")
+                }
+            }
         }
         LazyColumn(
                 state = listState,

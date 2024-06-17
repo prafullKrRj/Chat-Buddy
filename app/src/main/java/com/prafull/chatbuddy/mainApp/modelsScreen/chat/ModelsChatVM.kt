@@ -1,10 +1,17 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen.chat
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
+import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.utils.CryptoEncryption
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.koin.core.component.inject
 
 class ModelsChatVM(
@@ -12,22 +19,47 @@ class ModelsChatVM(
 ) : ChatViewModelAbstraction() {
 
     private val firestore: FirebaseFirestore by inject()
-
+    private val mAuth: FirebaseAuth by inject()
+    var historyLoading by mutableStateOf(false)
+    var historyError by mutableStateOf(false)
     init {
-        viewModelScope.launch {
-            updateChat()
-        }
+        updateChat()
     }
 
-    private fun updateChat() {
-        chatting = true
-        loadNewChat()
-        currModel = actualModel
-        chat.apply {
-            model = currModel.actualName
-            temperature = actualModel.temperature
-            systemPrompt = actualModel.system
-            safetySetting = actualModel.safetySetting
+    fun updateChat() {
+        viewModelScope.launch {
+            if (actualModel.modelGroup != "Characters") {
+                loadNewChat()
+                currModel = actualModel
+                chat.apply {
+                    model = currModel.actualName
+                    temperature = actualModel.temperature
+                    systemPrompt = actualModel.system
+                    safetySetting = actualModel.safetySetting
+                }
+            } else {
+                try {
+                    mAuth.currentUser?.email?.let {
+                        val response = firestore.collection("users").document(it)
+                            .collection("history").document(actualModel.generalName).get().await()
+                        val history = response.toObject(ChatHistory::class.java)
+                        history?.let { chatHistory ->
+                            chatHistory.messages = chatHistory.messages.map { message ->
+                                message.text = CryptoEncryption.decrypt(message.text)
+                                message
+                            }.toMutableList()
+                        }
+                        currModel = actualModel
+                        chatFromHistory(history!!)
+                    }
+                    historyError = false
+                    historyLoading = false
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    historyError = true
+                    historyLoading = false
+                }
+            }
         }
     }
 }
