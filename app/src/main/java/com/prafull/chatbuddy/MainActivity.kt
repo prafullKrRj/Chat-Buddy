@@ -20,6 +20,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.mainApp.MainNavigation
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
+import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.settings.SettingsScreen
@@ -145,7 +146,8 @@ sealed interface Routes {
         val modelGroup: String = "",
         val taskType: String = "",
         val temperature: Float = 0.7f,
-        val system: String = Const.GENERAL_SYSTEM_PROMPT
+        val system: String = Const.GENERAL_SYSTEM_PROMPT,
+        val safetySetting: String = ModelSafety.UNSPECIFIED.name
     ) {
         fun toModel() = Model(
                 generalName,
@@ -157,7 +159,8 @@ sealed interface Routes {
                 modelGroup,
                 taskType,
                 temperature,
-                system
+                system,
+                safetySetting
         )
     }
 }

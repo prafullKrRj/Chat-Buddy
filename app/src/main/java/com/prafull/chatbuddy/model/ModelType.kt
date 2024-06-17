@@ -1,6 +1,7 @@
 package com.prafull.chatbuddy.model
 
 import com.prafull.chatbuddy.Routes
+import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
 import com.prafull.chatbuddy.utils.Const
 
 
@@ -14,7 +15,8 @@ data class Model(
     val modelGroup: String = "",
     val taskType: String = "",
     val temperature: Float = 0.7f,
-    val system: String = Const.GENERAL_SYSTEM_PROMPT
+    val system: String = Const.GENERAL_SYSTEM_PROMPT,
+    val safetySetting: String = ModelSafety.UNSPECIFIED.name
 ) {
     fun toChatScreen() = Routes.ChatScreen(
             generalName,
@@ -26,6 +28,7 @@ data class Model(
             modelGroup,
             taskType,
             temperature,
-            system
+            system,
+            safetySetting
     )
 }

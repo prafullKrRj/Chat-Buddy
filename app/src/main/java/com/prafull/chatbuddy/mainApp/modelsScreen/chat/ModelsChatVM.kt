@@ -1,10 +1,11 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen.chat
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
+import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
 import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.launch
 import org.koin.core.component.inject
 
@@ -17,7 +18,6 @@ class ModelsChatVM(
     init {
         viewModelScope.launch {
             updateChat()
-            Log.d("ModelChatVM", "init: $chat")
         }
     }
 
@@ -25,15 +25,15 @@ class ModelsChatVM(
         chatting = true
         loadNewChat()
         currModel = actualModel
-        /* if (currModel.generalName == "Lucia") chat.apply {
-             safetySetting = Const.SAFETY_SETTINGS_ROMANTIC
-         }*/
-        Log.d("ModelChatVM", "updateChat: ${actualModel.system}")
         chat.apply {
             model = currModel.actualName
             temperature = actualModel.temperature
             systemPrompt = actualModel.system
+            safetySetting = when (actualModel.safetySetting) {
+                ModelSafety.UNSPECIFIED.name -> Const.SAFETY_SETTINGS_NORMAL
+                ModelSafety.ROMANTIC.name -> Const.SAFETY_SETTINGS_ROMANTIC
+                else -> Const.SAFETY_SETTINGS_NORMAL
+            }
         }
-        Log.d("ModelChatVM", "updateChat: $chat")
     }
 }

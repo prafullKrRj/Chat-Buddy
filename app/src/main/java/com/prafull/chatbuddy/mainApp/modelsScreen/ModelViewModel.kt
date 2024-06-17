@@ -95,3 +95,11 @@ data class ModelScreenUIState(
     val loading: Boolean = false,
     val error: Boolean = false
 )
+
+enum class ModelSafety {
+    ROMANTIC,
+    FRIENDLY,
+    PROFESSIONAL,
+    ACTOR,
+    UNSPECIFIED
+}

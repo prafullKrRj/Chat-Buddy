@@ -8,7 +8,6 @@ import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
-import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -25,7 +24,7 @@ class GeminiRepository : ChatRepository() {
                             topK = 64
                             topP = 0.95f
                         },
-                        safetySettings = Const.SAFETY_SETTINGS_ROMANTIC,
+                        safetySettings = history.safetySetting,
                         systemInstruction = content {
                             text(history.systemPrompt)
                         }
