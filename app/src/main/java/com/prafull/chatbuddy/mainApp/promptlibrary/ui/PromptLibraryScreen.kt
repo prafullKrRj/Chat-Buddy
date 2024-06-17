@@ -1,6 +1,5 @@
 package com.prafull.chatbuddy.mainApp.promptlibrary.ui
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,7 +43,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.ads.loadInterstitialAd
@@ -53,14 +51,12 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
 @OptIn(
-        ExperimentalFoundationApi::class,
         ExperimentalComposeUiApi::class
 )
 @Composable
 fun PromptScreen(
     modifier: Modifier,
     paddingValues: PaddingValues,
-    navController: NavController,
     navigateToHome: (PromptLibraryItem) -> Unit
 ) {
     val promptViewModel: PromptLibraryViewModel = koinViewModel()

@@ -14,7 +14,7 @@ data class Model(
     val modelGroup: String = "",
     val taskType: String = "",
     val temperature: Float = 0.7f,
-    val systemPrompt: String = Const.GENERAL_SYSTEM_PROMPT
+    val system: String = Const.GENERAL_SYSTEM_PROMPT
 ) {
     fun toChatScreen() = Routes.ChatScreen(
             generalName,
@@ -24,6 +24,8 @@ data class Model(
             hasVision,
             hasFiles,
             modelGroup,
-            taskType
+            taskType,
+            temperature,
+            system
     )
 }

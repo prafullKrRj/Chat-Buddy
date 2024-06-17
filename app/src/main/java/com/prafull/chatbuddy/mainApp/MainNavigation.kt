@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -174,8 +175,7 @@ fun MainNavigation(appNavController: NavController) {
                     currDestination = RoutesStrings.PromptScreen.name
                     PromptScreen(
                             Modifier.padding(),
-                            paddingValues,
-                            mainNavController
+                            paddingValues
                     ) { promptLibraryItem ->
                         chatViewModel.loadFromPromptLibrary(promptLibraryItem)
                         mainNavController.navigateHomeWithArgs(promptLibraryItem)
@@ -188,6 +188,7 @@ fun MainNavigation(appNavController: NavController) {
                 composable<Routes.ChatScreen> { backStackEntry ->
                     currDestination = RoutesStrings.ChatScreen.name
                     val model: Routes.ChatScreen = backStackEntry.toRoute()
+                    Log.d("MainNavigation", "MainNavigation: $model")
                     val viewModel: ModelsChatVM = koinViewModel { parametersOf(model.toModel()) }
                     ModelChatScreen(viewModel, mainNavController)
                 }

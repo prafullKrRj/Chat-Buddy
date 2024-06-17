@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp.home.data.claude
 
+import android.util.Log
 import com.prafull.chatbuddy.BuildConfig
 import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
@@ -15,6 +16,7 @@ class ClaudeRepository : ChatRepository() {
 
     private val claudeApiService: ClaudeApiService by inject()
     override suspend fun getResponse(history: ChatHistory, prompt: ChatMessage): Flow<ChatMessage> {
+        Log.d("ClaudeRepository", "getResponse: $history")
         return callbackFlow {
             try {
                 val request = ClaudeRequest(

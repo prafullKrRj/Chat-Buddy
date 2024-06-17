@@ -25,9 +25,15 @@ class ModelsChatVM(
         chatting = true
         loadNewChat()
         currModel = actualModel
+        /* if (currModel.generalName == "Lucia") chat.apply {
+             safetySetting = Const.SAFETY_SETTINGS_ROMANTIC
+         }*/
+        Log.d("ModelChatVM", "updateChat: ${actualModel.system}")
         chat.apply {
             model = currModel.actualName
             temperature = actualModel.temperature
+            systemPrompt = actualModel.system
         }
+        Log.d("ModelChatVM", "updateChat: $chat")
     }
 }

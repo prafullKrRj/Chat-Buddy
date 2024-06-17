@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp.home.model
 
+import com.google.ai.client.generativeai.type.SafetySetting
 import com.google.firebase.Timestamp
 import com.prafull.chatbuddy.utils.Const
 import java.util.UUID
@@ -13,7 +14,9 @@ data class ChatHistory(
     var promptName: String = "",
     var promptDescription: String = "",
     var temperature: Float = 0.7f,
-)
+    var safetySetting: List<SafetySetting> = Const.SAFETY_SETTINGS_NORMAL,
+
+    )
 
 fun String.isGeminiModel() = this.contains("gemini")
 fun String.isClaudeModel() = this.contains("claude")

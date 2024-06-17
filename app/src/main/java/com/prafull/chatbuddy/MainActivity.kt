@@ -24,6 +24,7 @@ import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.settings.SettingsScreen
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
+import com.prafull.chatbuddy.utils.Const
 import kotlinx.serialization.Serializable
 import org.koin.android.ext.android.inject
 
@@ -77,7 +78,7 @@ fun NavController.navigateAndPopBackStack(screen: Any) {
 
 fun NavController.navigateHomeWithArgs(promptLibraryItem: PromptLibraryItem) {
     navigateAndPopBackStack(
-            promptLibraryItem.toHomeArgs()  // HomeWithArgs
+            promptLibraryItem.toHomeArgs()
     )
 }
 
@@ -144,6 +145,7 @@ sealed interface Routes {
         val modelGroup: String = "",
         val taskType: String = "",
         val temperature: Float = 0.7f,
+        val system: String = Const.GENERAL_SYSTEM_PROMPT
     ) {
         fun toModel() = Model(
                 generalName,
@@ -154,7 +156,8 @@ sealed interface Routes {
                 hasFiles,
                 modelGroup,
                 taskType,
-                temperature
+                temperature,
+                system
         )
     }
 }

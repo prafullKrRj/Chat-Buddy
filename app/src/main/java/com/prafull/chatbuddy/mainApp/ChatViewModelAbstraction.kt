@@ -167,8 +167,8 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     fun onModelSelected(it: Model) {
         chat.apply {
             model = it.actualName
+            temperature = it.temperature
         }
         currModel = it
     }
-
 }

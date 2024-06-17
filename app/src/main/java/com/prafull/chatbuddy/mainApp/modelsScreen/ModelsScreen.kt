@@ -1,6 +1,7 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,6 +46,7 @@ fun ModelsScreen(paddingValues: PaddingValues, navController: NavController) {
     val uiState by modelViewModel.state.collectAsState()
     val navigate = remember<(Model) -> Unit> {
         {
+            Log.d("ModelsScreen", "navigate: ${it.system}")
             navController.navigate(
                     it.toChatScreen()
             )
