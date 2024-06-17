@@ -2,10 +2,11 @@ package com.prafull.chatbuddy.mainApp.di
 
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.prafull.chatbuddy.mainApp.home.data.claude.ClaudeApiService
-import com.prafull.chatbuddy.mainApp.home.data.claude.ClaudeRepository
-import com.prafull.chatbuddy.mainApp.home.data.gemini.GeminiRepository
-import com.prafull.chatbuddy.mainApp.home.data.home.HomeRepository
+import com.google.gson.Gson
+import com.prafull.chatbuddy.mainApp.home.data.remote.ClaudeApiService
+import com.prafull.chatbuddy.mainApp.home.data.repos.ClaudeRepository
+import com.prafull.chatbuddy.mainApp.home.data.repos.GeminiRepository
+import com.prafull.chatbuddy.mainApp.home.data.repos.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelViewModel
@@ -41,6 +42,9 @@ val repositories = module {
             .baseUrl("https://api.anthropic.com/")
             .addConverterFactory(GsonConverterFactory.create())
             .build().create(ClaudeApiService::class.java)
+    }
+    single<Gson> {
+        Gson()
     }
 }
 val viewModels = module {

@@ -11,7 +11,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.google.android.gms.ads.nativead.NativeAdView
-import com.prafull.chatbuddy.mainApp.PROMPT_LIBRARY_NATIVE_AD_TEST
+import com.prafull.chatbuddy.utils.PROMPT_LIBRARY_NATIVE_AD_TEST
 
 @Composable
 fun NativeAd() {

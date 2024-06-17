@@ -14,7 +14,7 @@ data class Model(
     val hasFiles: Boolean = false,
     val modelGroup: String = "",
     val taskType: String = "",
-    val temperature: Float = 0.7f,
+    val temperature: Double = 0.7,
     val system: String = Const.GENERAL_SYSTEM_PROMPT,
     val safetySetting: String = ModelSafety.UNSPECIFIED.name
 ) {
@@ -27,7 +27,7 @@ data class Model(
             hasFiles,
             modelGroup,
             taskType,
-            temperature,
+            temperature.toFloat(),
             system,
             safetySetting
     )

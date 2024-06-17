@@ -54,6 +54,7 @@ fun ModelsScreen(paddingValues: PaddingValues, navController: NavController) {
     }
     val modelResponse by modelViewModel.modelResponse.collectAsState()
     val context = LocalContext.current
+
     Column(
             Modifier
                 .fillMaxSize()

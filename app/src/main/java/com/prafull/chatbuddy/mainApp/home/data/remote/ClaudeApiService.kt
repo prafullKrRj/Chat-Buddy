@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.home.data.claude
+package com.prafull.chatbuddy.mainApp.home.data.remote
 
 import com.prafull.chatbuddy.mainApp.home.model.ClaudeRequest
 import com.prafull.chatbuddy.mainApp.home.model.ClaudeResponse

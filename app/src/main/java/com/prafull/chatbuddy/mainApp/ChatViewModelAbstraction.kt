@@ -7,8 +7,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Timestamp
-import com.prafull.chatbuddy.mainApp.home.data.claude.ClaudeRepository
-import com.prafull.chatbuddy.mainApp.home.data.gemini.GeminiRepository
+import com.prafull.chatbuddy.mainApp.home.data.repos.ClaudeRepository
+import com.prafull.chatbuddy.mainApp.home.data.repos.GeminiRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
@@ -118,10 +118,11 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
             messages = chatHistory.messages.toMutableList()
             lastModified = chatHistory.lastModified
             model = chatHistory.model
-
             systemPrompt = chatHistory.systemPrompt
             promptDescription = chatHistory.promptDescription
             promptName = chatHistory.promptName
+            safetySetting = chatHistory.safetySetting
+            temperature = chatHistory.temperature
         }
         _uiState.update {
             ChatUiState(messages = chatHistory.messages)
@@ -171,4 +172,6 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
         }
         currModel = it
     }
+
+    fun getCurrChat() = chat
 }

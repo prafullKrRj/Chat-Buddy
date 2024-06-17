@@ -9,11 +9,11 @@ data class PromptLibraryItem(
     val user: String = ""
 ) {
     fun isEmpty(): Boolean {
-        return name.isEmpty() && description.isEmpty() && system.isEmpty() && user.isEmpty()
+        return name.isEmpty() && description.isEmpty() && user.isEmpty()
     }
 
     fun isNotEmpty(): Boolean {
-        return name.isNotEmpty() || description.isNotEmpty() || system.isNotEmpty() || user.isNotEmpty()
+        return name.isNotEmpty() || description.isNotEmpty() || user.isNotEmpty()
     }
 
     fun toHomeArgs() = Routes.HomeWithArgs(name, description, system, user)

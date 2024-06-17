@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp
+package com.prafull.chatbuddy.utils
 
 import com.google.firebase.auth.FirebaseAuth
 

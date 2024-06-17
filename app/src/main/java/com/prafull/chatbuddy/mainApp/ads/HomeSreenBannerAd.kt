@@ -11,7 +11,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.google.android.gms.ads.LoadAdError
-import com.prafull.chatbuddy.mainApp.HOME_SCREEN_BANNER_AD_TEST
+import com.prafull.chatbuddy.utils.HOME_SCREEN_BANNER_AD_TEST
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -68,7 +68,7 @@ fun ModelScreenBannerAd(id: String = "") {
 }
 
 fun loadAd(adView: AdView, adRequest: AdRequest, attempt: Int, context: Context) {
-    if (attempt >= 5) { // Limit the number of retry attempts to 15
+    if (attempt >= 3) { // Limit the number of retry attempts to 3
         Log.d("Ad Failed Banner", "Failed to load ad after 15 attempts")
         return
     }

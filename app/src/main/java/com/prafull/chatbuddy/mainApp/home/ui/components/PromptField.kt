@@ -56,7 +56,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
-import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
@@ -107,7 +106,6 @@ fun PromptField(viewModel: ChatViewModelAbstraction) {
                 onPickImage = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                 isLoading
         )
-        if (viewModel.chatting) BannerAd()
     }
 }
 

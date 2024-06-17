@@ -104,10 +104,17 @@ fun HomeScreen(
                     }
                 }
             }
-            item {
-                if (promptType.isNotEmpty()) {
-                    PromptCard(promptType, chatViewModel.chatting)
+            item(key = "promptDetails") {
+                if (promptType.isNotEmpty() || chatViewModel.getCurrChat().toPromptLibraryItem()
+                        .isNotEmpty()
+                ) {
+                    if (promptType.isNotEmpty()) {
+                        PromptCard(promptType)
+                    } else {
+                        PromptCard(chatViewModel.getCurrChat().toPromptLibraryItem())
+                    }
                 }
+
             }
             items(chatUiState.value.messages, key = {
                 it.id
@@ -119,7 +126,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun PromptCard(promptType: PromptLibraryItem, isChatting: Boolean) {
+fun PromptCard(promptType: PromptLibraryItem) {
     Card(modifier = Modifier.padding(8.dp)) {
         Text(
                 text = promptType.name,
@@ -127,6 +134,7 @@ fun PromptCard(promptType: PromptLibraryItem, isChatting: Boolean) {
                 fontSize = 20.sp,
                 modifier = Modifier.padding(8.dp)
         )
+
         Text(
                 text = "Description: ${promptType.description}",
                 fontSize = 16.sp,

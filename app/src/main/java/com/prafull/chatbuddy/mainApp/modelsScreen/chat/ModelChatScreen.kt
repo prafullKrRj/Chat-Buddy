@@ -1,7 +1,11 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen.chat
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,13 +25,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.goBackStack
+import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
+import com.prafull.chatbuddy.model.Model
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +67,13 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
             listState.animateScrollToItem(state.messages.size)
         }
     }
+    val itemsWithAds = mutableListOf<Any>()
+    state.messages.forEachIndexed { index, message ->
+        itemsWithAds.add(message)
+        if ((index + 1) % 6 == 0) { // Add an ad after every 6 messages
+            itemsWithAds.add("Ad")
+        }
+    }
     Scaffold(
             topBar = {
                 CenterAlignedTopAppBar(title = {
@@ -73,15 +93,25 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                 PromptField(viewModel = viewModel)
             }
     ) { paddingValues ->
+        if (state.messages.isEmpty()) {
+            InitialChatUI(modifier = Modifier.padding(paddingValues), model = viewModel.currModel)
+        }
         LazyColumn(
                 state = listState,
                 contentPadding = paddingValues,
                 modifier = Modifier.fillMaxSize()
         ) {
-            items(state.messages, key = {
-                it.id
-            }) { message ->
-                MessageBubble(message = message, mA = mA, clipboardManager)
+            items(itemsWithAds, key = { item ->
+                if (item == "Ad") {
+                    "Ad"
+                } else {
+                    (item as ChatMessage).id
+                }
+            }) { item ->
+                when (item) {
+                    is ChatMessage -> MessageBubble(message = item, mA = mA, clipboardManager)
+                    // "Ad" -> BannerAd()
+                }
             }
         }
     }
@@ -102,5 +132,22 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                     TextButton(onClick = { showBackDialog.value = false }) { Text("Dismiss") }
                 }
         )
+    }
+}
+
+@Composable
+fun InitialChatUI(modifier: Modifier, model: Model) {
+    val context = LocalContext.current
+    Column(
+            modifier = modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        AsyncImage(
+                model = ImageRequest.Builder(context).data(model.image).build(),
+                contentDescription = "image",
+                modifier = Modifier.width(150.dp)
+        )
+        Text(text = model.generalName, fontWeight = SemiBold, fontSize = 20.sp)
     }
 }

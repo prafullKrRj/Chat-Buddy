@@ -158,7 +158,7 @@ sealed interface Routes {
                 hasFiles,
                 modelGroup,
                 taskType,
-                temperature,
+                temperature.toDouble(),
                 system,
                 safetySetting
         )

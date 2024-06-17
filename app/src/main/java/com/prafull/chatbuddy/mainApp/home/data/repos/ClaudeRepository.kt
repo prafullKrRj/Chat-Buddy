@@ -1,8 +1,8 @@
-package com.prafull.chatbuddy.mainApp.home.data.claude
+package com.prafull.chatbuddy.mainApp.home.data.repos
 
 import android.util.Log
 import com.prafull.chatbuddy.BuildConfig
-import com.prafull.chatbuddy.mainApp.home.data.ChatRepository
+import com.prafull.chatbuddy.mainApp.home.data.remote.ClaudeApiService
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.ClaudeRequest
@@ -22,7 +22,7 @@ class ClaudeRepository : ChatRepository() {
                 val request = ClaudeRequest(
                         model = history.model,
                         max_tokens = 1024,
-                        temperature = history.temperature,
+                        temperature = history.temperature.toFloat(),
                         system = history.systemPrompt,
                         messages = history.messages.map {
                             it.toClaudeContent()

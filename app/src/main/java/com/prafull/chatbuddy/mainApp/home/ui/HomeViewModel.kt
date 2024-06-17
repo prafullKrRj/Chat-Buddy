@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafull.chatbuddy.mainApp.home.data.home.HomeRepository
+import com.prafull.chatbuddy.mainApp.home.data.repos.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.Resource
