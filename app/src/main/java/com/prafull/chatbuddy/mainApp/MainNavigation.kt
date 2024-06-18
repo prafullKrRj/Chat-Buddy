@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp
 
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -105,7 +106,7 @@ fun MainNavigation(appNavController: NavController) {
             }
     ) {
         Scaffold(
-                modifier = Modifier,
+                modifier = Modifier.imePadding(),
                 topBar = {
                     when (currDestination) {
                         RoutesStrings.Home.name, RoutesStrings.HomeWithArgs.name -> {

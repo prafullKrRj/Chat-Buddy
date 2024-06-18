@@ -38,8 +38,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.goBackStack
-import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
 import com.prafull.chatbuddy.model.Model
@@ -50,8 +50,8 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
     val state by viewModel.uiState.collectAsState()
     val mA = FirebaseAuth.getInstance()
     val clipboardManager = LocalClipboardManager.current
-    Text(text = viewModel.currModel.generalName)
-    Text(text = state.messages.toString())
+    val context = LocalContext.current
+    val storageRef = FirebaseStorage.getInstance().reference
     val showBackDialog = remember {
         mutableStateOf(false)
     }
@@ -64,16 +64,11 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
         showBackDialog.value = true
     }
     val listState = rememberLazyListState()
+    Text(text = viewModel.currModel.generalName)
+    Text(text = state.messages.toString())
     LaunchedEffect(state.messages.size) {
         if (state.messages.isNotEmpty()) {
             listState.animateScrollToItem(state.messages.size)
-        }
-    }
-    val itemsWithAds = mutableListOf<Any>()
-    state.messages.forEachIndexed { index, message ->
-        itemsWithAds.add(message)
-        if ((index + 1) % 6 == 0) { // Add an ad after every 6 messages
-            itemsWithAds.add("Ad")
         }
     }
     Scaffold(
@@ -99,12 +94,20 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
             InitialChatUI(modifier = Modifier.padding(paddingValues), model = viewModel.currModel)
         }
         if (viewModel.historyLoading) {
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 CircularProgressIndicator()
             }
         }
         if (viewModel.historyError) {
-            Column(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
+            Column(
+                    Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 Button(onClick = {
                     viewModel.updateChat()
                 }) {
@@ -117,17 +120,10 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                 contentPadding = paddingValues,
                 modifier = Modifier.fillMaxSize()
         ) {
-            items(itemsWithAds, key = { item ->
-                if (item == "Ad") {
-                    "Ad"
-                } else {
-                    (item as ChatMessage).id
-                }
+            items(state.messages, key = { item ->
+                item.id
             }) { item ->
-                when (item) {
-                    is ChatMessage -> MessageBubble(message = item, mA = mA, clipboardManager)
-                    // "Ad" -> BannerAd()
-                }
+                MessageBubble(message = item, mA = mA, clipboardManager, context, storageRef)
             }
         }
     }

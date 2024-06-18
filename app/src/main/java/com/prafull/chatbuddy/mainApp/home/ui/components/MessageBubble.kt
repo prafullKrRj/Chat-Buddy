@@ -24,13 +24,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.StorageReference
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
@@ -42,7 +43,8 @@ fun MessageBubble(
     message: ChatMessage,
     mA: FirebaseAuth,
     clipboardManager: ClipboardManager,
-    context: Context = LocalContext.current
+    context: Context,
+    storageRef: StorageReference
 ) {
     Column(
             Modifier
@@ -65,6 +67,13 @@ fun MessageBubble(
                         ) {
                             items(message.imageBitmaps) { image ->
                                 PromptedImages(imageUri = image)
+                            }
+                            items(message.imageUrls) { imageUri ->
+
+                                PromptedImageFromHistory(
+                                        data = storageRef.child(imageUri).downloadUrl.toString(),
+                                        context = context
+                                )
                             }
                         }
                         FormattedText(
@@ -148,6 +157,21 @@ fun shareText(context: Context, text: String) {
 private fun PromptedImages(imageUri: Bitmap) {
     AsyncImage(
             model = imageUri,
+            contentDescription = null,
+            modifier = Modifier
+                .padding(4.dp)
+                .requiredWidth(72.dp)
+                .clickable {
+
+                }
+    )
+}
+
+@Composable
+private fun PromptedImageFromHistory(data: String, context: Context) {
+    AsyncImage(
+            model = ImageRequest
+                .Builder(context).data(data).build(),
             contentDescription = null,
             modifier = Modifier
                 .padding(4.dp)

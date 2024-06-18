@@ -4,5 +4,4 @@ import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
 
 class ChatViewModel : ChatViewModelAbstraction() {
 
-
 }

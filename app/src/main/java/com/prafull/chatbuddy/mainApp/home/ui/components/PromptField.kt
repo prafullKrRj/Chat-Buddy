@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
@@ -74,7 +73,6 @@ fun PromptField(viewModel: ChatViewModelAbstraction) {
     val focusManager = LocalFocusManager.current
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
-    val isLoading by viewModel.loading.collectAsState()
     val listState = rememberLazyListState()
 
     LaunchedEffect(imageUris.size) {
@@ -104,7 +102,7 @@ fun PromptField(viewModel: ChatViewModelAbstraction) {
                     }
                 },
                 onPickImage = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-                isLoading
+                viewModel.loading
         )
     }
 }

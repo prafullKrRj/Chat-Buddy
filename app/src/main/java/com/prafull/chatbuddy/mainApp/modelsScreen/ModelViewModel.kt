@@ -1,10 +1,10 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,13 +22,13 @@ class ModelViewModel : ViewModel(), KoinComponent {
 
     init {
         getModels()
+        addModel(Model())
     }
 
     private var _modelResponse = MutableStateFlow(Response())
     val modelResponse = _modelResponse.asStateFlow()
     fun getModels() {
         _state.update { ModelScreenUIState(loading = true) }
-        Log.d("ModelViewModel", "Getting Models")
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val modelDocuments = firestore.collection("models").get().await()
@@ -49,7 +49,6 @@ class ModelViewModel : ViewModel(), KoinComponent {
                 }
 
                 _modelResponse.update { Response(modelResponses) }
-                Log.d("ModelViewModel", "Model Response: $modelResponses")
                 _state.update { ModelScreenUIState(loading = false) }
             } catch (e: Exception) {
                 ModelScreenUIState(loading = false, error = true)
@@ -59,19 +58,23 @@ class ModelViewModel : ViewModel(), KoinComponent {
 
     private fun addModel(model: Model) {
         viewModelScope.launch(Dispatchers.IO) {
-            firestore.collection("models").document("nlp").collection("Characters")
-                .document("Lucia").set(
+            firestore.collection("models").document("nlp").collection("Open AI")
+                .document("gpt-3.5-turbo-0125")
+                .set(
                         Model(
-                                generalName = "Lucia",
-                                actualName = "gemini-1.5-flash",
+                                generalName = "GPT 3.5 Turbo",
+                                actualName = "gpt-3.5-turbo-0125",
                                 currPricePerToken = 0.0,
-                                image = "",
+                                image = "https://firebasestorage.googleapis.com/v0/b/chat-buddy-4c59f.appspot.com/o/models%2Fchatgpt-icon.png?alt=media&token=bf729a3d-5e7a-40b7-b953-61e8966a1517",
                                 hasVision = false,
                                 hasFiles = false,
-                                modelGroup = "Characters",
-                                taskType = "AI Girlfriend"
+                                modelGroup = "Open AI",
+                                taskType = "nlp",
+                                temperature = 0.7,
+                                system = Const.GENERAL_SYSTEM_PROMPT,
+                                safetySetting = ModelSafety.UNSPECIFIED.name
                         )
-                ).await()
+                )
         }
     }
 }

@@ -3,6 +3,7 @@ package com.prafull.chatbuddy.mainApp.home.data.repos
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.CryptoEncryption
@@ -18,6 +19,7 @@ class HomeRepository : KoinComponent {
 
     private val firebaseAuth by inject<FirebaseAuth>()
     private val firestore by inject<FirebaseFirestore>()
+    private val storage by inject<FirebaseStorage>()
     suspend fun getPreviousChats(): Flow<Resource<List<ChatHistory>>> {
         return callbackFlow {
             try {
@@ -35,7 +37,6 @@ class HomeRepository : KoinComponent {
                     }
                     chatHistory
                 }
-                Log.d("HomeRepository", "getPreviousChats: $chatHistoryList")
                 val sortedChatHistoryList = chatHistoryList.sortedByDescending { it.lastModified }
 
                 if (sortedChatHistoryList.size > 20) {
@@ -45,6 +46,8 @@ class HomeRepository : KoinComponent {
                             .document(firebaseAuth.currentUser?.email.toString())
                             .collection("history")
                             .document(chatHistory.id)
+                            .delete().await()
+                        storage.reference.child("users/${firebaseAuth.currentUser?.email.toString()}/history/${chatHistory.id}")
                             .delete().await()
                     }
                 }
@@ -56,7 +59,6 @@ class HomeRepository : KoinComponent {
             awaitClose { }
         }
     }
-
 
     suspend fun updateCoins(currValue: Long): Flow<Boolean> {
         return callbackFlow {
@@ -110,6 +112,8 @@ class HomeRepository : KoinComponent {
                     .document(firebaseAuth.currentUser?.email.toString())
                     .collection("history")
                     .document(id)
+                    .delete().await()
+                storage.reference.child("users/${firebaseAuth.currentUser?.email.toString()}/history/${id}")
                     .delete().await()
                 trySend(true)
             } catch (e: Exception) {

@@ -1,6 +1,7 @@
 package com.prafull.chatbuddy.mainApp.home.ui
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
@@ -52,8 +54,9 @@ fun HomeScreen(
 ) {
     val mA = FirebaseAuth.getInstance()
     val chatUiState = chatViewModel.uiState.collectAsState()
+    Log.d("HomeScreen", "Chat UI State: ${chatUiState.value.messages}")
     val modelsState by homeViewModel.modelDialogState.collectAsState()
-
+    val storageReference = FirebaseStorage.getInstance().reference
     val selectedModel = remember<(Model) -> Unit> {
         { model ->
             homeViewModel.modelButtonClicked = false
@@ -80,6 +83,7 @@ fun HomeScreen(
             verticalArrangement = Arrangement.Top
     ) {
         LazyColumn(
+                modifier = Modifier,
                 contentPadding = paddingValues,
                 userScrollEnabled = true,
                 state = lazyListState,
@@ -119,7 +123,13 @@ fun HomeScreen(
             items(chatUiState.value.messages, key = {
                 it.id
             }) { message ->
-                MessageBubble(message = message, mA = mA, clipboardManager)
+                MessageBubble(
+                        message = message,
+                        mA = mA,
+                        clipboardManager,
+                        context,
+                        storageReference
+                )
             }
         }
     }

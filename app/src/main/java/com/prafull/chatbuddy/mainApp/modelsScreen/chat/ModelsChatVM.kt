@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen.chat
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -22,13 +23,16 @@ class ModelsChatVM(
     private val mAuth: FirebaseAuth by inject()
     var historyLoading by mutableStateOf(false)
     var historyError by mutableStateOf(false)
+
     init {
         updateChat()
     }
 
     fun updateChat() {
         viewModelScope.launch {
+            chatting = true
             if (actualModel.modelGroup != "Characters") {
+                Log.d("ModelsChatVM", "Not a character $actualModel")
                 loadNewChat()
                 currModel = actualModel
                 chat.apply {
@@ -37,6 +41,8 @@ class ModelsChatVM(
                     systemPrompt = actualModel.system
                     safetySetting = actualModel.safetySetting
                 }
+                Log.d("ModelsChatVM", chat.toString())
+                historyError = false
             } else {
                 try {
                     mAuth.currentUser?.email?.let {
@@ -49,14 +55,18 @@ class ModelsChatVM(
                                 message
                             }.toMutableList()
                         }
+                        Log.d("History", history.toString())
                         currModel = actualModel
-                        chatFromHistory(history!!)
+                        if (history == null) {
+                            newCharacterChat(actualModel)
+                        } else {
+                            chatFromHistoryCharacter(history, actualModel)
+                        }
                     }
                     historyError = false
                     historyLoading = false
                 } catch (e: Exception) {
                     e.printStackTrace()
-                    historyError = true
                     historyLoading = false
                 }
             }

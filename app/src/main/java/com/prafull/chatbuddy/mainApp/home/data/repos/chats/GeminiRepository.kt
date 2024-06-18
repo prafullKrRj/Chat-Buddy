@@ -1,5 +1,6 @@
-package com.prafull.chatbuddy.mainApp.home.data.repos
+package com.prafull.chatbuddy.mainApp.home.data.repos.chats
 
+import android.util.Log
 import com.google.ai.client.generativeai.GenerativeModel
 import com.google.ai.client.generativeai.type.content
 import com.google.ai.client.generativeai.type.generationConfig
@@ -34,6 +35,7 @@ class GeminiRepository : ChatRepository() {
                             text(history.systemPrompt)
                         }
                 )
+            Log.d("GeminiRepository", "Starting chat with model: ${history.toString()}")
             val chat = generativeModel.startChat(
                     history = history.messages.map { it.toGeminiContent() },
             )

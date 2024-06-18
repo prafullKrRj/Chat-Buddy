@@ -1,6 +1,7 @@
 [versions]
 aescrypt = "0.0.1"
 agp = "8.4.0"
+anthropicSdk = "1.0.0"
 facebook = "6.17.0.0"
 firebaseAds = "23.1.0"
 firebaseBom = "33.1.0"
@@ -53,6 +54,7 @@ firebaseStorage = "21.0.0"
 accompanist-coil = { module = "com.google.accompanist:accompanist-coil", version.ref = "accompanistCoil" }
 aescrypt = { module = "com.scottyab:aescrypt", version.ref = "aescrypt" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+anthropic-sdk = { module = "com.anthropic:anthropic-sdk", version.ref = "anthropicSdk" }
 coil-compose-v240 = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 facebook = { module = "com.google.ads.mediation:facebook", version.ref = "facebook" }
