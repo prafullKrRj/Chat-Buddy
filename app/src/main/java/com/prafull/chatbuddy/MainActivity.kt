@@ -5,9 +5,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
@@ -24,6 +27,8 @@ import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.settings.SettingsScreen
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
+import com.prafull.chatbuddy.ui.theme.themechanging.ThemeOption
+import com.prafull.chatbuddy.ui.theme.themechanging.ThemeViewModel
 import com.prafull.chatbuddy.utils.Const
 import kotlinx.serialization.Serializable
 import org.koin.android.ext.android.inject
@@ -36,8 +41,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         val mAuth by inject<FirebaseAuth>()
+        val themeViewModel by inject<ThemeViewModel>()
         setContent {
-            ChatBuddyTheme {
+            val themeOption by themeViewModel.themeOption.collectAsState()
+            val isDarkTheme = when (themeOption) {
+                ThemeOption.SYSTEM_DEFAULT -> isSystemInDarkTheme()
+                ThemeOption.LIGHT -> false
+                ThemeOption.DARK -> true
+            }
+            ChatBuddyTheme(darkTheme = isDarkTheme, dynamicColor = true) {
                 Surface(
                         modifier = Modifier
                             .fillMaxSize()
@@ -59,8 +71,7 @@ class MainActivity : ComponentActivity() {
                         }
                         composable<Routes.SettingsScreen> {
                             SettingsScreen(navController = navController) {
-                                navController.popBackStack()
-                                navController.navigate(Routes.App)
+                                navController.goBackStack()
                             }
                         }
                     }
@@ -69,7 +80,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
 
 fun NavController.navigateAndPopBackStack(screen: Any) {
     popBackStack()

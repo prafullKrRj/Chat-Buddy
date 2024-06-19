@@ -6,8 +6,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.R
 
@@ -23,11 +25,21 @@ fun UserImage(modifier: Modifier, firebaseAuth: FirebaseAuth) {
 }
 
 @Composable
-fun BotImage(modifier: Modifier) {
-    Image(
-            modifier = modifier.clip(CircleShape),
-            painter = painterResource(id = R.drawable.logo),
-            contentDescription = "Bot Image",
-            contentScale = ContentScale.FillWidth,
-    )
+fun BotImage(modifier: Modifier, data: String? = null, image: Int = R.drawable.logo) {
+    if (data != null) {
+        AsyncImage(
+                modifier = modifier.clip(CircleShape),
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(data)
+                    .build(),
+                contentDescription = "Bot Image",
+        )
+    } else {
+        Image(
+                modifier = modifier.clip(CircleShape),
+                painter = painterResource(id = image),
+                contentDescription = "Bot Image",
+                contentScale = ContentScale.FillWidth,
+        )
+    }
 }

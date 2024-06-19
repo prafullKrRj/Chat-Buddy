@@ -8,6 +8,7 @@ import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.CryptoEncryption
 import com.prafull.chatbuddy.utils.Resource
+import com.prafull.chatbuddy.utils.base64ToBitmap
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
@@ -29,9 +30,12 @@ class HomeRepository : KoinComponent {
 
                 val chatHistoryList = response.documents.mapNotNull { document ->
                     val chatHistory = document.toObject(ChatHistory::class.java)
-                    chatHistory?.let {
+                    chatHistory?.let { it ->
                         it.messages = it.messages.map { message ->
                             message.text = CryptoEncryption.decrypt(message.text)
+                            message.imageBitmaps = message.imageUrls.map { base64 ->
+                                base64.base64ToBitmap()
+                            }
                             message
                         }.toMutableList()
                     }

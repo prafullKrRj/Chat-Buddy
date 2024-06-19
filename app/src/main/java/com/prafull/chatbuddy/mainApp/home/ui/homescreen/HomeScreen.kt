@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.home.ui
+package com.prafull.chatbuddy.mainApp.home.ui.homescreen
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
@@ -120,16 +120,44 @@ fun HomeScreen(
                 }
 
             }
-            items(chatUiState.value.messages, key = {
-                it.id
-            }) { message ->
-                MessageBubble(
-                        message = message,
-                        mA = mA,
-                        clipboardManager,
-                        context,
-                        storageReference
-                )
+            itemsIndexed(chatUiState.value.messages) { index, chatMessage ->
+                when (index) {
+                    chatUiState.value.messages.lastIndex -> {
+                        MessageBubble(
+                                message = chatMessage,
+                                mA = mA,
+                                clipboardManager = clipboardManager,
+                                context = context,
+                                isSecondLast = false,
+                                isLast = true,
+                                chatViewModel = chatViewModel
+                        )
+                    }
+
+                    chatUiState.value.messages.lastIndex - 1 -> {
+                        MessageBubble(
+                                message = chatMessage,
+                                mA = mA,
+                                clipboardManager = clipboardManager,
+                                context = context,
+                                isSecondLast = true,
+                                isLast = false,
+                                chatViewModel = chatViewModel
+                        )
+                    }
+
+                    else -> {
+                        MessageBubble(
+                                message = chatMessage,
+                                mA = mA,
+                                clipboardManager = clipboardManager,
+                                context = context,
+                                isSecondLast = false,
+                                isLast = false,
+                                chatViewModel = chatViewModel
+                        )
+                    }
+                }
             }
         }
     }

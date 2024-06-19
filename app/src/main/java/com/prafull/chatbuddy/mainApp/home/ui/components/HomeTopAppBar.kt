@@ -22,8 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prafull.chatbuddy.Routes
-import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
-import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
 
 @OptIn(ExperimentalMaterial3Api::class)

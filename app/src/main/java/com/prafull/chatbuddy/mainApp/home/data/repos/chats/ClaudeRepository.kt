@@ -25,10 +25,13 @@ class ClaudeRepository : ChatRepository() {
                         .withSystemPrompt(history.systemPrompt)
                         .withModel(history.model).build()
 
-                    val messages = history.toSerializedMessages() + SerializableMessage(
-                            role = Role.User,
-                            content = prompt.toClaudeContent()
-                    )
+
+                    val messages = history.messages.map {
+                        SerializableMessage(
+                                role = if (it.participant == Participant.USER) Role.User else Role.Assistant,
+                                content = it.toClaudeContent()
+                        )
+                    }
                     Log.d("ClaudeRepository", "Messages: $messages")
                     val response = client.getChatCompletion(messages)
 
@@ -45,7 +48,7 @@ class ClaudeRepository : ChatRepository() {
                         is MessageContent.ImageContent -> {
                             trySend(
                                     ChatMessage(
-                                            text = "error",
+                                            text = x.source.data,
                                             participant = Participant.ASSISTANT
                                     )
                             )
@@ -53,14 +56,14 @@ class ClaudeRepository : ChatRepository() {
 
                         is MessageContent.ToolResult -> trySend(
                                 ChatMessage(
-                                        text = "error",
+                                        text = x.content.toString(),
                                         participant = Participant.ASSISTANT
                                 )
                         )
 
                         is MessageContent.ToolUse -> trySend(
                                 ChatMessage(
-                                        text = "error",
+                                        text = x.name,
                                         participant = Participant.ASSISTANT
                                 )
                         )

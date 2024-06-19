@@ -32,11 +32,11 @@ import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.RoutesStrings
-import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
-import com.prafull.chatbuddy.mainApp.home.ui.HomeScreen
-import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.components.HomeTopAppBar
 import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeScreen
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelsScreen
 import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelChatScreen
 import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatVM

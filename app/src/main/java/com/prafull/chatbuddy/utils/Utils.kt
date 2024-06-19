@@ -2,6 +2,7 @@ package com.prafull.chatbuddy.utils
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.compose.runtime.saveable.Saver
@@ -47,4 +48,14 @@ fun Bitmap.toBase64(): String? {
     this.compress(Bitmap.CompressFormat.JPEG, 100, outputStream)
     val byteArray = outputStream.toByteArray()
     return Base64.getEncoder().encodeToString(byteArray)
+}
+
+fun String.base64ToBitmap(): Bitmap? {
+    return try {
+        val decodedString = Base64.getDecoder().decode(this)
+        BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+    } catch (e: IllegalArgumentException) {
+        e.printStackTrace()
+        null
+    }
 }

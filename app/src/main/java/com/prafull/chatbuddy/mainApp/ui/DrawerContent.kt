@@ -1,7 +1,6 @@
 package com.prafull.chatbuddy.mainApp.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Delete
@@ -37,8 +37,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.R.drawable
 import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
-import com.prafull.chatbuddy.mainApp.home.ui.ChatViewModel
-import com.prafull.chatbuddy.mainApp.home.ui.HomeViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.navigateAndPopBackStack
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.CoroutineScope
@@ -60,8 +60,11 @@ fun DrawerContent(
 ) {
     val currDestination =
         navController.currentBackStackEntryAsState().value?.destination?.javaClass?.name
-    ModalDrawerSheet(Modifier.padding(end = 100.dp)) {
-        Box(Modifier.fillMaxHeight()) {
+    ModalDrawerSheet(
+            Modifier.padding(end = 100.dp),
+            drawerShape = RoundedCornerShape(bottomEnd = 0.dp, topEnd = 16.dp)
+    ) {
+        Column(Modifier.fillMaxHeight(), verticalArrangement = Arrangement.SpaceBetween) {
             Column {
                 DrawerItem(
                         label = "Chat Buddy",
@@ -112,9 +115,9 @@ fun DrawerContent(
                         onChatClicked
                 )
             }
-            Column(modifier = Modifier.align(Alignment.BottomCenter)) {
+            Column(modifier = Modifier) {
                 Spacer(modifier = Modifier.height(8.dp))
-                DrawerUserItem(mAuth, onSettingsClicked)
+                DrawerUserItem(mAuth, onSettingsClicked, Modifier.height(56.dp))
             }
         }
     }
@@ -145,6 +148,7 @@ fun DrawerItem(
             },
             selected = selected,
             onClick = onClick,
+            shape = RectangleShape
     )
 }
 
@@ -164,7 +168,7 @@ fun ChatHistorySection(
         }
 
         is Resource.Success -> {
-            LazyColumn(contentPadding = PaddingValues(8.dp)) {
+            LazyColumn(contentPadding = PaddingValues(bottom = 8.dp)) {
                 if (previousChats.data.isEmpty()) {
                     item {
                         DrawerItem(
@@ -202,7 +206,8 @@ fun ChatHistorySection(
                                     }
                                 },
                                 selected = chatHistory.id == currChatUUID,
-                                onClick = { onChatClicked(chatHistory) }
+                                onClick = { onChatClicked(chatHistory) },
+                                shape = RectangleShape
                         )
                     }
                 }
@@ -220,7 +225,8 @@ fun ChatHistorySection(
 @Composable
 fun DrawerUserItem(
     mAuth: FirebaseAuth,
-    onSettingsClicked: () -> Unit
+    onSettingsClicked: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     NavigationDrawerItem(
             label = {
@@ -245,6 +251,7 @@ fun DrawerUserItem(
             },
             selected = false,
             onClick = onSettingsClicked,
-            shape = RectangleShape
+            shape = RectangleShape,
+            modifier = modifier
     )
 }

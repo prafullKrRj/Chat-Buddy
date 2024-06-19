@@ -16,7 +16,7 @@ import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.home.model.isGptModel
-import com.prafull.chatbuddy.mainApp.home.ui.ChatUiState
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatUiState
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,6 +33,7 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     private val geminiRepository: GeminiRepository by inject()
     private val claudeRepository: ClaudeRepository by inject()
     private val openAiRepository: OpenAiRepository by inject()
+
     var currChatUUID by mutableStateOf(UUID.randomUUID().toString())
 
     private val _uiState: MutableStateFlow<ChatUiState> =
@@ -58,14 +59,26 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
         }
     }
 
+    fun regenerateResponse() {
+        viewModelScope.launch {
+            chat.messages.removeLast()
+            _uiState.value.removeLastMessage()
+            currPrompt = _uiState.value.messages.last()
+            loading = true
+            chatting = true
+            currPrompt = ChatMessage()
+            geminiRepository.deleteLast(currChatUUID)
+            getResponse()
+        }
+    }
+
     private fun saveMessage(message: ChatMessage) {
-        claudeRepository.saveMessage(chat, message)
+        geminiRepository.saveMessage(chat, message)
         chat.messages.add(message)
         chat.lastModified = Timestamp.now()
     }
 
     private fun getResponse() {
-        Log.d("ChatViewModel", "Model: ${chat.model}")
         when {
             chat.model.isGeminiModel() -> getResponseFromGemini()
             chat.model.isClaudeModel() -> getResponseFromClaude()
@@ -96,10 +109,12 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     }
 
     fun chatFromHistory(chatHistory: ChatHistory) {
+        Log.d("ChatViewModel", "Chat from history: $chatHistory")
         viewModelScope.launch {
             currChatUUID = chatHistory.id
             currPrompt = ChatMessage()
             chat = chatHistory.copy()
+            currModel = chatHistory.toModel()
             _uiState.update {
                 ChatUiState(messages = chatHistory.messages)
             }
@@ -133,7 +148,9 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
                 model = character.actualName,
                 temperature = character.temperature,
                 systemPrompt = character.system,
-                safetySetting = character.safetySetting
+                safetySetting = character.safetySetting,
+                modelGeneralName = character.generalName,
+                botImage = character.image
         )
         chatting = false
         loading = false

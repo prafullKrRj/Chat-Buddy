@@ -32,7 +32,6 @@ class ModelsChatVM(
         viewModelScope.launch {
             chatting = true
             if (actualModel.modelGroup != "Characters") {
-                Log.d("ModelsChatVM", "Not a character $actualModel")
                 loadNewChat()
                 currModel = actualModel
                 chat.apply {
@@ -40,8 +39,9 @@ class ModelsChatVM(
                     temperature = actualModel.temperature
                     systemPrompt = actualModel.system
                     safetySetting = actualModel.safetySetting
+                    modelGeneralName = actualModel.generalName
+                    botImage = actualModel.image
                 }
-                Log.d("ModelsChatVM", chat.toString())
                 historyError = false
             } else {
                 try {

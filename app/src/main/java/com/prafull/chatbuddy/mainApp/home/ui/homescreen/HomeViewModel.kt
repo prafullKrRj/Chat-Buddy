@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.home.ui
+package com.prafull.chatbuddy.mainApp.home.ui.homescreen
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf

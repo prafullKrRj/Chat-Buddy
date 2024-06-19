@@ -15,6 +15,27 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 class GeminiRepository : ChatRepository() {
+
+
+    fun deleteLast(chatId: String) {
+        val docRef =
+            fireStore.collection("users").document(firebaseAuth.currentUser?.email.toString())
+                .collection("history").document(chatId)
+        docRef.get().addOnSuccessListener { document ->
+            if (document != null) {
+                val messages = document.get("messages") as MutableList<ChatMessage>
+                if (messages.isNotEmpty()) {
+                    messages.removeLast() // Remove the last element
+                    docRef.update("messages", messages) // Update the document
+                }
+            } else {
+                Log.d("GeminiRepository", "No such document")
+            }
+        }.addOnFailureListener { exception ->
+            Log.d("GeminiRepository", "get failed with ", exception)
+        }
+    }
+
     override suspend fun getResponse(history: ChatHistory, prompt: ChatMessage): Flow<ChatMessage> {
         return callbackFlow {
             val generativeModel =

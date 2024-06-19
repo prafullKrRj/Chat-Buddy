@@ -3,6 +3,7 @@ package com.prafull.chatbuddy.mainApp.home.ui.components
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -25,14 +26,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.StorageReference
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
 import com.prafull.chatbuddy.mainApp.ui.BotImage
@@ -44,7 +43,9 @@ fun MessageBubble(
     mA: FirebaseAuth,
     clipboardManager: ClipboardManager,
     context: Context,
-    storageRef: StorageReference
+    isSecondLast: Boolean,
+    isLast: Boolean,
+    chatViewModel: ChatViewModelAbstraction,
 ) {
     Column(
             Modifier
@@ -66,14 +67,7 @@ fun MessageBubble(
                                 modifier = Modifier.padding(horizontal = 8.dp)
                         ) {
                             items(message.imageBitmaps) { image ->
-                                PromptedImages(imageUri = image)
-                            }
-                            items(message.imageUrls) { imageUri ->
-
-                                PromptedImageFromHistory(
-                                        data = storageRef.child(imageUri).downloadUrl.toString(),
-                                        context = context
-                                )
+                                if (image != null) PromptedImages(imageUri = image)
                             }
                         }
                         FormattedText(
@@ -82,25 +76,38 @@ fun MessageBubble(
                                     .padding(horizontal = 8.dp)
                                     .padding(top = 8.dp)
                         )
-                        CopyAndShare(
+                        MessageFunctions(
                                 message = message,
                                 context = context,
-                                clipboardManager = clipboardManager
+                                clipboardManager = clipboardManager,
+                                isSecondLast = isSecondLast,
+                                isLast = isLast
                         )
                     }
                 }
             }
         } else {
             Row {
-                BotImage(Modifier.size(24.dp))
+                Log.d("MessageBubble", "BotImage: ${chatViewModel.currModel.image}")
+                if (chatViewModel.currModel.image.isNotEmpty()) {
+                    BotImage(Modifier.size(24.dp), data = chatViewModel.currModel.image)
+                } else {
+                    BotImage(Modifier.size(24.dp))
+                }
                 Spacer(modifier = Modifier.size(8.dp))
                 Column {
-                    Text(text = stringResource(id = R.string.app_name))
+                    Text(text = chatViewModel.currModel.generalName)
                     FormattedText(text = message.text)
-                    CopyAndShare(
+                    MessageFunctions(
                             message = message,
                             context = context,
-                            clipboardManager = clipboardManager
+                            clipboardManager = clipboardManager,
+                            isSecondLast = isSecondLast,
+                            isLast = isLast,
+                            editPrompt = {},
+                            regenerateOutput = {
+                                chatViewModel.regenerateResponse()
+                            }
                     )
                 }
             }
@@ -109,10 +116,14 @@ fun MessageBubble(
 }
 
 @Composable
-fun CopyAndShare(
+fun MessageFunctions(
     message: ChatMessage,
     context: Context,
-    clipboardManager: ClipboardManager
+    clipboardManager: ClipboardManager,
+    isSecondLast: Boolean,
+    isLast: Boolean,
+    editPrompt: () -> Unit = {},
+    regenerateOutput: () -> Unit = {}
 ) {
     Row(
             modifier = Modifier
@@ -120,6 +131,22 @@ fun CopyAndShare(
                 .padding(8.dp),
             horizontalArrangement = Arrangement.End
     ) {
+        if (isSecondLast && message.participant == Participant.USER) {
+            IconButton(onClick = editPrompt) {
+                Icon(
+                        painter = painterResource(id = R.drawable.outline_edit_24),
+                        contentDescription = "Re Prompt"
+                )
+            }
+        }
+        if (isLast && message.participant == Participant.ASSISTANT) {
+            IconButton(onClick = regenerateOutput) {
+                Icon(
+                        painter = painterResource(id = R.drawable.outline_autorenew_24),
+                        contentDescription = "Regenerate"
+                )
+            }
+        }
         IconButton(onClick = {
             clipboardManager.setText(AnnotatedString(message.text))
             Toast.makeText(context, "Copied to clipboard", Toast.LENGTH_SHORT).show()
@@ -157,21 +184,6 @@ fun shareText(context: Context, text: String) {
 private fun PromptedImages(imageUri: Bitmap) {
     AsyncImage(
             model = imageUri,
-            contentDescription = null,
-            modifier = Modifier
-                .padding(4.dp)
-                .requiredWidth(72.dp)
-                .clickable {
-
-                }
-    )
-}
-
-@Composable
-private fun PromptedImageFromHistory(data: String, context: Context) {
-    AsyncImage(
-            model = ImageRequest
-                .Builder(context).data(data).build(),
             contentDescription = null,
             modifier = Modifier
                 .padding(4.dp)

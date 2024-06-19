@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -38,7 +38,6 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.goBackStack
 import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
@@ -51,7 +50,6 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
     val mA = FirebaseAuth.getInstance()
     val clipboardManager = LocalClipboardManager.current
     val context = LocalContext.current
-    val storageRef = FirebaseStorage.getInstance().reference
     val showBackDialog = remember {
         mutableStateOf(false)
     }
@@ -120,10 +118,44 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                 contentPadding = paddingValues,
                 modifier = Modifier.fillMaxSize()
         ) {
-            items(state.messages, key = { item ->
-                item.id
-            }) { item ->
-                MessageBubble(message = item, mA = mA, clipboardManager, context, storageRef)
+            itemsIndexed(state.messages) { index, chatMessage ->
+                when (index) {
+                    state.messages.lastIndex -> {
+                        MessageBubble(
+                                message = chatMessage,
+                                mA = mA,
+                                clipboardManager = clipboardManager,
+                                context = context,
+                                isSecondLast = false,
+                                isLast = true,
+                                chatViewModel = viewModel
+                        )
+                    }
+
+                    state.messages.lastIndex - 1 -> {
+                        MessageBubble(
+                                message = chatMessage,
+                                mA = mA,
+                                clipboardManager = clipboardManager,
+                                context = context,
+                                isSecondLast = true,
+                                isLast = false,
+                                chatViewModel = viewModel
+                        )
+                    }
+
+                    else -> {
+                        MessageBubble(
+                                message = chatMessage,
+                                mA = mA,
+                                clipboardManager = clipboardManager,
+                                context = context,
+                                isSecondLast = false,
+                                isLast = false,
+                                chatViewModel = viewModel
+                        )
+                    }
+                }
             }
         }
     }

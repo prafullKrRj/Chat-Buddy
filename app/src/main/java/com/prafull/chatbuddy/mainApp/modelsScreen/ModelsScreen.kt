@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,6 +40,7 @@ import coil.request.ImageRequest
 import com.prafull.chatbuddy.mainApp.ads.ModelScreenBannerAd
 import com.prafull.chatbuddy.model.Model
 import org.koin.androidx.compose.koinViewModel
+import java.util.Locale
 
 @Composable
 fun ModelsScreen(paddingValues: PaddingValues, navController: NavController) {
@@ -58,7 +60,9 @@ fun ModelsScreen(paddingValues: PaddingValues, navController: NavController) {
     Column(
             Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.spacedBy(8.dp, CenterVertically),
+            horizontalAlignment = CenterHorizontally
     ) {
         ModelScreenBannerAd()
         if (uiState.loading) {
@@ -76,7 +80,7 @@ fun ModelsScreen(paddingValues: PaddingValues, navController: NavController) {
                 }) { modelResponse ->
                     Column {
                         Text(
-                                text = modelResponse.type.toUpperCase(),
+                                text = modelResponse.type.uppercase(Locale.getDefault()),
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(8.dp)
