@@ -87,6 +87,7 @@ dependencies {
     implementation(libs.firebase.ads)
     implementation(libs.androidx.material3.android)
     implementation(libs.firebase.storage)
+    implementation(libs.androidx.ui.text.google.fonts)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

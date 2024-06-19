@@ -13,6 +13,7 @@ import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
 
 class GeminiRepository : ChatRepository() {
 
@@ -33,6 +34,26 @@ class GeminiRepository : ChatRepository() {
             }
         }.addOnFailureListener { exception ->
             Log.d("GeminiRepository", "get failed with ", exception)
+        }
+    }
+
+    suspend fun deleteLastTwo(chatId: String): Boolean {
+        val docRef =
+            fireStore.collection("users").document(firebaseAuth.currentUser?.email.toString())
+                .collection("history").document(chatId)
+        docRef.get().await().let { document ->
+            if (document != null) {
+                val messages = document.get("messages") as MutableList<ChatMessage>
+                if (messages.isNotEmpty()) {
+                    messages.removeLast() // Remove the last element
+                    messages.removeLast()
+                    docRef.update("messages", messages) // Update the documentr
+                    return true
+                } else {
+                    Log.d("GeminiRepository", "No such document")
+                }
+            }
+            return false
         }
     }
 

@@ -29,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
@@ -61,6 +62,9 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
     BackHandler {
         showBackDialog.value = true
     }
+    val focusRequester = remember {
+        FocusRequester()
+    }
     val listState = rememberLazyListState()
     Text(text = viewModel.currModel.generalName)
     Text(text = state.messages.toString())
@@ -85,7 +89,7 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                 })
             },
             bottomBar = {
-                PromptField(viewModel = viewModel)
+                PromptField(Modifier, viewModel = viewModel)
             }
     ) { paddingValues ->
         if (state.messages.isEmpty()) {
@@ -128,7 +132,8 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                                 context = context,
                                 isSecondLast = false,
                                 isLast = true,
-                                chatViewModel = viewModel
+                                viewModel = viewModel,
+                                focusRequester = focusRequester
                         )
                     }
 
@@ -140,7 +145,8 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                                 context = context,
                                 isSecondLast = true,
                                 isLast = false,
-                                chatViewModel = viewModel
+                                viewModel = viewModel,
+                                focusRequester
                         )
                     }
 
@@ -152,7 +158,8 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                                 context = context,
                                 isSecondLast = false,
                                 isLast = false,
-                                chatViewModel = viewModel
+                                viewModel = viewModel,
+                                focusRequester
                         )
                     }
                 }

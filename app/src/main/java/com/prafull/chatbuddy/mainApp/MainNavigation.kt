@@ -19,10 +19,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -66,13 +69,18 @@ fun MainNavigation(appNavController: NavController) {
     var currDestination by rememberSaveable {
         mutableStateOf(RoutesStrings.Home.name)
     }
+    val focusManager = LocalFocusManager.current
     val mAuth = FirebaseAuth.getInstance()
+    val focusRequester = remember {
+        FocusRequester()
+    }
     LaunchedEffect(drawerState.isOpen) {
         if (drawerState.isOpen) {
             homeViewModel.getPreviousChats()
+            focusManager.clearFocus()
         }
     }
-    val focusManager = LocalFocusManager.current
+
     LaunchedEffect(currDestination) {
         focusManager.clearFocus()
     }
@@ -138,7 +146,10 @@ fun MainNavigation(appNavController: NavController) {
                 },
                 bottomBar = {
                     if (currDestination == RoutesStrings.Home.name || currDestination == RoutesStrings.HomeWithArgs.name) {
-                        PromptField(viewModel = chatViewModel)
+                        PromptField(
+                                Modifier.focusRequester(focusRequester),
+                                viewModel = chatViewModel
+                        )
                     }
                 }
         ) { paddingValues ->
@@ -153,7 +164,8 @@ fun MainNavigation(appNavController: NavController) {
                             mainNavController,
                             chatViewModel,
                             homeViewModel,
-                            PromptLibraryItem()
+                            PromptLibraryItem(),
+                            focusRequester
                     )
                 }
                 composable<Routes.HomeWithArgs> { backStackEntry ->
@@ -164,7 +176,8 @@ fun MainNavigation(appNavController: NavController) {
                             mainNavController,
                             chatViewModel,
                             homeViewModel,
-                            homeWithArgs.toPromptLibraryItem()
+                            homeWithArgs.toPromptLibraryItem(),
+                            focusRequester
                     )
                 }
                 composable<Routes.ModelsScreen> {

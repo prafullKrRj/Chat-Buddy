@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp
 
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -19,6 +20,7 @@ import com.prafull.chatbuddy.mainApp.home.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatUiState
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -69,6 +71,26 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
             currPrompt = ChatMessage()
             geminiRepository.deleteLast(currChatUUID)
             getResponse()
+        }
+    }
+
+    fun updateLastPrompt(images: List<Bitmap>, text: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            loading = true
+            _uiState.value.removeLastMessage()
+            _uiState.value.removeLastMessage()
+            currPrompt = ChatMessage(
+                    text = text,
+                    imageBitmaps = images
+            )
+            val x = geminiRepository.deleteLastTwo(currChatUUID)
+            if (x) {
+                chat.messages.removeLast()
+                chat.messages.removeLast()
+
+                chatting = true
+                sendMessage()
+            }
         }
     }
 

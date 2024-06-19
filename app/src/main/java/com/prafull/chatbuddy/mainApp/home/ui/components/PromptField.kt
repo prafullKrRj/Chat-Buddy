@@ -8,8 +8,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
@@ -24,9 +26,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,6 +36,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,8 +51,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
@@ -62,7 +66,7 @@ import kotlinx.coroutines.launch
 
 
 @Composable
-fun PromptField(viewModel: ChatViewModelAbstraction) {
+fun PromptField(modifier: Modifier, viewModel: ChatViewModelAbstraction) {
 
     val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
     val pickMedia = rememberLauncherForActivityResult(
@@ -78,14 +82,12 @@ fun PromptField(viewModel: ChatViewModelAbstraction) {
     LaunchedEffect(imageUris.size) {
         if (imageUris.isNotEmpty()) listState.animateScrollToItem(imageUris.size)
     }
-    Card(
+    ElevatedCard(
             modifier = Modifier.imePadding(),
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
-            shape = RoundedCornerShape(topEnd = 10.dp, topStart = 10.dp)
     ) {
         ImagePickerRow(imageUris, pickMedia, listState)
         MessageInputRow(
-                modifier = Modifier,
+                modifier = modifier,
                 prompt = viewModel.currPrompt.text,
                 onPromptChange = {
                     viewModel.currPrompt = ChatMessage(text = it)
@@ -154,9 +156,10 @@ fun MessageInputRow(
         }
         OutlinedTextField(
                 modifier = modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                shape = RoundedCornerShape(40),
+                    .padding(8.dp)
+                    .height(IntrinsicSize.Min)
+                    .fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
                 value = prompt,
                 label = {
                     if (!isFocused && prompt.isBlank()) {
@@ -185,12 +188,16 @@ fun MessageInputRow(
                     }
                     if (prompt.isBlank() && isLoading) {
                         CircularProgressIndicator(
-                                strokeWidth = 2.dp,
+                                strokeWidth = 4.dp,
                                 modifier = Modifier.padding(4.dp)
                         )
                     }
                 },
-                colors = OutlinedTextFieldDefaults.promptFieldColors()
+                colors = TextFieldDefaults.colors(
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent
+                ),
+                textStyle = TextStyle(textAlign = TextAlign.Start)
         )
     }
 }

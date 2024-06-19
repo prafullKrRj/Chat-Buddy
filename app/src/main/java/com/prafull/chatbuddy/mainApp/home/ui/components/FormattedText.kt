@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -125,7 +123,7 @@ fun parseInlineMarkdown(input: String, linkRegex: Regex): AnnotatedString {
                     if (end != -1) {
                         withStyle(
                                 style = SpanStyle(
-                                        fontFamily = FontFamily.Monospace,
+                                        fontFamily = FontFamily.Default,
                                         background = Color.LightGray
                                 )
                         ) {
@@ -174,18 +172,20 @@ fun CodeSnippetBox(language: String, code: String) {
 
     Column(
             modifier = Modifier
-                .background(Color(0xFF2D2D2D), RoundedCornerShape(8.dp))
-                .padding(8.dp)
+                .padding(vertical = 8.dp)
+                .background(MaterialTheme.colorScheme.onSurface, RoundedCornerShape(8.dp))
                 .fillMaxWidth()
     ) {
         Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                     text = language,
-                    color = Color.White,
+                    color = MaterialTheme.colorScheme.inverseOnSurface,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Bold
             )
@@ -193,21 +193,20 @@ fun CodeSnippetBox(language: String, code: String) {
                 clipboardManager.setText(AnnotatedString(code))
                 Toast.makeText(context, "Code copied to clipboard", Toast.LENGTH_SHORT).show()
             }) {
-                Text(text = "Copy code", color = Color.White)
+                Text(text = "Copy code", color = MaterialTheme.colorScheme.inverseOnSurface)
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
         Box(
                 modifier = Modifier
-                    .background(Color(0xFF1E1E1E))
+                    .background(MaterialTheme.colorScheme.tertiaryContainer)
                     .padding(16.dp)
                     .fillMaxWidth()
         ) {
             Text(
                     text = code,
-                    color = Color(0xFFE06C75),
-                    fontFamily = FontFamily.Monospace,
-                    fontSize = 14.sp
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    fontFamily = FontFamily.SansSerif,
+                    fontSize = 12.sp
             )
         }
     }

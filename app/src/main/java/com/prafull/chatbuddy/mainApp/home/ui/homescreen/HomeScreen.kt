@@ -1,11 +1,10 @@
 package com.prafull.chatbuddy.mainApp.home.ui.homescreen
 
 import android.annotation.SuppressLint
-import android.util.Log
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -19,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -26,7 +26,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
@@ -50,17 +49,21 @@ fun HomeScreen(
     navController: NavController,
     chatViewModel: ChatViewModel,
     homeViewModel: HomeViewModel,
-    promptType: PromptLibraryItem
+    promptType: PromptLibraryItem,
+    focusRequester: FocusRequester
 ) {
     val mA = FirebaseAuth.getInstance()
     val chatUiState = chatViewModel.uiState.collectAsState()
-    Log.d("HomeScreen", "Chat UI State: ${chatUiState.value.messages}")
     val modelsState by homeViewModel.modelDialogState.collectAsState()
-    val storageReference = FirebaseStorage.getInstance().reference
     val selectedModel = remember<(Model) -> Unit> {
         { model ->
             homeViewModel.modelButtonClicked = false
             chatViewModel.onModelSelected(model)
+        }
+    }
+    val editPrompt = remember<(String) -> Unit> {
+        {
+
         }
     }
     if (homeViewModel.modelButtonClicked) {
@@ -78,9 +81,11 @@ fun HomeScreen(
     }
     val context = LocalContext.current
     Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .imePadding(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top
+            //       verticalArrangement = Arrangement.SpaceBetween
     ) {
         LazyColumn(
                 modifier = Modifier,
@@ -130,7 +135,8 @@ fun HomeScreen(
                                 context = context,
                                 isSecondLast = false,
                                 isLast = true,
-                                chatViewModel = chatViewModel
+                                viewModel = chatViewModel,
+                                focusRequester = focusRequester
                         )
                     }
 
@@ -142,7 +148,8 @@ fun HomeScreen(
                                 context = context,
                                 isSecondLast = true,
                                 isLast = false,
-                                chatViewModel = chatViewModel
+                                viewModel = chatViewModel,
+                                focusRequester = focusRequester
                         )
                     }
 
@@ -154,7 +161,8 @@ fun HomeScreen(
                                 context = context,
                                 isSecondLast = false,
                                 isLast = false,
-                                chatViewModel = chatViewModel
+                                viewModel = chatViewModel,
+                                focusRequester = focusRequester
                         )
                     }
                 }
