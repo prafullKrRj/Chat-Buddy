@@ -3,7 +3,6 @@ package com.prafull.chatbuddy.mainApp.home.ui.components
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -88,7 +88,6 @@ fun MessageBubble(
             }
         } else {
             Row {
-                Log.d("MessageBubble", "BotImage: ${chatViewModel.currModel.image}")
                 if (chatViewModel.currModel.image.isNotEmpty()) {
                     BotImage(Modifier.size(24.dp), data = chatViewModel.currModel.image)
                 } else {
@@ -96,7 +95,11 @@ fun MessageBubble(
                 }
                 Spacer(modifier = Modifier.size(8.dp))
                 Column {
-                    Text(text = chatViewModel.currModel.generalName)
+                    if (chatViewModel.currModel.generalName.isNotEmpty()) {
+                        Text(text = chatViewModel.currModel.generalName)
+                    } else {
+                        Text(text = stringResource(id = R.string.app_name))
+                    }
                     FormattedText(text = message.text)
                     MessageFunctions(
                             message = message,
