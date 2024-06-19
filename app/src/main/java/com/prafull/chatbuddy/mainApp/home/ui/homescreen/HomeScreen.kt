@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -49,8 +48,7 @@ fun HomeScreen(
     navController: NavController,
     chatViewModel: ChatViewModel,
     homeViewModel: HomeViewModel,
-    promptType: PromptLibraryItem,
-    focusRequester: FocusRequester
+    promptType: PromptLibraryItem
 ) {
     val mA = FirebaseAuth.getInstance()
     val chatUiState = chatViewModel.uiState.collectAsState()
@@ -59,11 +57,6 @@ fun HomeScreen(
         { model ->
             homeViewModel.modelButtonClicked = false
             chatViewModel.onModelSelected(model)
-        }
-    }
-    val editPrompt = remember<(String) -> Unit> {
-        {
-
         }
     }
     if (homeViewModel.modelButtonClicked) {
@@ -125,7 +118,9 @@ fun HomeScreen(
                 }
 
             }
-            itemsIndexed(chatUiState.value.messages) { index, chatMessage ->
+            itemsIndexed(chatUiState.value.messages, key = { _, chatMessage ->
+                chatMessage.id
+            }) { index, chatMessage ->
                 when (index) {
                     chatUiState.value.messages.lastIndex -> {
                         MessageBubble(
@@ -135,8 +130,7 @@ fun HomeScreen(
                                 context = context,
                                 isSecondLast = false,
                                 isLast = true,
-                                viewModel = chatViewModel,
-                                focusRequester = focusRequester
+                                viewModel = chatViewModel
                         )
                     }
 
@@ -148,8 +142,7 @@ fun HomeScreen(
                                 context = context,
                                 isSecondLast = true,
                                 isLast = false,
-                                viewModel = chatViewModel,
-                                focusRequester = focusRequester
+                                viewModel = chatViewModel
                         )
                     }
 
@@ -161,8 +154,7 @@ fun HomeScreen(
                                 context = context,
                                 isSecondLast = false,
                                 isLast = false,
-                                viewModel = chatViewModel,
-                                focusRequester = focusRequester
+                                viewModel = chatViewModel
                         )
                     }
                 }

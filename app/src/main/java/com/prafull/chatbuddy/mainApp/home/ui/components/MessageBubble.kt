@@ -3,7 +3,9 @@ package com.prafull.chatbuddy.mainApp.home.ui.components
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -18,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -38,7 +41,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,7 +59,6 @@ import com.prafull.chatbuddy.mainApp.ui.UserImage
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
 import kotlinx.coroutines.launch
-
 @Composable
 fun MessageBubble(
     message: ChatMessage,
@@ -66,150 +67,171 @@ fun MessageBubble(
     context: Context,
     isSecondLast: Boolean,
     isLast: Boolean,
-    viewModel: ChatViewModelAbstraction,
-    focusRequester: FocusRequester
+    viewModel: ChatViewModelAbstraction
 ) {
-
-    var isEditingPrompt by rememberSaveable {
-        mutableStateOf(false)
-    }
-    var editingPrompt by rememberSaveable {
-        mutableStateOf("")
-    }
+    var isEditingPrompt by rememberSaveable { mutableStateOf(false) }
+    var editingPrompt by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
-
-    val imageUris =
-        rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
-    val pickMedia = rememberLauncherForActivityResult(
-            ActivityResultContracts.PickVisualMedia()
-    ) { imageUri ->
+    val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
+    val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { imageUri ->
         imageUri?.let { imageUris.add(it) }
     }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
+
     LaunchedEffect(imageUris.size) {
         if (imageUris.isNotEmpty()) listState.animateScrollToItem(imageUris.size)
     }
-    Column(
-            Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-    ) {
+
+    Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
         if (message.participant == Participant.USER) {
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                UserImage(Modifier.size(24.dp), firebaseAuth = mA)
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(text = mA.currentUser?.displayName ?: "User")
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Card(
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(end = 8.dp),
-                    ) {
-                        if (!isEditingPrompt) {
-                            LazyRow(
-                                    modifier = Modifier
-                                        .padding(horizontal = 8.dp)
-                                        .background(Color.Transparent)
-                            ) {
-                                items(message.imageBitmaps) { image ->
-                                    if (image != null) PromptedImages(imageUri = image)
-                                }
-                            }
-                            FormattedText(
-                                    text = message.text,
-                                    modifier = Modifier
-                                        .padding(horizontal = 8.dp)
-                                        .padding(top = 8.dp)
-                            )
-                            MessageFunctions(
-                                    message = message,
-                                    context = context,
-                                    clipboardManager = clipboardManager,
-                                    isSecondLast = isSecondLast,
-                                    isLast = isLast,
-                                    editPrompt = {
-                                        editingPrompt = message.text
-                                        isEditingPrompt = true
-                                    }
-                            )
-                        } else {
-
-                            ImagePickerRow(imageUris, pickMedia, listState)
-                            OutlinedTextField(
-                                    value = editingPrompt,
-                                    onValueChange = {
-                                        editingPrompt = it
-                                    },
-                                    modifier = Modifier.padding(8.dp),
-                                    trailingIcon = {
-                                        IconButton(onClick = {
-                                            scope.launch {
-                                                val bitmaps =
-                                                    imageUris.mapNotNull { it.toBitmaps(context) }
-                                                viewModel.updateLastPrompt(
-                                                        bitmaps, editingPrompt
-                                                )
-                                                imageUris.clear()
-                                                editingPrompt = ""
-                                                isEditingPrompt = false
-                                                focusManager.clearFocus()
-                                            }
-                                        }) {
-                                            Icon(
-                                                    imageVector = Icons.AutoMirrored.Default.Send,
-                                                    contentDescription = "Send"
-                                            )
-                                        }
-                                    },
-                                    leadingIcon = {
-                                        IconButton(onClick = {
-                                            scope.launch {
-                                                pickMedia.launch(
-                                                        PickVisualMediaRequest(
-                                                                ActivityResultContracts.PickVisualMedia.ImageOnly
-                                                        )
-                                                )
-                                            }
-                                        }) {
-                                            Icon(
-                                                    painterResource(id = R.drawable.baseline_image_24),
-                                                    contentDescription = "select image"
-                                            )
-                                        }
-                                    }
-                            )
+            UserMessageBubble(
+                    message = message,
+                    mA = mA,
+                    isEditingPrompt = isEditingPrompt,
+                    editingPrompt = editingPrompt,
+                    imageUris = imageUris,
+                    listState = listState,
+                    pickMedia = pickMedia,
+                    onEditPromptChange = { editingPrompt = it },
+                    onSendClick = {
+                        scope.launch {
+                            val bitmaps = imageUris.mapNotNull { it.toBitmaps(context) }
+                            viewModel.updateLastPrompt(bitmaps, editingPrompt)
+                            imageUris.clear()
+                            editingPrompt = ""
+                            isEditingPrompt = false
+                            focusManager.clearFocus()
                         }
-
-                    }
-                }
-            }
+                    },
+                    onPickImageClick = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                    onEditPromptToggle = {
+                        editingPrompt = message.text
+                        isEditingPrompt = true
+                    },
+                    context = context,
+                    clipboardManager = clipboardManager,
+                    isSecondLast = isSecondLast,
+                    isLast = isLast
+            )
         } else {
-            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                if (viewModel.currModel.image.isNotEmpty()) {
-                    BotImage(Modifier.size(24.dp), data = viewModel.currModel.image)
-                } else {
-                    BotImage(Modifier.size(24.dp))
-                }
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    if (viewModel.currModel.generalName.isNotEmpty()) {
-                        Text(text = viewModel.currModel.generalName)
-                    } else {
-                        Text(text = stringResource(id = R.string.app_name))
+            BotMessageBubble(
+                    message = message,
+                    viewModel = viewModel,
+                    context = context,
+                    clipboardManager = clipboardManager,
+                    isSecondLast = isSecondLast,
+                    isLast = isLast
+            )
+        }
+    }
+}
+
+@Composable
+fun UserMessageBubble(
+    message: ChatMessage,
+    mA: FirebaseAuth,
+    isEditingPrompt: Boolean,
+    editingPrompt: String,
+    imageUris: MutableList<Uri>,
+    listState: LazyListState,
+    pickMedia: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    onEditPromptChange: (String) -> Unit,
+    onSendClick: () -> Unit,
+    onPickImageClick: () -> Unit,
+    onEditPromptToggle: () -> Unit,
+    context: Context,
+    clipboardManager: ClipboardManager,
+    isSecondLast: Boolean,
+    isLast: Boolean
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        UserImage(Modifier.size(24.dp), firebaseAuth = mA)
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Text(text = mA.currentUser?.displayName ?: "User")
+            Spacer(modifier = Modifier.height(4.dp))
+            Card(Modifier.fillMaxWidth().padding(end = 8.dp)) {
+                if (!isEditingPrompt) {
+                    LazyRow(
+                            modifier = Modifier.padding(horizontal = 8.dp).background(Color.Transparent)
+                    ) {
+                        items(message.imageBitmaps) { image ->
+                            image?.let { PromptedImages(imageUri = it) }
+                        }
                     }
-                    FormattedText(text = message.text)
+                    FormattedText(
+                            text = message.text,
+                            modifier = Modifier.padding(horizontal = 8.dp).padding(top = 8.dp)
+                    )
                     MessageFunctions(
                             message = message,
                             context = context,
                             clipboardManager = clipboardManager,
                             isSecondLast = isSecondLast,
                             isLast = isLast,
-                            regenerateOutput = {
-                                viewModel.regenerateResponse()
+                            editPrompt = onEditPromptToggle
+                    )
+                } else {
+                    ImagePickerRow(imageUris, pickMedia, listState)
+                    OutlinedTextField(
+                            value = editingPrompt,
+                            onValueChange = onEditPromptChange,
+                            modifier = Modifier.padding(8.dp),
+                            trailingIcon = {
+                                IconButton(onClick = onSendClick) {
+                                    Icon(
+                                            imageVector = Icons.AutoMirrored.Default.Send,
+                                            contentDescription = "Send"
+                                    )
+                                }
+                            },
+                            leadingIcon = {
+                                IconButton(onClick = onPickImageClick) {
+                                    Icon(
+                                            painter = painterResource(id = R.drawable.baseline_image_24),
+                                            contentDescription = "select image"
+                                    )
+                                }
                             }
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun BotMessageBubble(
+    message: ChatMessage,
+    viewModel: ChatViewModelAbstraction,
+    context: Context,
+    clipboardManager: ClipboardManager,
+    isSecondLast: Boolean,
+    isLast: Boolean
+) {
+    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+        if (viewModel.currModel.image.isNotEmpty()) {
+            BotImage(Modifier.size(24.dp), data = viewModel.currModel.image)
+        } else {
+            BotImage(Modifier.size(24.dp))
+        }
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            if (viewModel.currModel.generalName.isNotEmpty()) {
+                Text(text = viewModel.currModel.generalName)
+            } else {
+                Text(text = stringResource(id = R.string.app_name))
+            }
+            FormattedText(text = message.text)
+            MessageFunctions(
+                    message = message,
+                    context = context,
+                    clipboardManager = clipboardManager,
+                    isSecondLast = isSecondLast,
+                    isLast = isLast,
+                    regenerateOutput = {
+                        viewModel.regenerateResponse()
+                    }
+            )
         }
     }
 }
@@ -224,11 +246,8 @@ fun MessageFunctions(
     editPrompt: () -> Unit = {},
     regenerateOutput: () -> Unit = {}
 ) {
-
     Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
+            modifier = Modifier.fillMaxWidth().padding(8.dp),
             horizontalArrangement = Arrangement.End
     ) {
         if (isSecondLast && message.participant == Participant.USER) {
@@ -275,7 +294,6 @@ fun shareText(context: Context, text: String) {
         putExtra(Intent.EXTRA_TEXT, text)
         type = "text/plain"
     }
-
     val shareIntent = Intent.createChooser(sendIntent, null)
     context.startActivity(shareIntent)
 }
@@ -285,11 +303,6 @@ private fun PromptedImages(imageUri: Bitmap) {
     AsyncImage(
             model = imageUri,
             contentDescription = null,
-            modifier = Modifier
-                .padding(4.dp)
-                .requiredWidth(72.dp)
-                .clickable {
-
-                }
+            modifier = Modifier.padding(4.dp).requiredWidth(72.dp).clickable { }
     )
 }

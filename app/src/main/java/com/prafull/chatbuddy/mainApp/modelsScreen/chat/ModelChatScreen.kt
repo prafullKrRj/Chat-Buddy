@@ -29,7 +29,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
@@ -61,9 +60,6 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
     }
     BackHandler {
         showBackDialog.value = true
-    }
-    val focusRequester = remember {
-        FocusRequester()
     }
     val listState = rememberLazyListState()
     Text(text = viewModel.currModel.generalName)
@@ -132,8 +128,7 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                                 context = context,
                                 isSecondLast = false,
                                 isLast = true,
-                                viewModel = viewModel,
-                                focusRequester = focusRequester
+                                viewModel = viewModel
                         )
                     }
 
@@ -145,8 +140,7 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                                 context = context,
                                 isSecondLast = true,
                                 isLast = false,
-                                viewModel = viewModel,
-                                focusRequester
+                                viewModel = viewModel
                         )
                     }
 
@@ -158,8 +152,7 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
                                 context = context,
                                 isSecondLast = false,
                                 isLast = false,
-                                viewModel = viewModel,
-                                focusRequester
+                                viewModel = viewModel
                         )
                     }
                 }
