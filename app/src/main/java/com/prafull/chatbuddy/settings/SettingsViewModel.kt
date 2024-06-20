@@ -13,8 +13,15 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.BuildConfig
+import com.prafull.chatbuddy.mainApp.home.data.repos.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.utils.Resource
 import com.prafull.chatbuddy.utils.SharedPrefManager
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -25,7 +32,26 @@ class SettingsViewModel : ViewModel(), KoinComponent {
     private val firestore by inject<FirebaseFirestore>()
     private val storage by inject<FirebaseStorage>()
     private val chatViewModel by inject<ChatViewModel>()
+    private val homeRepository by inject<HomeRepository>()
     private val sharedPrefManager by inject<SharedPrefManager>()
+
+    var showModelSelectionDialog by mutableStateOf(false)
+    private val _modelState = MutableStateFlow<Resource<List<Model>>>(Resource.Initial)
+    val modelState = _modelState.asStateFlow()
+    var defaultModel by mutableStateOf("")
+    fun getModels() {
+        viewModelScope.launch(Dispatchers.IO) {
+            homeRepository.getModels().collect { response ->
+                _modelState.update {
+                    response
+                }
+            }
+        }
+    }
+    fun setModel(model: Model) {
+        defaultModel = model.generalName
+        sharedPrefManager.setModel(model)
+    }
     private fun deleteCollection(collection: CollectionReference) {
         collection.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -37,11 +63,14 @@ class SettingsViewModel : ViewModel(), KoinComponent {
             }
         }
     }
-
-    fun getDefaultModel(): String {
-        return sharedPrefManager.getDefaultModel()
+    init {
+        getDefaultModel()
     }
-
+    fun getDefaultModel() {
+        viewModelScope.launch {
+            defaultModel = sharedPrefManager.getModel().generalName
+        }
+    }
     fun clearData() {
         viewModelScope.launch {
             val collection =

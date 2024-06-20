@@ -70,9 +70,9 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
     BackHandler {
         showBackDialog.value = true
     }
+    val currentModel by viewModel.currentModel.collectAsState()
     val listState = rememberLazyListState()
-    Text(text = viewModel.currModel.generalName)
-    Text(text = state.messages.toString())
+    Text(text = currentModel.generalName)
     LaunchedEffect(state.messages.size) {
         if (state.messages.isNotEmpty()) {
             listState.animateScrollToItem(state.messages.size)
@@ -82,7 +82,7 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
             modifier = Modifier.imePadding(),
             topBar = {
                 CenterAlignedTopAppBar(title = {
-                    Text(text = viewModel.currModel.generalName)
+                    Text(text = currentModel.generalName)
                 }, navigationIcon = {
                     IconButton(onClick = {
                         showBackDialog.value = true
@@ -99,7 +99,7 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
             }
     ) { paddingValues ->
         if (state.messages.isEmpty()) {
-            InitialChatUI(modifier = Modifier.padding(paddingValues), model = viewModel.currModel)
+            InitialChatUI(modifier = Modifier.padding(paddingValues), model = currentModel)
         }
         if (viewModel.historyLoading) {
             Column(

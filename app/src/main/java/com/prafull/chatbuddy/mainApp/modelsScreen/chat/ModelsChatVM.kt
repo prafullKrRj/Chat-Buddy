@@ -1,6 +1,5 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen.chat
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -11,6 +10,7 @@ import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.CryptoEncryption
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import org.koin.core.component.inject
@@ -33,9 +33,11 @@ class ModelsChatVM(
             chatting = true
             if (actualModel.modelGroup != "Characters") {
                 loadNewChat()
-                currModel = actualModel
+                _currentModel.update {
+                    actualModel
+                }
                 chat.apply {
-                    model = currModel.actualName
+                    model = actualModel.actualName
                     temperature = actualModel.temperature
                     systemPrompt = actualModel.system
                     safetySetting = actualModel.safetySetting
@@ -55,8 +57,9 @@ class ModelsChatVM(
                                 message
                             }.toMutableList()
                         }
-                        Log.d("History", history.toString())
-                        currModel = actualModel
+                        _currentModel.update {
+                            actualModel
+                        }
                         if (history == null) {
                             newCharacterChat(actualModel)
                         } else {

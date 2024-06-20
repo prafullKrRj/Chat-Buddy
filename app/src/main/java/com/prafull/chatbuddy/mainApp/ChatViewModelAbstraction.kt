@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.ChatRepository
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.ClaudeRepository
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.GeminiRepository
@@ -19,12 +20,15 @@ import com.prafull.chatbuddy.mainApp.home.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatUiState
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.utils.Const
+import com.prafull.chatbuddy.utils.SharedPrefManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.UUID
@@ -34,6 +38,8 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     private val geminiRepository: GeminiRepository by inject()
     private val claudeRepository: ClaudeRepository by inject()
     private val openAiRepository: OpenAiRepository by inject()
+    private val sharedPref: SharedPrefManager by inject()
+    private val firestore by inject<FirebaseFirestore>()
 
     var currChatUUID by mutableStateOf(UUID.randomUUID().toString())
 
@@ -48,17 +54,53 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     protected var chat =
         ChatHistory(id = currChatUUID)         // current chat
 
-
-    var currModel by mutableStateOf(Model())    // current model
+    protected val _currentModel = MutableStateFlow(Model())
+    val currentModel: StateFlow<Model> = _currentModel.asStateFlow()
+    private var defaultModel by mutableStateOf(Model())
+    init {
+        getDefaultModel()
+    }
+    fun getDefaultModel() {
+        viewModelScope.launch {
+            val savedModel = sharedPref.getModel()
+            Log.d("ChatViewModel", "getDefaultModel: $savedModel")
+            if (savedModel.generalName == Const.CHAT_BUDDY) {
+                val respondedModel = firestore.collection("models").document("nlp").collection(Const.CHAT_BUDDY).document(Const.CHAT_BUDDY).get().await().toObject(Model::class.java)
+                respondedModel?.let { response ->
+                    sharedPref.setModel(response)
+                    _currentModel.update {
+                        response
+                    }
+                    defaultModel = response
+                    chat.apply {
+                        model = response.actualName
+                    }
+                }
+            } else {
+                val respondedModel = firestore.collection("models").document("nlp").collection(savedModel.modelGroup).document(savedModel.actualName).get().await().toObject(Model::class.java)
+                Log.d("ChatViewModel", "getDefaultModel: $respondedModel")
+                respondedModel?.let { response ->
+                    sharedPref.setModel(response)
+                    _currentModel.update {
+                        response
+                    }
+                    defaultModel = response
+                    chat.apply {
+                        model = response.actualName
+                    }
+                }
+            }
+            Log.d("ChatViewModel", "getDefaultModel: ${currentModel.value.generalName}")
+        }
+    }
     fun sendMessage() {
         viewModelScope.launch {
             loading = true
             chatting = true
-            currPrompt
             _uiState.value.addMessage(currPrompt)
             saveMessage(currPrompt)
             currPrompt = ChatMessage(
-                    model = currModel.generalName
+                    model = currentModel.value.generalName
             )
             getResponse()
         }
@@ -130,6 +172,7 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
         }
     }
 
+
     private fun updateChatWithResponse(response: ChatMessage) {
         _uiState.value.addMessage(response)
         Log.d("ChatViewModel", "Response: ${response.model}")
@@ -141,8 +184,13 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
         viewModelScope.launch {
             currChatUUID = chatHistory.id
             currPrompt = ChatMessage()
+            Log.d("ChatViewModel", "chatFromHistory: ${chatHistory.modelGeneralName}")
             chat = chatHistory.copy()
-            currModel = chatHistory.toModel()
+            Log.d("ChatViewModel", "chatFromHistory: ${chatHistory.modelGeneralName}")
+            _currentModel.update {
+                chatHistory.toModel()
+            }
+            Log.d("ChatViewModel", "chatFromHistory: ${chatHistory.modelGeneralName}")
             _uiState.update {
                 ChatUiState(messages = chatHistory.messages)
             }
@@ -156,7 +204,9 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
                 model = character.actualName
                 temperature = character.temperature
                 safetySetting = character.safetySetting
-                promptName = character.system
+                systemPrompt = character.system
+                modelGeneralName = character.generalName
+                botImage = character.image
             }
     )
 
@@ -164,7 +214,9 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
         if (chatting) {
             updateScreenState()
             chat = ChatHistory(id = currChatUUID)
-            currModel = Model()
+            _currentModel.update {
+                Model()
+            }
             chatting = false
         }
     }
@@ -179,8 +231,11 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
                 systemPrompt = character.system,
                 safetySetting = character.safetySetting,
                 modelGeneralName = character.generalName,
-                botImage = character.image
+                botImage = character.image,
         )
+        _currentModel.update {
+            character
+        }
         chatting = false
         loading = false
     }
@@ -206,13 +261,15 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
         }
     }
 
-    fun onModelSelected(it: Model) {
+    fun onModelSelected(model: Model) {
         chat.apply {
-            model = it.actualName
-            modelGeneralName = it.generalName
-            temperature = it.temperature
+            this.model = model.actualName
+            modelGeneralName = model.generalName
+            temperature = model.temperature
         }
-        currModel = it
+        _currentModel.update {
+            model
+        }
     }
 
     fun getCurrChat() = chat // for prompt details

@@ -4,6 +4,7 @@ import android.app.Application
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import com.google.gson.Gson
 import com.prafull.chatbuddy.authScreen.AuthViewModel
 import com.prafull.chatbuddy.authScreen.repo.AuthRepository
 import com.prafull.chatbuddy.mainApp.home.data.remote.ClaudeApiService
@@ -33,8 +34,11 @@ class ChatBuddyApp : Application() {
         super.onCreate()
         startKoin {
             modules(viewModels, authModule, repositoryModule, firebaseModule, module {
+                single<Gson> {
+                    Gson()
+                }
                 single {
-                    SharedPrefManager(this@ChatBuddyApp)
+                    SharedPrefManager(get())
                 }
             })
             androidContext(this@ChatBuddyApp)

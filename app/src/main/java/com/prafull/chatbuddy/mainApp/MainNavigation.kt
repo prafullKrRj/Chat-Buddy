@@ -56,7 +56,6 @@ fun MainNavigation(appNavController: NavController) {
     val homeViewModel: HomeViewModel = getViewModel()
     val chatViewModel: ChatViewModel = getViewModel()
 
-    chatViewModel.currModel = homeViewModel.currModel
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val previousChats by homeViewModel.previousChats.collectAsState()

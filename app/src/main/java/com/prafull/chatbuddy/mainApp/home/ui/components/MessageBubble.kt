@@ -35,6 +35,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +60,7 @@ import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.home.model.isGptModel
 import com.prafull.chatbuddy.mainApp.ui.BotImage
 import com.prafull.chatbuddy.mainApp.ui.UserImage
+import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
 import kotlinx.coroutines.launch
@@ -87,7 +89,7 @@ fun MessageBubble(
     LaunchedEffect(imageUris.size) {
         if (imageUris.isNotEmpty()) listState.animateScrollToItem(imageUris.size)
     }
-
+    val currentModel by viewModel.currentModel.collectAsState()
     Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,6 +133,7 @@ fun MessageBubble(
             )
         } else {
             BotMessageBubble(
+                    currentModel = currentModel,
                     message = message,
                     viewModel = viewModel,
                     context = context,
@@ -225,6 +228,7 @@ fun UserMessageBubble(
 
 @Composable
 fun BotMessageBubble(
+    currentModel: Model,
     message: ChatMessage,
     viewModel: ChatViewModelAbstraction,
     context: Context,
@@ -232,10 +236,11 @@ fun BotMessageBubble(
     isSecondLast: Boolean,
     isLast: Boolean
 ) {
+
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        Log.d("BotMessageBubble", "BotMessageBubble: ${message.model}")
-        if (viewModel.currModel.modelGroup == "Characters") {
-            BotImage(modifier = Modifier.size(24.dp), data = viewModel.currModel.image)
+        Log.d("BotMessageBubble", "BotMessageBubble: ${currentModel.modelGroup}")
+        if (currentModel.modelGroup == "Characters") {
+            BotImage(modifier = Modifier.size(24.dp), data = currentModel.image)
         } else if (message.model.isGptModel()) {
             BotImage(modifier = Modifier.size(24.dp), image = R.drawable.gpt)
         } else if (message.model.isGeminiModel()) {

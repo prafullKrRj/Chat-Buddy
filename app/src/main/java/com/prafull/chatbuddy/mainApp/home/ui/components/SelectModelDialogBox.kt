@@ -41,7 +41,6 @@ fun SelectModelDialogBox(
     onDismissRequest: () -> Unit
 ) {
     var selectedModel by remember { mutableStateOf<Model?>(null) }
-
     AlertDialog(
             onDismissRequest = { /*TODO*/ },
             confirmButton = {

@@ -9,7 +9,6 @@ import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.Const
 import com.prafull.chatbuddy.utils.CryptoEncryption
 import com.prafull.chatbuddy.utils.Resource
-import com.prafull.chatbuddy.utils.SharedPrefManager
 import com.prafull.chatbuddy.utils.base64ToBitmap
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -23,7 +22,6 @@ class HomeRepository : KoinComponent {
     private val firebaseAuth by inject<FirebaseAuth>()
     private val firestore by inject<FirebaseFirestore>()
     private val storage by inject<FirebaseStorage>()
-    private val sharedPrefManager by inject<SharedPrefManager>()
     suspend fun getPreviousChats(): Flow<Resource<List<ChatHistory>>> {
         return callbackFlow {
             try {
@@ -33,7 +31,7 @@ class HomeRepository : KoinComponent {
 
                 val chatHistoryList = response.documents.mapNotNull { document ->
                     val chatHistory = document.toObject(ChatHistory::class.java)
-                    chatHistory?.let { it ->
+                    chatHistory?.let {
                         it.messages = it.messages.map { message ->
                             message.text = CryptoEncryption.decrypt(message.text)
                             message.imageBitmaps = message.imageUrls.map { base64 ->
@@ -118,14 +116,6 @@ class HomeRepository : KoinComponent {
                     .await().documents.forEach {
                         models.add(it.toObject(Model::class.java)!!)
                     }
-
-                Log.d(
-                        "HomeRepository", "getModels: ${
-                    models.map {
-                        it.generalName
-                    }
-                }"
-                )
                 trySend(Resource.Success(models))
             } catch (e: Exception) {
                 trySend(Resource.Error(e))
@@ -147,21 +137,6 @@ class HomeRepository : KoinComponent {
                 trySend(true)
             } catch (e: Exception) {
                 trySend(false)
-            }
-            awaitClose { }
-        }
-    }
-
-    fun getCurrentModel(): Flow<Model> {
-        return callbackFlow {
-            try {
-                val modelGroup = sharedPrefManager.getDefaultModel().split("/")
-                firestore.collection("models").document("nlp").collection(modelGroup[0])
-                    .document(modelGroup[1]).get().await().toObject(Model::class.java)?.let {
-                        trySend(it)
-                    }
-            } catch (e: Exception) {
-                trySend(Model())
             }
             awaitClose { }
         }

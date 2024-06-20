@@ -45,6 +45,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.mainApp.home.ui.components.SelectModelDialogBox
 import com.prafull.chatbuddy.mainApp.ui.UserImage
 import com.prafull.chatbuddy.signOutAndNavigateToAuth
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeOption
@@ -57,8 +58,20 @@ import java.util.Locale
 fun SettingsScreen(navController: NavController, onBackClicked: () -> Unit) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val settingsViewModel: SettingsViewModel = koinViewModel()
+    val modelsState by settingsViewModel.modelState.collectAsState()
     val themeViewModel: ThemeViewModel = koinViewModel()
     val context = LocalContext.current
+
+    if (settingsViewModel.showModelSelectionDialog) {
+        settingsViewModel.getModels()
+        SelectModelDialogBox(modelsState = modelsState, onModelSelect = {
+            settingsViewModel.showModelSelectionDialog = false
+            settingsViewModel.setModel(it)
+        }) {
+            settingsViewModel.showModelSelectionDialog = false
+        }
+    }
+
     BackHandler {
         onBackClicked()
     }
@@ -113,6 +126,7 @@ private fun HandleDialogs(
                 }
         )
     }
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -186,7 +200,9 @@ private fun SettingsContent(
             Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clickable { }
+                        .clickable {
+                            settingsViewModel.showModelSelectionDialog = true
+                        }
                         .padding(16.dp)
             ) {
                 Icon(
@@ -196,7 +212,7 @@ private fun SettingsContent(
                 Spacer(modifier = Modifier.padding(4.dp))
                 Column {
                     Text(text = stringResource(id = R.string.default_model))
-                    Text(text = settingsViewModel.getDefaultModel())
+                    Text(text = settingsViewModel.defaultModel)
                 }
             }
         }
