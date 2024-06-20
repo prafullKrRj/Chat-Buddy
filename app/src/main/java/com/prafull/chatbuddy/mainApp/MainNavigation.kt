@@ -1,6 +1,6 @@
 package com.prafull.chatbuddy.mainApp
 
-import androidx.compose.foundation.layout.imePadding
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
@@ -11,7 +11,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
@@ -32,8 +31,6 @@ import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.RoutesStrings
-import com.prafull.chatbuddy.mainApp.home.ui.components.HomeTopAppBar
-import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeScreen
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
@@ -56,8 +53,10 @@ import org.koin.core.parameter.parametersOf
 
 @Composable
 fun MainNavigation(appNavController: NavController) {
-    val chatViewModel: ChatViewModel = getViewModel()
     val homeViewModel: HomeViewModel = getViewModel()
+    val chatViewModel: ChatViewModel = getViewModel()
+
+    chatViewModel.currModel = homeViewModel.currModel
     val scope = rememberCoroutineScope()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val previousChats by homeViewModel.previousChats.collectAsState()
@@ -83,6 +82,7 @@ fun MainNavigation(appNavController: NavController) {
                     return@ModalNavigationDrawer
                 }
                 DrawerContent(
+                        currDestination = currDestination,
                         mAuth = mAuth,
                         previousChats = previousChats,
                         homeViewModel = homeViewModel,
@@ -104,95 +104,55 @@ fun MainNavigation(appNavController: NavController) {
                 }
             }
     ) {
-        Scaffold(
-                modifier = Modifier.imePadding(),
-                topBar = {
-                    when (currDestination) {
-                        RoutesStrings.Home.name, RoutesStrings.HomeWithArgs.name -> {
-                            HomeTopAppBar(
-                                    homeViewModel = homeViewModel,
-                                    chatViewModel = chatViewModel,
-                                    navController = mainNavController
-                            ) {
-                                scope.launch {
-                                    drawerState.apply {
-                                        drawerState.open()
-                                    }
-                                }
-                            }
-                        }
-
-                        RoutesStrings.ModelsScreen.name -> {
-                            ModelsAndPromptTopAppBar(title = "Models", drawerState, scope) {
-                                homeViewModel.getPreviousChats()
-                            }
-                        }
-
-                        RoutesStrings.PromptScreen.name -> {
-                            ModelsAndPromptTopAppBar(title = "Prompt", drawerState, scope) {
-                                homeViewModel.getPreviousChats()
-                            }
-                        }
-                    }
-                },
-                bottomBar = {
-                    if (currDestination == RoutesStrings.Home.name || currDestination == RoutesStrings.HomeWithArgs.name) {
-                        PromptField(
-                                Modifier,
-                                viewModel = chatViewModel
-                        )
-                    }
+        NavHost(
+                navController = mainNavController,
+                startDestination = Routes.Home
+        ) {
+            composable<Routes.Home> {
+                currDestination = RoutesStrings.Home.name
+                HomeScreen(
+                        mainNavController,
+                        chatViewModel,
+                        homeViewModel,
+                        PromptLibraryItem(),
+                        drawerState
+                )
+            }
+            composable<Routes.HomeWithArgs> { backStackEntry ->
+                val homeWithArgs: Routes.HomeWithArgs = backStackEntry.toRoute()
+                currDestination = RoutesStrings.HomeWithArgs.name
+                HomeScreen(
+                        mainNavController,
+                        chatViewModel,
+                        homeViewModel,
+                        homeWithArgs.toPromptLibraryItem(),
+                        drawerState
+                )
+            }
+            composable<Routes.ModelsScreen> {
+                currDestination = RoutesStrings.ModelsScreen.name
+                ModelsScreen(mainNavController, drawerState, homeViewModel)
+            }
+            composable<Routes.PromptScreen> {
+                currDestination = RoutesStrings.PromptScreen.name
+                PromptScreen(
+                        Modifier.padding(),
+                        drawerState, homeViewModel
+                ) { promptLibraryItem ->
+                    chatViewModel.loadFromPromptLibrary(promptLibraryItem)
+                    mainNavController.navigateHomeWithArgs(promptLibraryItem)
                 }
-        ) { paddingValues ->
-            NavHost(
-                    navController = mainNavController,
-                    startDestination = Routes.Home
-            ) {
-                composable<Routes.Home> {
-                    currDestination = RoutesStrings.Home.name
-                    HomeScreen(
-                            paddingValues,
-                            mainNavController,
-                            chatViewModel,
-                            homeViewModel,
-                            PromptLibraryItem()
-                    )
-                }
-                composable<Routes.HomeWithArgs> { backStackEntry ->
-                    val homeWithArgs: Routes.HomeWithArgs = backStackEntry.toRoute()
-                    currDestination = RoutesStrings.HomeWithArgs.name
-                    HomeScreen(
-                            paddingValues,
-                            mainNavController,
-                            chatViewModel,
-                            homeViewModel,
-                            homeWithArgs.toPromptLibraryItem()
-                    )
-                }
-                composable<Routes.ModelsScreen> {
-                    currDestination = RoutesStrings.ModelsScreen.name
-                    ModelsScreen(paddingValues, mainNavController)
-                }
-                composable<Routes.PromptScreen> {
-                    currDestination = RoutesStrings.PromptScreen.name
-                    PromptScreen(
-                            Modifier.padding(),
-                            paddingValues
-                    ) { promptLibraryItem ->
-                        chatViewModel.loadFromPromptLibrary(promptLibraryItem)
-                        mainNavController.navigateHomeWithArgs(promptLibraryItem)
-                    }
-                }
-                composable<Routes.PaymentsScreen> {
-                    currDestination = RoutesStrings.PaymentsScreen.name
-                    PaymentsScreen(mainNavController)
-                }
-                composable<Routes.ChatScreen> { backStackEntry ->
-                    currDestination = RoutesStrings.ChatScreen.name
-                    val model: Routes.ChatScreen = backStackEntry.toRoute()
-                    val viewModel: ModelsChatVM = koinViewModel { parametersOf(model.toModel()) }
-                    ModelChatScreen(viewModel, mainNavController)
-                }
+            }
+            composable<Routes.PaymentsScreen> {
+                currDestination = RoutesStrings.PaymentsScreen.name
+                PaymentsScreen(mainNavController)
+            }
+            composable<Routes.ChatScreen> { backStackEntry ->
+                currDestination = RoutesStrings.ChatScreen.name
+                val model: Routes.ChatScreen = backStackEntry.toRoute()
+                Log.d("ChatScreen", model.toString())
+                val viewModel: ModelsChatVM = koinViewModel { parametersOf(model.toModel()) }
+                ModelChatScreen(viewModel, mainNavController)
             }
         }
     }

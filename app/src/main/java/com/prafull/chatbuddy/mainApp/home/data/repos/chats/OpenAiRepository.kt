@@ -29,12 +29,18 @@ class OpenAiRepository : ChatRepository() {
                             ChatMessage(
                                     text = it.content,
                                     isPending = false,
-                                    participant = Participant.ASSISTANT
+                                    participant = Participant.ASSISTANT,
+                                    model = history.modelGeneralName
                             )
                     )
                 }
             } catch (e: Exception) {
-                trySend(ChatMessage(text = e.localizedMessage ?: "Error"))
+                trySend(
+                        ChatMessage(
+                                text = e.localizedMessage ?: "Error",
+                                model = history.modelGeneralName
+                        )
+                )
             }
             awaitClose { }
         }

@@ -6,15 +6,15 @@ import com.prafull.chatbuddy.utils.Const
 
 
 data class Model(
-    val generalName: String = "",
-    val actualName: String = "",
+    val generalName: String = Const.CHAT_BUDDY,
+    val actualName: String = "gemini-1.5-flash",
     val currPricePerToken: Double = 0.0,
     val image: String = "",
     val hasVision: Boolean = false,
     val hasFiles: Boolean = false,
     val modelGroup: String = "",
     val taskType: String = "",
-    val temperature: Double = 0.7,
+    val temperature: Double = 0.8,
     val system: String = Const.GENERAL_SYSTEM_PROMPT,
     val safetySetting: String = ModelSafety.UNSPECIFIED.name
 ) {

@@ -70,14 +70,16 @@ class GeminiRepository : ChatRepository() {
                         },
                         safetySettings = if (history.safetySetting == ModelSafety.ROMANTIC.name) {
                             Const.SAFETY_SETTINGS_ROMANTIC
-                        } else {
+                        } else if (history.safetySetting == ModelSafety.UNSPECIFIED.name) {
                             Const.SAFETY_SETTINGS_NORMAL
+                        } else {
+                            Const.SAFETY_SETTINGS_UNINTERRUPTED
                         },
                         systemInstruction = content {
                             text(history.systemPrompt)
                         }
                 )
-            Log.d("GeminiRepository", "Starting chat with model: ${history.toString()}")
+
             val chat = generativeModel.startChat(
                     history = history.messages.map { it.toGeminiContent() },
             )
@@ -88,7 +90,8 @@ class GeminiRepository : ChatRepository() {
                             ChatMessage(
                                     text = modelResponse,
                                     participant = Participant.ASSISTANT,
-                                    isPending = false
+                                    isPending = false,
+                                    model = history.modelGeneralName
                             )
                     )
                 }
@@ -96,7 +99,8 @@ class GeminiRepository : ChatRepository() {
                 trySend(
                         ChatMessage(
                                 text = e.localizedMessage ?: "Error",
-                                participant = Participant.ERROR
+                                participant = Participant.ERROR,
+                                model = history.modelGeneralName
                         )
                 )
             }

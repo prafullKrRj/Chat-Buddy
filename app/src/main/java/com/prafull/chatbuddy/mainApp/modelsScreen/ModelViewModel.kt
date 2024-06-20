@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
 import com.prafull.chatbuddy.model.Model
-import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +21,7 @@ class ModelViewModel : ViewModel(), KoinComponent {
 
     init {
         getModels()
-        addModel(Model())
+        addModel()
     }
 
     private var _modelResponse = MutableStateFlow(Response())
@@ -56,23 +55,23 @@ class ModelViewModel : ViewModel(), KoinComponent {
         }
     }
 
-    private fun addModel(model: Model) {
+    private fun addModel() {
         viewModelScope.launch(Dispatchers.IO) {
-            firestore.collection("models").document("nlp").collection("Open AI")
-                .document("gpt-3.5-turbo-0125")
+            firestore.collection("models").document("nlp").collection("Characters")
+                .document("James")
                 .set(
                         Model(
-                                generalName = "GPT 3.5 Turbo",
-                                actualName = "gpt-3.5-turbo-0125",
+                                generalName = "James",
+                                actualName = "gemini-1.5-flash",
                                 currPricePerToken = 0.0,
-                                image = "https://firebasestorage.googleapis.com/v0/b/chat-buddy-4c59f.appspot.com/o/models%2Fchatgpt-icon.png?alt=media&token=bf729a3d-5e7a-40b7-b953-61e8966a1517",
+                                image = "https://firebasestorage.googleapis.com/v0/b/chat-buddy-4c59f.appspot.com/o/models%2FJames%20(1).jpg?alt=media&token=79a1158d-a0d6-4aa4-8ece-c77fcc4442a1",
                                 hasVision = false,
                                 hasFiles = false,
-                                modelGroup = "Open AI",
+                                modelGroup = "Characters",
                                 taskType = "nlp",
-                                temperature = 0.7,
-                                system = Const.GENERAL_SYSTEM_PROMPT,
-                                safetySetting = ModelSafety.UNSPECIFIED.name
+                                temperature = 1.0,
+                                system = "Your name is James Act like an boyfriend to the user engage into romantic and seductive conversation with the user such also observing user that whether the user want to engage into romantic conversation or into emotional conversation. Make user in attached to your way of talking and your love. The language should be more sort of human like and romantic if needed. Also talk in same language in which user is talking like he was talking in Hinglish then you should talk in hinglish.",
+                                safetySetting = ModelSafety.ROMANTIC.name
                         )
                 )
         }
@@ -104,5 +103,6 @@ enum class ModelSafety {
     FRIENDLY,
     PROFESSIONAL,
     ACTOR,
-    UNSPECIFIED
+    UNSPECIFIED,
+    UNINTERRUPTED
 }

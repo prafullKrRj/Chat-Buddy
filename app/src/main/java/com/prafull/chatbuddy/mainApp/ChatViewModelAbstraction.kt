@@ -7,7 +7,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Timestamp
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.ChatRepository
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.ClaudeRepository
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.GeminiRepository
@@ -49,20 +48,25 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     protected var chat =
         ChatHistory(id = currChatUUID)         // current chat
 
+
     var currModel by mutableStateOf(Model())    // current model
     fun sendMessage() {
         viewModelScope.launch {
             loading = true
             chatting = true
+            currPrompt
             _uiState.value.addMessage(currPrompt)
             saveMessage(currPrompt)
-            currPrompt = ChatMessage()
+            currPrompt = ChatMessage(
+                    model = currModel.generalName
+            )
             getResponse()
         }
     }
 
     fun regenerateResponse() {
         viewModelScope.launch {
+            chat.messages.removeLast()
             chat.messages.removeLast()
             _uiState.value.removeLastMessage()
             currPrompt = _uiState.value.messages.last()
@@ -87,7 +91,6 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
             if (x) {
                 chat.messages.removeLast()
                 chat.messages.removeLast()
-
                 chatting = true
                 sendMessage()
             }
@@ -96,8 +99,6 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
 
     private fun saveMessage(message: ChatMessage) {
         geminiRepository.saveMessage(chat, message)
-        chat.messages.add(message)
-        chat.lastModified = Timestamp.now()
     }
 
     private fun getResponse() {
@@ -115,23 +116,28 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     private fun getResponseFromRepository(repository: ChatRepository) {
         viewModelScope.launch {
             repository.getResponse(chat, _uiState.value.messages.last()).collect { response ->
+                response.apply {
+                    model = chat.modelGeneralName
+                }
+                chat.apply {
+                    messages.add(_uiState.value.messages.last())
+                }
+                chat.apply {
+                    messages.add(response)
+                }
                 updateChatWithResponse(response)
             }
         }
     }
 
     private fun updateChatWithResponse(response: ChatMessage) {
-        chat.apply {
-            messages.add(response)
-            lastModified = Timestamp.now()
-        }
         _uiState.value.addMessage(response)
+        Log.d("ChatViewModel", "Response: ${response.model}")
         saveMessage(response)
         loading = false
     }
 
     fun chatFromHistory(chatHistory: ChatHistory) {
-        Log.d("ChatViewModel", "Chat from history: $chatHistory")
         viewModelScope.launch {
             currChatUUID = chatHistory.id
             currPrompt = ChatMessage()
@@ -158,6 +164,7 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
         if (chatting) {
             updateScreenState()
             chat = ChatHistory(id = currChatUUID)
+            currModel = Model()
             chatting = false
         }
     }
@@ -202,6 +209,7 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     fun onModelSelected(it: Model) {
         chat.apply {
             model = it.actualName
+            modelGeneralName = it.generalName
             temperature = it.temperature
         }
         currModel = it

@@ -14,6 +14,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.BuildConfig
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
+import com.prafull.chatbuddy.utils.SharedPrefManager
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -24,6 +25,7 @@ class SettingsViewModel : ViewModel(), KoinComponent {
     private val firestore by inject<FirebaseFirestore>()
     private val storage by inject<FirebaseStorage>()
     private val chatViewModel by inject<ChatViewModel>()
+    private val sharedPrefManager by inject<SharedPrefManager>()
     private fun deleteCollection(collection: CollectionReference) {
         collection.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -34,6 +36,10 @@ class SettingsViewModel : ViewModel(), KoinComponent {
                 batch.commit()
             }
         }
+    }
+
+    fun getDefaultModel(): String {
+        return sharedPrefManager.getDefaultModel()
     }
 
     fun clearData() {

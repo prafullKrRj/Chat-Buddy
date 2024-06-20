@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -45,7 +46,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -54,11 +54,15 @@ import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
+import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
+import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
+import com.prafull.chatbuddy.mainApp.home.model.isGptModel
 import com.prafull.chatbuddy.mainApp.ui.BotImage
 import com.prafull.chatbuddy.mainApp.ui.UserImage
 import com.prafull.chatbuddy.utils.UriSaver
 import com.prafull.chatbuddy.utils.toBitmaps
 import kotlinx.coroutines.launch
+
 @Composable
 fun MessageBubble(
     message: ChatMessage,
@@ -73,9 +77,10 @@ fun MessageBubble(
     var editingPrompt by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
     val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
-    val pickMedia = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { imageUri ->
-        imageUri?.let { imageUris.add(it) }
-    }
+    val pickMedia =
+        rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) { imageUri ->
+            imageUri?.let { imageUris.add(it) }
+        }
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
 
@@ -83,7 +88,11 @@ fun MessageBubble(
         if (imageUris.isNotEmpty()) listState.animateScrollToItem(imageUris.size)
     }
 
-    Column(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
+    Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
+    ) {
         if (message.participant == Participant.USER) {
             UserMessageBubble(
                     message = message,
@@ -104,7 +113,13 @@ fun MessageBubble(
                             focusManager.clearFocus()
                         }
                     },
-                    onPickImageClick = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                    onPickImageClick = {
+                        pickMedia.launch(
+                                PickVisualMediaRequest(
+                                        ActivityResultContracts.PickVisualMedia.ImageOnly
+                                )
+                        )
+                    },
                     onEditPromptToggle = {
                         editingPrompt = message.text
                         isEditingPrompt = true
@@ -150,10 +165,16 @@ fun UserMessageBubble(
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(text = mA.currentUser?.displayName ?: "User")
             Spacer(modifier = Modifier.height(4.dp))
-            Card(Modifier.fillMaxWidth().padding(end = 8.dp)) {
+            Card(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = 8.dp)
+            ) {
                 if (!isEditingPrompt) {
                     LazyRow(
-                            modifier = Modifier.padding(horizontal = 8.dp).background(Color.Transparent)
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .background(Color.Transparent)
                     ) {
                         items(message.imageBitmaps) { image ->
                             image?.let { PromptedImages(imageUri = it) }
@@ -161,7 +182,9 @@ fun UserMessageBubble(
                     }
                     FormattedText(
                             text = message.text,
-                            modifier = Modifier.padding(horizontal = 8.dp).padding(top = 8.dp)
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp)
+                                .padding(top = 8.dp)
                     )
                     MessageFunctions(
                             message = message,
@@ -210,17 +233,20 @@ fun BotMessageBubble(
     isLast: Boolean
 ) {
     Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-        if (viewModel.currModel.image.isNotEmpty()) {
-            BotImage(Modifier.size(24.dp), data = viewModel.currModel.image)
+        Log.d("BotMessageBubble", "BotMessageBubble: ${message.model}")
+        if (viewModel.currModel.modelGroup == "Characters") {
+            BotImage(modifier = Modifier.size(24.dp), data = viewModel.currModel.image)
+        } else if (message.model.isGptModel()) {
+            BotImage(modifier = Modifier.size(24.dp), image = R.drawable.gpt)
+        } else if (message.model.isGeminiModel()) {
+            BotImage(modifier = Modifier.size(24.dp), image = R.drawable.gemini)
+        } else if (message.model.isClaudeModel()) {
+            BotImage(modifier = Modifier.size(24.dp), image = R.drawable.claude)
         } else {
             BotImage(Modifier.size(24.dp))
         }
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            if (viewModel.currModel.generalName.isNotEmpty()) {
-                Text(text = viewModel.currModel.generalName)
-            } else {
-                Text(text = stringResource(id = R.string.app_name))
-            }
+            Text(text = message.model)
             FormattedText(text = message.text)
             MessageFunctions(
                     message = message,
@@ -247,7 +273,9 @@ fun MessageFunctions(
     regenerateOutput: () -> Unit = {}
 ) {
     Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             horizontalArrangement = Arrangement.End
     ) {
         if (isSecondLast && message.participant == Participant.USER) {
@@ -303,6 +331,9 @@ private fun PromptedImages(imageUri: Bitmap) {
     AsyncImage(
             model = imageUri,
             contentDescription = null,
-            modifier = Modifier.padding(4.dp).requiredWidth(72.dp).clickable { }
+            modifier = Modifier
+                .padding(4.dp)
+                .requiredWidth(72.dp)
+                .clickable { }
     )
 }

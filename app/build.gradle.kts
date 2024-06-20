@@ -125,5 +125,6 @@ dependencies {
 
     implementation(libs.facebook)
     implementation(libs.mediation.test.suite)
-    implementation("com.robbiebowman:claude-sdk:0.0.2b")
+    implementation(libs.claude.sdk)
+
 }

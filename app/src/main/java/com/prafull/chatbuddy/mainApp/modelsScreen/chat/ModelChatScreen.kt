@@ -1,9 +1,13 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen.chat
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.annotation.DrawableRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -31,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,7 +43,11 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.google.firebase.auth.FirebaseAuth
+import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.goBackStack
+import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
+import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
+import com.prafull.chatbuddy.mainApp.home.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
 import com.prafull.chatbuddy.model.Model
@@ -70,6 +79,7 @@ fun ModelChatScreen(viewModel: ModelsChatVM, navController: NavController) {
         }
     }
     Scaffold(
+            modifier = Modifier.imePadding(),
             topBar = {
                 CenterAlignedTopAppBar(title = {
                     Text(text = viewModel.currModel.generalName)
@@ -187,11 +197,28 @@ fun InitialChatUI(modifier: Modifier, model: Model) {
             verticalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        AsyncImage(
-                model = ImageRequest.Builder(context).data(model.image).build(),
-                contentDescription = "image",
-                modifier = Modifier.width(150.dp)
-        )
+        if (model.modelGroup.isGeminiModel()) OfflineLogo(R.drawable.gemini)
+        else if (model.modelGroup.isGptModel()) OfflineLogo(R.drawable.gpt)
+        else if (model.modelGroup.isClaudeModel()) OfflineLogo(R.drawable.claude)
+        else OnlineLogo(context, model.image)
         Text(text = model.generalName, fontWeight = SemiBold, fontSize = 20.sp)
     }
+}
+
+@Composable
+private fun OfflineLogo(@DrawableRes id: Int) {
+    Image(
+            painter = painterResource(id = id),
+            contentDescription = "image",
+            modifier = Modifier.width(150.dp)
+    )
+}
+
+@Composable
+private fun OnlineLogo(context: Context, data: String) {
+    AsyncImage(
+            model = ImageRequest.Builder(context).data(data).build(),
+            contentDescription = "image",
+            modifier = Modifier.width(150.dp)
+    )
 }

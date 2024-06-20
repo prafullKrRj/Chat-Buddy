@@ -45,7 +45,7 @@ fun HomeTopAppBar(
                         homeViewModel.getModels()
                         homeViewModel.modelButtonClicked = true
                     }, label = {
-                        Text(text = "Models ${chatViewModel.currModel.generalName}")
+                        Text(text = "Models ${homeViewModel.currModel}")
                     })
                 }
             },

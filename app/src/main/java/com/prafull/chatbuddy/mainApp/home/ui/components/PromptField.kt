@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.foundation.layout.size
@@ -83,7 +82,7 @@ fun PromptField(modifier: Modifier, viewModel: ChatViewModelAbstraction) {
         if (imageUris.isNotEmpty()) listState.animateScrollToItem(imageUris.size)
     }
     ElevatedCard(
-            modifier = Modifier.imePadding(),
+            modifier = Modifier,
     ) {
         ImagePickerRow(imageUris, pickMedia, listState)
         MessageInputRow(

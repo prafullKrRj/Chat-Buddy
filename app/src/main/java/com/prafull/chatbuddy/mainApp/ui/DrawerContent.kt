@@ -32,10 +32,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.R.drawable
 import com.prafull.chatbuddy.Routes
+import com.prafull.chatbuddy.RoutesStrings
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
@@ -47,10 +47,12 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun DrawerContent(
+    currDestination: String,
     mAuth: FirebaseAuth,
     previousChats: Resource<List<ChatHistory>>,
     homeViewModel: HomeViewModel,
     currChatUUID: String,
+
     navController: NavController,
     chatViewModel: ChatViewModel,
     closeDrawer: () -> Unit,
@@ -58,8 +60,6 @@ fun DrawerContent(
     scope: CoroutineScope,
     onChatClicked: (ChatHistory) -> Unit,
 ) {
-    val currDestination =
-        navController.currentBackStackEntryAsState().value?.destination?.javaClass?.name
     ModalDrawerSheet(
             Modifier.padding(end = 100.dp),
             drawerShape = RoundedCornerShape(bottomEnd = 0.dp, topEnd = 16.dp)
@@ -71,21 +71,25 @@ fun DrawerContent(
                         iconRes = drawable.sharp_chat_bubble_outline_24,
                         onClick = {
                             scope.launch {
-                                navController.navigateAndPopBackStack(Routes.Home)
-                                chatViewModel.loadNewChat()
-                                delay(250L)
-                                closeDrawer()
+                                if (currDestination != RoutesStrings.Home.name || chatViewModel.chatting) {
+                                    navController.navigateAndPopBackStack(Routes.Home)
+                                    chatViewModel.loadNewChat()
+                                    closeDrawer()
+                                    delay(100L)
+                                }
                             }
                         }
                 )
                 DrawerItem(
                         label = "Prompt Library",
                         iconRes = drawable.outline_apps_24,
-                        selected = currDestination == Routes.PromptScreen.javaClass.name,
+                        selected = currDestination == RoutesStrings.PromptScreen.name,
                         onClick = {
                             scope.launch {
-                                navController.navigateAndPopBackStack(Routes.PromptScreen)
-                                delay(100L)
+                                if (currDestination != RoutesStrings.PromptScreen.name) {
+                                    navController.navigateAndPopBackStack(Routes.PromptScreen)
+                                    delay(250L)
+                                }
                                 closeDrawer()
                             }
                         }
@@ -93,11 +97,13 @@ fun DrawerContent(
                 DrawerItem(
                         label = "Models",
                         iconRes = drawable.baseline_explore_24,
-                        selected = currDestination == Routes.ModelsScreen.javaClass.name,
+                        selected = currDestination == RoutesStrings.ModelsScreen.name,
                         onClick = {
                             scope.launch {
-                                navController.navigateAndPopBackStack(Routes.ModelsScreen)
-                                delay(250L)
+                                if (currDestination != RoutesStrings.ModelsScreen.name) {
+                                    navController.navigateAndPopBackStack(Routes.ModelsScreen)
+                                    delay(250L)
+                                }
                                 closeDrawer()
                             }
                         }
@@ -108,6 +114,7 @@ fun DrawerContent(
                             .padding(vertical = 8.dp)
                 )
                 ChatHistorySection(
+                        currDestination,
                         previousChats,
                         homeViewModel,
                         chatViewModel,
@@ -154,6 +161,7 @@ fun DrawerItem(
 
 @Composable
 fun ChatHistorySection(
+    currDestination: String,
     previousChats: Resource<List<ChatHistory>>,
     homeViewModel: HomeViewModel,
     chatViewModel: ChatViewModel,
@@ -205,7 +213,7 @@ fun ChatHistorySection(
                                         }
                                     }
                                 },
-                                selected = chatHistory.id == currChatUUID,
+                                selected = chatHistory.id == currChatUUID && (currDestination == RoutesStrings.Home.name || currDestination == RoutesStrings.HomeWithArgs.name),
                                 onClick = { onChatClicked(chatHistory) },
                                 shape = RectangleShape
                         )

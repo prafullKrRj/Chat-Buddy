@@ -182,6 +182,24 @@ private fun SettingsContent(
                     icon = R.drawable.outline_color_lens_24
             )
         }
+        item {
+            Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { }
+                        .padding(16.dp)
+            ) {
+                Icon(
+                        painter = painterResource(id = R.drawable.baseline_explore_24),
+                        contentDescription = null
+                )
+                Spacer(modifier = Modifier.padding(4.dp))
+                Column {
+                    Text(text = stringResource(id = R.string.default_model))
+                    Text(text = settingsViewModel.getDefaultModel())
+                }
+            }
+        }
         item { SectionTitle(R.string.About) }
         item {
             SimpleSettingsItem(

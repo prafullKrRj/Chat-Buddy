@@ -18,7 +18,7 @@ data class ChatHistory(
     var promptName: String = "",
     var promptDescription: String = "",
     var temperature: Double = 0.7,
-    var safetySetting: String = ModelSafety.UNSPECIFIED.name,
+    var safetySetting: String = ModelSafety.UNINTERRUPTED.name,
 ) {
     fun toPromptLibraryItem() = PromptLibraryItem(promptName, promptDescription, systemPrompt, "")
     fun toModel() = Model(
@@ -32,6 +32,6 @@ data class ChatHistory(
             )
 }
 
-fun String.isGeminiModel() = this.contains("gemini")
-fun String.isClaudeModel() = this.contains("claude")
-fun String.isGptModel() = this.contains("gpt")
+fun String.isGeminiModel() = this.lowercase().contains("gemini")
+fun String.isClaudeModel() = this.lowercase().contains("claude")
+fun String.isGptModel() = this.lowercase().contains("gpt")

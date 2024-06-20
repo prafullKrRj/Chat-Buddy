@@ -22,9 +22,11 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
@@ -47,8 +49,10 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prafull.chatbuddy.MainActivity
+import com.prafull.chatbuddy.mainApp.ModelsAndPromptTopAppBar
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.ads.loadInterstitialAd
+import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
@@ -59,113 +63,123 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun PromptScreen(
     modifier: Modifier,
-    paddingValues: PaddingValues,
+    drawerState: DrawerState,
+    homeViewModel: HomeViewModel,
     navigateToHome: (PromptLibraryItem) -> Unit
 ) {
     val promptViewModel: PromptLibraryViewModel = koinViewModel()
     val state by promptViewModel.uiState.collectAsState()
-    if (state.isLoading) {
-        CircularProgressIndicator()
-    } else if (state.error != null) {
-        Button(onClick = {
-            promptViewModel.getPrompts()
-        }) {
-            Text(text = "Retry")
-        }
-    } else {
-
-        val searchQuery = remember { mutableStateOf("") }
-        val tabs = listOf("Personal Prompts", "Business Prompts")
-        val scope = rememberCoroutineScope()
-        val focusManager = LocalFocusManager.current
-        val pagerState = rememberPagerState(
-                pageCount = { tabs.size }, initialPage = 0
-        )
-        var selectedPrompt by remember {
-            mutableStateOf(PromptLibraryItem("", "", ""))
-        }
-        val context = LocalContext.current
-        var showPromptDialog by remember { mutableStateOf(false) }
-        val activity = context as MainActivity
-        Column(
-                Modifier
-                    .padding(paddingValues)
-                    .pointerInteropFilter {
-                        focusManager.clearFocus()
-                        false
-                    }) {
-            OutlinedTextField(
-                    value = searchQuery.value,
-                    onValueChange = { searchQuery.value = it },
-                    label = { Text("Search") },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                            unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
-                            focusedContainerColor = MaterialTheme.colorScheme.outlineVariant,
-                            unfocusedContainerColor = MaterialTheme.colorScheme.outlineVariant
-                    ),
-                    shape = RoundedCornerShape(30)
-            )
-            TabRow(selectedTabIndex = pagerState.currentPage) {
-                tabs.forEachIndexed { index, title ->
-                    Tab(text = { Text(title) },
-                            selected = pagerState.currentPage == index,
-                            onClick = {
-                                scope.launch { pagerState.animateScrollToPage(index) }
-                            })
+    val scope = rememberCoroutineScope()
+    Scaffold(
+            topBar = {
+                ModelsAndPromptTopAppBar(title = "Prompt", drawerState, scope) {
+                    homeViewModel.getPreviousChats()
                 }
             }
-            HorizontalPager(state = pagerState) { page ->
-                when (page) {
-                    0 -> {
-                        DisplayPrompts(state.personalPrompts, searchQuery.value, modifier) {
-                            scope.launch {
-                                selectedPrompt = it
-                                showPromptDialog = true
+    ) { paddingValues ->
+
+        if (state.isLoading) {
+            CircularProgressIndicator()
+        } else if (state.error != null) {
+            Button(onClick = {
+                promptViewModel.getPrompts()
+            }) {
+                Text(text = "Retry")
+            }
+        } else {
+
+            val searchQuery = remember { mutableStateOf("") }
+            val tabs = listOf("Personal Prompts", "Business Prompts")
+            val scope = rememberCoroutineScope()
+            val focusManager = LocalFocusManager.current
+            val pagerState = rememberPagerState(
+                    pageCount = { tabs.size }, initialPage = 0
+            )
+            var selectedPrompt by remember {
+                mutableStateOf(PromptLibraryItem("", "", ""))
+            }
+            val context = LocalContext.current
+            var showPromptDialog by remember { mutableStateOf(false) }
+            val activity = context as MainActivity
+            Column(
+                    Modifier
+                        .padding(paddingValues)
+                        .pointerInteropFilter {
+                            focusManager.clearFocus()
+                            false
+                        }) {
+                OutlinedTextField(
+                        value = searchQuery.value,
+                        onValueChange = { searchQuery.value = it },
+                        label = { Text("Search") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                                unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,
+                                focusedContainerColor = MaterialTheme.colorScheme.outlineVariant,
+                                unfocusedContainerColor = MaterialTheme.colorScheme.outlineVariant
+                        ),
+                        shape = RoundedCornerShape(30)
+                )
+                TabRow(selectedTabIndex = pagerState.currentPage) {
+                    tabs.forEachIndexed { index, title ->
+                        Tab(text = { Text(title) },
+                                selected = pagerState.currentPage == index,
+                                onClick = {
+                                    scope.launch { pagerState.animateScrollToPage(index) }
+                                })
+                    }
+                }
+                HorizontalPager(state = pagerState) { page ->
+                    when (page) {
+                        0 -> {
+                            DisplayPrompts(state.personalPrompts, searchQuery.value, modifier) {
+                                scope.launch {
+                                    selectedPrompt = it
+                                    showPromptDialog = true
+                                }
+                            }
+                        }
+
+                        1 -> {
+                            DisplayPrompts(state.businessPrompts, searchQuery.value, modifier) {
+                                scope.launch {
+                                    selectedPrompt = it
+                                    showPromptDialog = true
+                                }
                             }
                         }
                     }
-
-                    1 -> {
-                        DisplayPrompts(state.businessPrompts, searchQuery.value, modifier) {
+                }
+                BannerAd()
+            }
+            if (showPromptDialog) {
+                var isLoading by remember {
+                    mutableStateOf(false)
+                }
+                if (isLoading) {
+                    CircularProgressIndicator()
+                }
+                DialogContent(promptLibraryItem = selectedPrompt,
+                        onDismiss = { showPromptDialog = false },
+                        confirmButton = { promptLibraryItem ->
+                            isLoading = true
                             scope.launch {
-                                selectedPrompt = it
-                                showPromptDialog = true
+                                loadInterstitialAd(context, activity, onAdFailedToLoad = {
+                                    isLoading = false
+                                    showPromptDialog = false
+                                    navigateToHome(promptLibraryItem)
+                                }, onAdLoaded = {
+                                    navigateToHome(promptLibraryItem)
+                                    isLoading = false
+                                    showPromptDialog = false
+                                })
                             }
                         }
-                    }
-                }
+                )
             }
-            BannerAd()
-        }
-        if (showPromptDialog) {
-            var isLoading by remember {
-                mutableStateOf(false)
-            }
-            if (isLoading) {
-                CircularProgressIndicator()
-            }
-            DialogContent(promptLibraryItem = selectedPrompt,
-                    onDismiss = { showPromptDialog = false },
-                    confirmButton = { promptLibraryItem ->
-                        isLoading = true
-                        scope.launch {
-                            loadInterstitialAd(context, activity, onAdFailedToLoad = {
-                                isLoading = false
-                                showPromptDialog = false
-                                navigateToHome(promptLibraryItem)
-                            }, onAdLoaded = {
-                                navigateToHome(promptLibraryItem)
-                                isLoading = false
-                                showPromptDialog = false
-                            })
-                        }
-                    }
-            )
-
         }
     }
 }

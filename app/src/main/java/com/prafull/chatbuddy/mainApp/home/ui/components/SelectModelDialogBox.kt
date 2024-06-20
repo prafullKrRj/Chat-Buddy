@@ -27,6 +27,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
+import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
+import com.prafull.chatbuddy.mainApp.home.model.isGptModel
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.Resource
 
@@ -38,6 +41,7 @@ fun SelectModelDialogBox(
     onDismissRequest: () -> Unit
 ) {
     var selectedModel by remember { mutableStateOf<Model?>(null) }
+
     AlertDialog(
             onDismissRequest = { /*TODO*/ },
             confirmButton = {
@@ -69,40 +73,18 @@ fun SelectModelDialogBox(
                         }
 
                         is Resource.Success -> {
-                            LazyColumn(contentPadding = PaddingValues(8.dp)) {
-                                items(modelsState.data, key = { it.actualName }) { model ->
-                                    Card(modifier = Modifier) {
-                                        Row(
-                                                Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(8.dp)
-                                                    .clickable { selectedModel = model },
-                                                horizontalArrangement = Arrangement.SpaceBetween,
-                                                verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Image(
-                                                    painter = painterResource(id = R.drawable.claude),
-                                                    contentDescription = null,
-                                                    modifier = Modifier.weight(.2f)
-                                            )
-                                            Column(
-                                                    modifier = Modifier
-                                                        .padding(8.dp)
-                                                        .weight(.7f),
-                                                    verticalArrangement = Arrangement.Center
-                                            ) {
-                                                Text(text = model.generalName)
-                                                Text(text = model.currPricePerToken.toString())
-                                                Text(text = model.taskType)
-                                            }
-                                            Checkbox(
-                                                    modifier = Modifier.weight(.1f),
-                                                    checked = selectedModel == model,
-                                                    onCheckedChange = {
-                                                        selectedModel = if (it) model else null
-                                                    })
-                                        }
-                                    }
+                            LazyColumn(
+                                    contentPadding = PaddingValues(4.dp),
+                                    modifier = Modifier.fillMaxWidth()
+                            ) {
+                                items(modelsState.data, key = { it.generalName }) { model ->
+                                    SelectModelItem(
+                                            onClick = {
+                                                selectedModel = model
+                                            },
+                                            model = model,
+                                            selectedModel = selectedModel
+                                    )
                                 }
                             }
                         }
@@ -116,4 +98,51 @@ fun SelectModelDialogBox(
                 }
             }
     )
+}
+
+@Composable
+private fun SelectModelItem(onClick: () -> Unit, model: Model, selectedModel: Model?) {
+    Card(modifier = Modifier.padding(vertical = 8.dp)) {
+        Row(
+                Modifier
+                    .fillMaxWidth()
+                    .clickable { onClick() }
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                    painter = painterResource(
+                            id =
+                            if (model.generalName.isGptModel()) {
+                                R.drawable.gpt
+                            } else if (model.generalName.isClaudeModel()) {
+                                R.drawable.claude
+                            } else if (model.generalName.isGeminiModel()) {
+                                R.drawable.gemini
+                            } else {
+                                R.drawable.logo
+                            }
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.weight(.2f)
+            )
+            Column(
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .weight(.7f),
+                    verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = model.generalName)
+                Text(text = model.currPricePerToken.toString())
+                Text(text = model.taskType)
+            }
+            Checkbox(
+                    modifier = Modifier.weight(.1f),
+                    checked = selectedModel == model,
+                    onCheckedChange = {
+                        if (it) onClick()
+                    })
+        }
+    }
 }

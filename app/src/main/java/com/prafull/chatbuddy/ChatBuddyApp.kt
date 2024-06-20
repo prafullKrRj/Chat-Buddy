@@ -6,6 +6,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.authScreen.AuthViewModel
 import com.prafull.chatbuddy.authScreen.repo.AuthRepository
+import com.prafull.chatbuddy.mainApp.home.data.remote.ClaudeApiService
 import com.prafull.chatbuddy.mainApp.home.data.repos.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.ClaudeRepository
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.GeminiRepository
@@ -19,16 +20,23 @@ import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptLibraryViewModel
 import com.prafull.chatbuddy.settings.SettingsViewModel
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemePreferences
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeViewModel
+import com.prafull.chatbuddy.utils.SharedPrefManager
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.startKoin
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class ChatBuddyApp : Application() {
     override fun onCreate() {
         super.onCreate()
         startKoin {
-            modules(viewModels, authModule, repositoryModule, firebaseModule)
+            modules(viewModels, authModule, repositoryModule, firebaseModule, module {
+                single {
+                    SharedPrefManager(this@ChatBuddyApp)
+                }
+            })
             androidContext(this@ChatBuddyApp)
 
         }
@@ -46,7 +54,12 @@ val repositoryModule = module {
 
     single<OpenAiRepository> { OpenAiRepository() }
 
-
+    single<ClaudeApiService> {
+        Retrofit.Builder()
+            .baseUrl("https://api.anthropic.com/")
+            .addConverterFactory(GsonConverterFactory.create())
+            .build().create(ClaudeApiService::class.java)
+    }
 }
 val firebaseModule = module {
     single<FirebaseAuth> {

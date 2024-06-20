@@ -34,6 +34,20 @@ class HomeViewModel : ViewModel(), KoinComponent {
     var modelButtonClicked by mutableStateOf(false)
     val modelDialogState = _dialogState.asStateFlow()
 
+    var currModel by mutableStateOf(Model())
+
+    init {
+        getCurrentModel()
+    }
+
+    private fun getCurrentModel() {
+        viewModelScope.launch {
+            homeRepository.getCurrentModel().collect {
+                currModel = it
+            }
+        }
+    }
+
     fun adWatched() {
         _watchedAd.update {
             true
