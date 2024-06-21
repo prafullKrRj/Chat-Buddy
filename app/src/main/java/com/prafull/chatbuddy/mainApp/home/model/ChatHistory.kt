@@ -29,7 +29,7 @@ data class ChatHistory(
             system = systemPrompt,
             image = botImage,
 
-    )
+            )
 }
 
 fun String.isGeminiModel() = this.lowercase().contains("gemini")

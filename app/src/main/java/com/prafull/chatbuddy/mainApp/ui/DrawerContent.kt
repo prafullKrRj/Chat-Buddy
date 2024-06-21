@@ -87,7 +87,7 @@ fun DrawerContent(
                         onClick = {
                             scope.launch {
                                 if (currDestination != RoutesStrings.PromptScreen.name) {
-                                    navController.navigateAndPopBackStack(Routes.PromptScreen)
+                                    navController.navigateAndPopBackStack(Routes.PromptLibraryNav)
                                     delay(250L)
                                 }
                                 closeDrawer()

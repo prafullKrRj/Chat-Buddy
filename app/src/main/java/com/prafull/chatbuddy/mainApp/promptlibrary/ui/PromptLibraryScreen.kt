@@ -52,10 +52,10 @@ import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.mainApp.ModelsAndPromptTopAppBar
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.ads.loadInterstitialAd
-import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
+import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import kotlinx.coroutines.launch
-import org.koin.androidx.compose.koinViewModel
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(
         ExperimentalComposeUiApi::class
@@ -64,20 +64,22 @@ import org.koin.androidx.compose.koinViewModel
 fun PromptScreen(
     modifier: Modifier,
     drawerState: DrawerState,
-    homeViewModel: HomeViewModel,
-    navigateToHome: (PromptLibraryItem) -> Unit
+    homeVM: NewHomeViewModel,
+    toPromptChat: (PromptLibraryItem) -> Unit
 ) {
-    val promptViewModel: PromptLibraryViewModel = koinViewModel()
+    val promptViewModel: PromptLibraryViewModel = getViewModel()
     val state by promptViewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     Scaffold(
             topBar = {
                 ModelsAndPromptTopAppBar(title = "Prompt", drawerState, scope) {
-                    homeViewModel.getPreviousChats()
+                    homeVM.getPreviousChats()
                 }
+            },
+            bottomBar = {
+                BannerAd()
             }
     ) { paddingValues ->
-
         if (state.isLoading) {
             CircularProgressIndicator()
         } else if (state.error != null) {
@@ -87,10 +89,8 @@ fun PromptScreen(
                 Text(text = "Retry")
             }
         } else {
-
             val searchQuery = remember { mutableStateOf("") }
             val tabs = listOf("Personal Prompts", "Business Prompts")
-            val scope = rememberCoroutineScope()
             val focusManager = LocalFocusManager.current
             val pagerState = rememberPagerState(
                     pageCount = { tabs.size }, initialPage = 0
@@ -170,9 +170,9 @@ fun PromptScreen(
                                 loadInterstitialAd(context, activity, onAdFailedToLoad = {
                                     isLoading = false
                                     showPromptDialog = false
-                                    navigateToHome(promptLibraryItem)
+                                    toPromptChat(promptLibraryItem)
                                 }, onAdLoaded = {
-                                    navigateToHome(promptLibraryItem)
+                                    toPromptChat(promptLibraryItem)
                                     isLoading = false
                                     showPromptDialog = false
                                 })

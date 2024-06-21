@@ -20,7 +20,7 @@ class SharedPrefManager(context: Context) : KoinComponent {
 
     suspend fun getModel(): Model {
         if (pref.contains("currModel")) {
-            val x =  pref.getString("currModel", "")
+            val x = pref.getString("currModel", "")
             return gson.fromJson(x, Model::class.java)
         } else {
             val model = firestore.collection("model").document("nlp").collection(Const.CHAT_BUDDY)

@@ -7,7 +7,10 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.prafull.chatbuddy.authScreen.AuthViewModel
 import com.prafull.chatbuddy.authScreen.repo.AuthRepository
-import com.prafull.chatbuddy.mainApp.home.data.remote.ClaudeApiService
+import com.prafull.chatbuddy.mainApp.common.data.remote.ClaudeApiService
+import com.prafull.chatbuddy.mainApp.common.data.repos.ClaudeRepo
+import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
+import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
 import com.prafull.chatbuddy.mainApp.home.data.repos.HomeRepository
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.ClaudeRepository
 import com.prafull.chatbuddy.mainApp.home.data.repos.chats.GeminiRepository
@@ -16,7 +19,10 @@ import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ModelViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatVM
+import com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen.HomeChatVM
+import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.data.PromptLibraryRepo
+import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptChatVM
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptLibraryViewModel
 import com.prafull.chatbuddy.settings.SettingsViewModel
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemePreferences
@@ -58,6 +64,10 @@ val repositoryModule = module {
 
     single<OpenAiRepository> { OpenAiRepository() }
 
+    single { GeminiRepo() }
+    single { ClaudeRepo() }
+    single { OpenAiRepo() }
+
     single<ClaudeApiService> {
         Retrofit.Builder()
             .baseUrl("https://api.anthropic.com/")
@@ -78,6 +88,12 @@ val firebaseModule = module {
 }
 val viewModels = module {
     viewModel<HomeViewModel> { HomeViewModel() }
+
+    viewModel<NewHomeViewModel> { NewHomeViewModel() }
+    viewModel<HomeChatVM> { HomeChatVM(get(), get()) }
+    viewModel { PromptChatVM(get()) }
+
+
     viewModel<ChatViewModel> { ChatViewModel() }
     viewModel<ModelsChatVM> { ModelsChatVM(get()) }
     viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }

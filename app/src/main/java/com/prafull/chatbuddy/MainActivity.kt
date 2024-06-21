@@ -103,6 +103,7 @@ fun NavController.signOutAndNavigateToAuth() {
     navigate(Routes.Auth)
 }
 
+
 sealed interface Routes {
 
 
@@ -120,6 +121,15 @@ sealed interface Routes {
     object Home
 
     @Serializable
+    object NewHomeNavigation
+
+    @Serializable
+    object NewHome
+
+    @Serializable
+    object HomeChatScreen
+
+    @Serializable
     data class HomeWithArgs(
         val name: String,
         val description: String,
@@ -133,10 +143,24 @@ sealed interface Routes {
     object ModelsScreen
 
     @Serializable
-    object PromptScreen
+    object PromptLibraryNav
+
+    @Serializable
+    object PromptLibraryScreen
+
+    @Serializable
+    data class PromptChatScreen(
+        val name: String,
+        val description: String,
+        val system: String,
+        val user: String
+    ) {
+        fun toPromptLibraryItem() = PromptLibraryItem(name, description, system, user)
+    }
 
     @Serializable
     object PaymentsScreen
+
 
     @Serializable
     data class ChatScreen(
@@ -166,6 +190,7 @@ sealed interface Routes {
                 safetySetting
         )
     }
+
 }
 
 enum class RoutesStrings {
@@ -177,5 +202,6 @@ enum class RoutesStrings {
     ModelsScreen,
     ChatScreen,
     PromptScreen,
-    PaymentsScreen
+    PaymentsScreen,
+    NewHome
 }

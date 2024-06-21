@@ -48,10 +48,12 @@ class SettingsViewModel : ViewModel(), KoinComponent {
             }
         }
     }
+
     fun setModel(model: Model) {
         defaultModel = model.generalName
         sharedPrefManager.setModel(model)
     }
+
     private fun deleteCollection(collection: CollectionReference) {
         collection.get().addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -63,14 +65,17 @@ class SettingsViewModel : ViewModel(), KoinComponent {
             }
         }
     }
+
     init {
         getDefaultModel()
     }
+
     fun getDefaultModel() {
         viewModelScope.launch {
             defaultModel = sharedPrefManager.getModel().generalName
         }
     }
+
     fun clearData() {
         viewModelScope.launch {
             val collection =

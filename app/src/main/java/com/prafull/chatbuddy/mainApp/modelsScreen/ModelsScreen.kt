@@ -1,7 +1,6 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -14,26 +13,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -42,16 +31,8 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.prafull.chatbuddy.R
-import com.prafull.chatbuddy.mainApp.ModelsAndPromptTopAppBar
-import com.prafull.chatbuddy.mainApp.ads.ModelScreenBannerAd
-import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
-import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
-import com.prafull.chatbuddy.mainApp.home.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
 import com.prafull.chatbuddy.model.Model
-import org.koin.androidx.compose.koinViewModel
-import java.util.Locale
 
 @Composable
 fun ModelsScreen(
@@ -59,6 +40,7 @@ fun ModelsScreen(
     drawerState: DrawerState,
     homeViewModel: HomeViewModel
 ) {
+    /*
     val modelViewModel: ModelViewModel = koinViewModel()
     val uiState by modelViewModel.state.collectAsState()
     val navigate = remember<(Model) -> Unit> {
@@ -131,7 +113,7 @@ fun ModelsScreen(
                 }
             }
         }
-    }
+    }*/
 }
 
 @Composable

@@ -17,6 +17,11 @@ object Const {
     const val CHAT_BUDDY = "Chat Buddy"
     const val NLP = "nlp"
 
+    const val NORMAL_HISTORY = "normal_history"
+    const val CHARACTERS_HISTORY = "characters_history"
+    const val LIBRARY_HISTORY = "library_history"
+
+
     val SAFETY_SETTINGS_NORMAL = listOf(
             SafetySetting(
                     harmCategory = HarmCategory.SEXUALLY_EXPLICIT,

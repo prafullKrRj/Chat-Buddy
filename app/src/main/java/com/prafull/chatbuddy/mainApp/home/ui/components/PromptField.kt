@@ -202,7 +202,7 @@ fun MessageInputRow(
 }
 
 @Composable
-private fun SelectedImage(imageUri: Uri, removeImage: (Uri) -> Unit) {
+fun SelectedImage(imageUri: Uri, removeImage: (Uri) -> Unit) {
     Box(
             modifier = Modifier
                 .padding(4.dp)

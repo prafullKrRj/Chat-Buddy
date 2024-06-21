@@ -57,15 +57,19 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
     protected val _currentModel = MutableStateFlow(Model())
     val currentModel: StateFlow<Model> = _currentModel.asStateFlow()
     private var defaultModel by mutableStateOf(Model())
+
     init {
         getDefaultModel()
     }
+
     fun getDefaultModel() {
         viewModelScope.launch {
             val savedModel = sharedPref.getModel()
             Log.d("ChatViewModel", "getDefaultModel: $savedModel")
             if (savedModel.generalName == Const.CHAT_BUDDY) {
-                val respondedModel = firestore.collection("models").document("nlp").collection(Const.CHAT_BUDDY).document(Const.CHAT_BUDDY).get().await().toObject(Model::class.java)
+                val respondedModel =
+                    firestore.collection("models").document("nlp").collection(Const.CHAT_BUDDY)
+                        .document(Const.CHAT_BUDDY).get().await().toObject(Model::class.java)
                 respondedModel?.let { response ->
                     sharedPref.setModel(response)
                     _currentModel.update {
@@ -77,7 +81,9 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
                     }
                 }
             } else {
-                val respondedModel = firestore.collection("models").document("nlp").collection(savedModel.modelGroup).document(savedModel.actualName).get().await().toObject(Model::class.java)
+                val respondedModel =
+                    firestore.collection("models").document("nlp").collection(savedModel.modelGroup)
+                        .document(savedModel.actualName).get().await().toObject(Model::class.java)
                 Log.d("ChatViewModel", "getDefaultModel: $respondedModel")
                 respondedModel?.let { response ->
                     sharedPref.setModel(response)
@@ -93,6 +99,7 @@ abstract class ChatViewModelAbstraction : KoinComponent, ViewModel() {
             Log.d("ChatViewModel", "getDefaultModel: ${currentModel.value.generalName}")
         }
     }
+
     fun sendMessage() {
         viewModelScope.launch {
             loading = true

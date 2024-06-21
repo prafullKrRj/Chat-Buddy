@@ -332,7 +332,7 @@ fun shareText(context: Context, text: String) {
 }
 
 @Composable
-private fun PromptedImages(imageUri: Bitmap) {
+internal fun PromptedImages(imageUri: Bitmap) {
     AsyncImage(
             model = imageUri,
             contentDescription = null,

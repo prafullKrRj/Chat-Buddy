@@ -1,7 +1,7 @@
 package com.prafull.chatbuddy.mainApp.home.data.repos.chats
 
 import android.util.Log
-import com.prafull.chatbuddy.mainApp.home.data.remote.ClaudeApiService
+import com.prafull.chatbuddy.mainApp.common.data.remote.ClaudeApiService
 import com.prafull.chatbuddy.mainApp.home.model.ChatHistory
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.ClaudeRequest

@@ -35,7 +35,7 @@ fun HomeTopAppBar(
     navigationIconClicked: () -> Unit,
 ) {
     val coins by homeViewModel.coins.collectAsState()
-    val currentModel by chatViewModel.currentModel.collectAsState()
+    //  val currentModel by chatViewModel.currentModel.collectAsState()
     TopAppBar(
             title = {
                 Row(
@@ -46,7 +46,7 @@ fun HomeTopAppBar(
                         homeViewModel.getModels()
                         homeViewModel.modelButtonClicked = true
                     }, label = {
-                        Text(text = currentModel.generalName)
+//Text(text = currentModel.generalName)
                     })
                 }
             },
