@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.modelsScreen.chat
+package com.prafull.chatbuddy.mainApp.modelsScreen.ui.chat
 
 import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
 import com.prafull.chatbuddy.model.Model

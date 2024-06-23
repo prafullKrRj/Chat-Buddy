@@ -83,8 +83,6 @@ class SettingsViewModel : ViewModel(), KoinComponent {
                     .collection("history")
             deleteCollection(collection)
             showClearDataDialog = false
-            chatViewModel.chatting = true
-            chatViewModel.loadNewChat()
         }
     }
 

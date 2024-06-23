@@ -12,13 +12,11 @@ import com.prafull.chatbuddy.mainApp.common.data.repos.ClaudeRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
 import com.prafull.chatbuddy.mainApp.home.data.repos.HomeRepository
-import com.prafull.chatbuddy.mainApp.home.data.repos.chats.ClaudeRepository
-import com.prafull.chatbuddy.mainApp.home.data.repos.chats.GeminiRepository
-import com.prafull.chatbuddy.mainApp.home.data.repos.chats.OpenAiRepository
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
-import com.prafull.chatbuddy.mainApp.modelsScreen.ModelViewModel
-import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatVM
+import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatNewVM
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelViewModel
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.chat.ModelsChatVM
 import com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen.HomeChatVM
 import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.data.PromptLibraryRepo
@@ -58,12 +56,6 @@ val repositoryModule = module {
 
     single<PromptLibraryRepo> { PromptLibraryRepo() }
 
-    single<GeminiRepository> { GeminiRepository() }
-
-    single<ClaudeRepository> { ClaudeRepository() }
-
-    single<OpenAiRepository> { OpenAiRepository() }
-
     single { GeminiRepo() }
     single { ClaudeRepo() }
     single { OpenAiRepo() }
@@ -92,6 +84,7 @@ val viewModels = module {
     viewModel<NewHomeViewModel> { NewHomeViewModel() }
     viewModel<HomeChatVM> { HomeChatVM(get(), get()) }
     viewModel { PromptChatVM(get()) }
+    viewModel { ModelsChatNewVM(get()) }
 
 
     viewModel<ChatViewModel> { ChatViewModel() }

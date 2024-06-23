@@ -1,7 +1,7 @@
 package com.prafull.chatbuddy.mainApp.home.model
 
 import com.google.firebase.Timestamp
-import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelSafety
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.utils.Const

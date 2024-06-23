@@ -27,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -55,7 +54,9 @@ import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.goBackStack
+import com.prafull.chatbuddy.mainApp.common.components.BotImage
 import com.prafull.chatbuddy.mainApp.common.components.ChatTopBar
+import com.prafull.chatbuddy.mainApp.common.components.UserImage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
 import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
@@ -69,11 +70,8 @@ import com.prafull.chatbuddy.mainApp.newHome.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomePromptField
 import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.ExitDialog
-import com.prafull.chatbuddy.mainApp.ui.BotImage
-import com.prafull.chatbuddy.mainApp.ui.UserImage
 import com.prafull.chatbuddy.utils.UriSaver
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeChatScreen(
     chatVM: HomeChatVM,
@@ -109,7 +107,7 @@ fun HomeChatScreen(
                     homeVM.getModels()
                     showModelSelectionDialog = true
                 }) {
-                    navController.goBackStack()
+                    showExitDialog = true
                 }
             },
             bottomBar = {
@@ -157,7 +155,7 @@ fun HomeChatScreen(
 
     if (showModelSelectionDialog) {
         SelectModelDialogBox(modelsState = modelState, onModelSelect = { newModel ->
-            chatVM.changeModel(homeVM, newModel)
+            chatVM.changeModel(newModel, homeVM)
             showModelSelectionDialog = false
         }) {
             showModelSelectionDialog = false

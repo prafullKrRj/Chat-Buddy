@@ -45,8 +45,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.mainApp.common.components.UserImage
 import com.prafull.chatbuddy.mainApp.home.ui.components.SelectModelDialogBox
-import com.prafull.chatbuddy.mainApp.ui.UserImage
 import com.prafull.chatbuddy.signOutAndNavigateToAuth
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeOption
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeViewModel

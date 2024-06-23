@@ -4,11 +4,13 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,6 +49,12 @@ fun PromptChatScreen(
             promptChatVM.regenerateResponse()
         }
     }
+    val lazyListState = rememberLazyListState()
+    LaunchedEffect(key1 = uiState.messages.size) {
+        if (uiState.messages.isNotEmpty()) {
+            lazyListState.animateScrollToItem(uiState.messages.lastIndex)
+        }
+    }
     var showExitDialog by remember {
         mutableStateOf(false)
     }
@@ -61,7 +69,7 @@ fun PromptChatScreen(
                             showModelSelectionDialog = true
                         },
                         onBackButtonClicked = {
-                            navController.popBackStack()
+                            showExitDialog = true
                         }
                 )
             },
@@ -83,6 +91,7 @@ fun PromptChatScreen(
             }
     ) { paddingValues ->
         LazyColumn(
+                state = lazyListState,
                 contentPadding = paddingValues
         ) {
             item("Prompt") {
@@ -109,7 +118,7 @@ fun PromptChatScreen(
     }
     if (showModelSelectionDialog) {
         SelectModelDialogBox(modelsState = modelState, onModelSelect = { newModel ->
-            promptChatVM.changeModel(newModel)
+            promptChatVM.changeModel(newModel, null)
             showModelSelectionDialog = false
         }) {
             showModelSelectionDialog = false

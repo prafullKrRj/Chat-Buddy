@@ -1,7 +1,7 @@
 package com.prafull.chatbuddy.model
 
 import com.prafull.chatbuddy.Routes
-import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelSafety
 import com.prafull.chatbuddy.utils.Const
 
 
@@ -18,7 +18,7 @@ data class Model(
     val system: String = Const.GENERAL_SYSTEM_PROMPT,
     val safetySetting: String = ModelSafety.UNSPECIFIED.name
 ) {
-    fun toChatScreen() = Routes.ChatScreen(
+    fun toChatScreen() = Routes.ModelChatScreen(
             generalName,
             actualName,
             currPricePerToken.toString(),

@@ -1,43 +1,17 @@
 package com.prafull.chatbuddy.mainApp.home.ui.homescreen
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Card
 import androidx.compose.material3.DrawerState
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseAuth
-import com.prafull.chatbuddy.MainActivity
-import com.prafull.chatbuddy.Routes
-import com.prafull.chatbuddy.mainApp.ads.BannerAd
-import com.prafull.chatbuddy.mainApp.ads.rewardedAds
-import com.prafull.chatbuddy.mainApp.home.ui.components.AdWindow
-import com.prafull.chatbuddy.mainApp.home.ui.components.HomeTopAppBar
-import com.prafull.chatbuddy.mainApp.home.ui.components.MessageBubble
-import com.prafull.chatbuddy.mainApp.home.ui.components.PremiumPlanComp
-import com.prafull.chatbuddy.mainApp.home.ui.components.PromptField
-import com.prafull.chatbuddy.mainApp.home.ui.components.SelectModelDialogBox
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
-import com.prafull.chatbuddy.model.Model
-import kotlinx.coroutines.launch
 
 /**
  * HomeScreen is the main screen of the application.
@@ -53,130 +27,129 @@ fun HomeScreen(
     promptType: PromptLibraryItem,
     drawerState: DrawerState
 ) {
-    val mA = FirebaseAuth.getInstance()
-    val chatUiState = chatViewModel.uiState.collectAsState()
-    val modelsState by homeViewModel.modelDialogState.collectAsState()
-    val selectedModel = remember<(Model) -> Unit> {
-        { model ->
-            homeViewModel.modelButtonClicked = false
-            chatViewModel.onModelSelected(model)
-        }
-    }
-    if (homeViewModel.modelButtonClicked) {
-        SelectModelDialogBox(
-                modelsState = modelsState,
-                onModelSelect = selectedModel,
-                onDismissRequest = {
-                    homeViewModel.modelButtonClicked = false
-                })
-    }
-    val clipboardManager = LocalClipboardManager.current
-    val lazyListState = rememberLazyListState()
-    LaunchedEffect(chatUiState.value.messages.size) {
-        if (chatUiState.value.messages.isNotEmpty()) lazyListState.animateScrollToItem(chatUiState.value.messages.size + 1)
-    }
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    Scaffold(
-            modifier = Modifier.imePadding(),
-            topBar = {
-                HomeTopAppBar(
-                        homeViewModel = homeViewModel,
-                        chatViewModel = chatViewModel,
-                        navController = navController
-                ) {
-                    scope.launch {
-                        drawerState.apply {
-                            drawerState.open()
-                        }
-                    }
-                }
-            },
-            bottomBar = {
-                PromptField(modifier = Modifier, viewModel = chatViewModel)
-            }
-    ) { paddingValues ->
-        LazyColumn(
-                modifier = Modifier,
-                contentPadding = paddingValues,
-                userScrollEnabled = true,
-                state = lazyListState,
-                horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            if (!chatViewModel.chatting && promptType.isEmpty()) {
-                item(key = "ad") {
-                    BannerAd()
-                    AdWindow(homeViewModel) {
-                        homeViewModel.adButtonEnabled = false
-                        rewardedAds(context as MainActivity, failed = {
-                            homeViewModel.adButtonEnabled = true
-                        }) {
-                            homeViewModel.adWatched()
-                            homeViewModel.adButtonEnabled = true
-                        }
-                    }
-                }
-                item("premium") {
-                    PremiumPlanComp {
-                        navController.navigate(Routes.PaymentsScreen)
-                    }
-                }
-            }
-            item(key = "promptDetails") {
-                if (promptType.isNotEmpty() || chatViewModel.getCurrChat().toPromptLibraryItem()
-                        .isNotEmpty()
-                ) {
-                    if (promptType.isNotEmpty()) {
-                        PromptCard(promptType)
-                    } else {
-                        PromptCard(chatViewModel.getCurrChat().toPromptLibraryItem())
-                    }
-                }
+    /*  val mA = FirebaseAuth.getInstance()
+      val chatUiState = chatViewModel.uiState.collectAsState()
+      val modelsState by homeViewModel.modelDialogState.collectAsState()
+      val selectedModel = remember<(Model) -> Unit> {
+          { model ->
+              homeViewModel.modelButtonClicked = false
+              chatViewModel.onModelSelected(model)
+          }
+      }
+      if (homeViewModel.modelButtonClicked) {
+          SelectModelDialogBox(
+                  modelsState = modelsState,
+                  onModelSelect = selectedModel,
+                  onDismissRequest = {
+                      homeViewModel.modelButtonClicked = false
+                  })
+      }
+      val clipboardManager = LocalClipboardManager.current
+      val lazyListState = rememberLazyListState()
+      LaunchedEffect(chatUiState.value.messages.size) {
+          if (chatUiState.value.messages.isNotEmpty()) lazyListState.animateScrollToItem(chatUiState.value.messages.size + 1)
+      }
+      val context = LocalContext.current
+      val scope = rememberCoroutineScope()
+      Scaffold(
+              modifier = Modifier.imePadding(),
+              topBar = {
+                  HomeTopAppBar(
+                          homeViewModel = homeViewModel,
+                          chatViewModel = chatViewModel,
+                          navController = navController
+                  ) {
+                      scope.launch {
+                          drawerState.apply {
+                              drawerState.open()
+                          }
+                      }
+                  }
+              },
+              bottomBar = {
+                  PromptField(modifier = Modifier, viewModel = chatViewModel)
+              }
+      ) { paddingValues ->
+          LazyColumn(
+                  modifier = Modifier,
+                  contentPadding = paddingValues,
+                  userScrollEnabled = true,
+                  state = lazyListState,
+                  horizontalAlignment = Alignment.CenterHorizontally
+          ) {
+              if (!chatViewModel.chatting && promptType.isEmpty()) {
+                  item(key = "ad") {
+                      BannerAd()
+                      AdWindow(homeViewModel) {
+                          homeViewModel.adButtonEnabled = false
+                          rewardedAds(context as MainActivity, failed = {
+                              homeViewModel.adButtonEnabled = true
+                          }) {
+                              homeViewModel.adWatched()
+                              homeViewModel.adButtonEnabled = true
+                          }
+                      }
+                  }
+                  item("premium") {
+                      PremiumPlanComp {
+                          navController.navigate(Routes.PaymentsScreen)
+                      }
+                  }
+              }
+              item(key = "promptDetails") {
+                  if (promptType.isNotEmpty() || chatViewModel.getCurrChat().toPromptLibraryItem()
+                          .isNotEmpty()
+                  ) {
+                      if (promptType.isNotEmpty()) {
+                          PromptCard(promptType)
+                      } else {
+                          PromptCard(chatViewModel.getCurrChat().toPromptLibraryItem())
+                      }
+                  }
 
-            }
-            itemsIndexed(chatUiState.value.messages, key = { _, chatMessage ->
-                chatMessage.id
-            }) { index, chatMessage ->
-                when (index) {
-                    chatUiState.value.messages.lastIndex -> {
-                        MessageBubble(
-                                message = chatMessage,
-                                mA = mA,
-                                clipboardManager = clipboardManager,
-                                context = context,
-                                isSecondLast = false,
-                                isLast = true,
-                                viewModel = chatViewModel
-                        )
-                    }
+              }
+              itemsIndexed(chatUiState.value.messages, key = { _, chatMessage ->
+                  chatMessage.id
+              }) { index, chatMessage ->
+                  when (index) {
+                      chatUiState.value.messages.lastIndex -> {
+                          MessageBubble(
+                                  message = chatMessage,
+                                  mA = mA,
+                                  clipboardManager = clipboardManager,
+                                  context = context,
+                                  isSecondLast = false,
+                                  isLast = true,
+                                  viewModel = chatViewModel
+                          )
+                      }
 
-                    chatUiState.value.messages.lastIndex - 1 -> {
-                        MessageBubble(
-                                message = chatMessage,
-                                mA = mA,
-                                clipboardManager = clipboardManager,
-                                context = context,
-                                isSecondLast = true,
-                                isLast = false,
-                                viewModel = chatViewModel
-                        )
-                    }
+                      chatUiState.value.messages.lastIndex - 1 -> {
+                          MessageBubble(
+                                  message = chatMessage,
+                                  mA = mA,
+                                  clipboardManager = clipboardManager,
+                                  context = context,
+                                  isSecondLast = true,
+                                  isLast = false,
+                                  viewModel = chatViewModel
+                          )
+                      }
 
-                    else -> {
-                        MessageBubble(
-                                message = chatMessage,
-                                mA = mA,
-                                clipboardManager = clipboardManager,
-                                context = context,
-                                isSecondLast = false,
-                                isLast = false,
-                                viewModel = chatViewModel
-                        )
-                    }
-                }
-            }
-        }
-    }
+                      else -> {
+                          MessageBubble(
+                                  message = chatMessage,
+                                  mA = mA,
+                                  clipboardManager = clipboardManager,
+                                  context = context,
+                                  isSecondLast = false,
+                                  isLast = false,
+                                  viewModel = chatViewModel
+                          )
+                      }
+                  }
+              }
+          }*/
 }
 
 @Composable

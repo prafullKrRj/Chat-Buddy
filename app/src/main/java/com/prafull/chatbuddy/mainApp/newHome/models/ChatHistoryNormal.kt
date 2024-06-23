@@ -3,7 +3,7 @@ package com.prafull.chatbuddy.mainApp.newHome.models
 import android.graphics.Bitmap
 import com.prafull.chatbuddy.mainApp.common.model.HistoryItem
 import com.prafull.chatbuddy.mainApp.common.model.HistoryMessage
-import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelSafety
 import com.prafull.chatbuddy.utils.Const
 import java.util.UUID
 

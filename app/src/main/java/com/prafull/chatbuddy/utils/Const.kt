@@ -18,7 +18,7 @@ object Const {
     const val NLP = "nlp"
 
     const val NORMAL_HISTORY = "normal_history"
-    const val CHARACTERS_HISTORY = "characters_history"
+    const val MODELS_HISTORY = "characters_history"
     const val LIBRARY_HISTORY = "library_history"
 
 

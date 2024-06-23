@@ -8,6 +8,8 @@ import com.prafull.chatbuddy.mainApp.home.model.ClaudeMessageContent
 import com.prafull.chatbuddy.mainApp.home.model.ClaudeMessageContentSource
 import com.prafull.chatbuddy.mainApp.home.model.OpenAiMessageContent
 import com.prafull.chatbuddy.mainApp.home.model.OpenAiMessageInp
+import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
+import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
 import com.prafull.chatbuddy.mainApp.newHome.models.ChatHistoryNormal
 import com.prafull.chatbuddy.mainApp.newHome.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryMessage
@@ -34,6 +36,17 @@ data class HistoryItem(
                 model = model
         )
     }
+
+    fun toModelsHistory() = ModelsHistory(
+            id = id,
+            system = system,
+            messages = messages.map { it.toModelsHisMsg() }.toMutableList(),
+            temperature = temperature,
+            safetySettings = safetySettings,
+            promptType = promptType,
+            model = model
+    )
+
 }
 
 data class HistoryMessage(
@@ -117,4 +130,14 @@ data class HistoryMessage(
                 botImage = botImage
         )
     }
+
+    fun toModelsHisMsg() = ModelsMessage(
+            id = id,
+            text = text,
+            participant = participant,
+            model = model,
+            botImage = botImage,
+            imageBase64 = imageBase64,
+            imageBitmaps = imageBitmaps
+    )
 }

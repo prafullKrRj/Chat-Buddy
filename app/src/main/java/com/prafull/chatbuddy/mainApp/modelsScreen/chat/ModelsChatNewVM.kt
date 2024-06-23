@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen
+package com.prafull.chatbuddy.mainApp.modelsScreen.chat
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,34 +9,27 @@ import com.prafull.chatbuddy.mainApp.common.data.repos.HomeChatAbstract
 import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.home.model.isGptModel
-import com.prafull.chatbuddy.mainApp.newHome.models.ChatHistoryNormal
-import com.prafull.chatbuddy.mainApp.newHome.models.NormalHistoryMsg
+import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
+import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
 import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
 import com.prafull.chatbuddy.model.Model
 import kotlinx.coroutines.launch
 
-class HomeChatVM(
-    firstPrompt: NormalHistoryMsg,
-    initialModel: Model
-) : BaseChatViewModel<NormalHistoryMsg, ChatHistoryNormal>() {
+class ModelsChatNewVM(
+    suppliedModel: Model
+) : BaseChatViewModel<ModelsMessage, ModelsHistory>() {
 
-    override var chatHistory by mutableStateOf(ChatHistoryNormal(model = "gemini-1.5-flash-latest"))
-    override fun changeModel(newModel: Model, homeViewModel: NewHomeViewModel?) {
-        chatHistory = chatHistory.copy(
-                model = newModel.actualName
-        )
-        homeViewModel?.currModel = newModel
-    }
+    var model by mutableStateOf(suppliedModel)
+    override var chatHistory: ModelsHistory by mutableStateOf(ModelsHistory())
 
     init {
-        chatHistory = chatHistory.copy(model = initialModel.actualName)
-        sendMessage(firstPrompt)
-    }
-
-    override fun sendMessage(message: NormalHistoryMsg) {
-        isLoading = true
-        _chatUiState.value.addMessage(message)
-        getResponse()
+        model = suppliedModel
+        chatHistory = chatHistory.copy(
+                model = model.actualName,
+                system = model.system,
+                safetySettings = model.safetySetting,
+                temperature = model.temperature
+        )
     }
 
     override fun getResponse() {
@@ -55,14 +48,9 @@ class HomeChatVM(
                     chatUiState.value.getLast().toHistoryMessage()
             ).collect { response ->
                 chatHistory.apply {
-                    messages.addAll(
-                            listOf(
-                                    _chatUiState.value.getLast(),
-                                    response.toNormalHistoryMsg()
-                            )
-                    )
+                    messages.addAll(listOf(_chatUiState.value.getLast(), response.toModelsHisMsg()))
                 }
-                _chatUiState.value.addMessage(response.toNormalHistoryMsg())
+                _chatUiState.value.addMessage(response.toModelsHisMsg())
                 isLoading = false
             }
         }
@@ -81,5 +69,15 @@ class HomeChatVM(
                 getResponse()
             }
         }
+    }
+
+    override fun sendMessage(message: ModelsMessage) {
+        isLoading = true
+        _chatUiState.value.addMessage(message)
+        getResponse()
+    }
+
+    override fun changeModel(newModel: Model, homeViewModel: NewHomeViewModel?) {
+        TODO("Not yet implemented")
     }
 }

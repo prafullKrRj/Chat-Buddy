@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.modelsScreen.chat
+package com.prafull.chatbuddy.mainApp.modelsScreen.ui.chat
 
 import android.content.Context
 import androidx.annotation.DrawableRes

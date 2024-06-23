@@ -7,9 +7,7 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -24,7 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Share
@@ -34,18 +31,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ClipboardManager
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
@@ -53,17 +41,14 @@ import coil.compose.AsyncImage
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
+import com.prafull.chatbuddy.mainApp.common.components.BotImage
+import com.prafull.chatbuddy.mainApp.common.components.UserImage
 import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
 import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.home.model.isGptModel
-import com.prafull.chatbuddy.mainApp.ui.BotImage
-import com.prafull.chatbuddy.mainApp.ui.UserImage
 import com.prafull.chatbuddy.model.Model
-import com.prafull.chatbuddy.utils.UriSaver
-import com.prafull.chatbuddy.utils.toBitmaps
-import kotlinx.coroutines.launch
 
 @Composable
 fun MessageBubble(
@@ -75,6 +60,7 @@ fun MessageBubble(
     isLast: Boolean,
     viewModel: ChatViewModelAbstraction
 ) {
+    /*
     var isEditingPrompt by rememberSaveable { mutableStateOf(false) }
     var editingPrompt by rememberSaveable { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -142,7 +128,7 @@ fun MessageBubble(
                     isLast = isLast
             )
         }
-    }
+    }*/
 }
 
 @Composable
@@ -260,7 +246,7 @@ fun BotMessageBubble(
                     isSecondLast = isSecondLast,
                     isLast = isLast,
                     regenerateOutput = {
-                        viewModel.regenerateResponse()
+                        // viewModel.regenerateResponse()
                     }
             )
         }

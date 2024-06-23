@@ -2,7 +2,6 @@ package com.prafull.chatbuddy.mainApp.home.ui.components
 
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -26,7 +24,6 @@ import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,18 +34,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -58,54 +49,50 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.ChatViewModelAbstraction
-import com.prafull.chatbuddy.mainApp.home.model.ChatMessage
-import com.prafull.chatbuddy.utils.UriSaver
-import com.prafull.chatbuddy.utils.toBitmaps
-import kotlinx.coroutines.launch
 
 
 @Composable
 fun PromptField(modifier: Modifier, viewModel: ChatViewModelAbstraction) {
+    /*
+        val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
+        val pickMedia = rememberLauncherForActivityResult(
+                ActivityResultContracts.PickVisualMedia()
+        ) { imageUri ->
+            imageUri?.let { imageUris.add(it) }
+        }
+        val focusManager = LocalFocusManager.current
+        val context = LocalContext.current
+        val scope = rememberCoroutineScope()
+        val listState = rememberLazyListState()
 
-    val imageUris = rememberSaveable(saver = UriSaver()) { mutableStateListOf() }
-    val pickMedia = rememberLauncherForActivityResult(
-            ActivityResultContracts.PickVisualMedia()
-    ) { imageUri ->
-        imageUri?.let { imageUris.add(it) }
-    }
-    val focusManager = LocalFocusManager.current
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(imageUris.size) {
-        if (imageUris.isNotEmpty()) listState.animateScrollToItem(imageUris.size)
-    }
-    ElevatedCard(
-            modifier = Modifier,
-    ) {
-        ImagePickerRow(imageUris, pickMedia, listState)
-        MessageInputRow(
-                modifier = modifier,
-                prompt = viewModel.currPrompt.text,
-                onPromptChange = {
-                    viewModel.currPrompt = ChatMessage(text = it)
-                },
-                onSend = {
-                    scope.launch {
-                        val bitmaps = imageUris.mapNotNull { it.toBitmaps(context) }
-                        viewModel.currPrompt = viewModel.currPrompt.copy(
-                                imageBitmaps = bitmaps.toMutableList()
-                        )
-                        viewModel.sendMessage()
-                        imageUris.clear()
-                        focusManager.clearFocus()
-                    }
-                },
-                onPickImage = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
-                viewModel.loading
-        )
-    }
+        LaunchedEffect(imageUris.size) {
+            if (imageUris.isNotEmpty()) listState.animateScrollToItem(imageUris.size)
+        }
+        ElevatedCard(
+                modifier = Modifier,
+        ) {
+            ImagePickerRow(imageUris, pickMedia, listState)
+            MessageInputRow(
+                    modifier = modifier,
+                    prompt = viewModel.currPrompt.text,
+                    onPromptChange = {
+                        viewModel.currPrompt = ChatMessage(text = it)
+                    },
+                    onSend = {
+                        scope.launch {
+                            val bitmaps = imageUris.mapNotNull { it.toBitmaps(context) }
+                            viewModel.currPrompt = viewModel.currPrompt.copy(
+                                    imageBitmaps = bitmaps.toMutableList()
+                            )
+                            viewModel.sendMessage()
+                            imageUris.clear()
+                            focusManager.clearFocus()
+                        }
+                    },
+                    onPickImage = { pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
+                    viewModel.loading
+            )
+        }*/
 }
 
 @Composable

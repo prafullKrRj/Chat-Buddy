@@ -3,41 +3,34 @@ package com.prafull.chatbuddy.mainApp.promptlibrary.ui
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.prafull.chatbuddy.mainApp.common.data.repos.ClaudeRepo
-import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
+import com.prafull.chatbuddy.mainApp.common.BaseChatViewModel
 import com.prafull.chatbuddy.mainApp.common.data.repos.HomeChatAbstract
-import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
 import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.home.model.isGptModel
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen.ChatUIState
+import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryHistory
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryMessage
 import com.prafull.chatbuddy.model.Model
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 
 
 class PromptChatVM(
     private val promptLibraryItem: PromptLibraryItem
-) : ViewModel(), KoinComponent {
+) : BaseChatViewModel<PromptLibraryMessage, PromptLibraryHistory>(
+) {
 
-    private val geminiRepository: GeminiRepo by inject()
-    private val claudeRepository: ClaudeRepo by inject()
-    private val openAiRepository: OpenAiRepo by inject()
+    override var chatHistory by mutableStateOf(PromptLibraryHistory())
 
-    private val _chatUiState = MutableStateFlow(ChatUIState<PromptLibraryMessage>())
-    val chatUiState = _chatUiState.asStateFlow()
+    override fun changeModel(newModel: Model, homeViewModel: NewHomeViewModel?) {
+        promptModel = newModel
+        chatHistory = chatHistory.copy(
+                model = newModel.actualName
+        )
+    }
 
-    var isLoading by mutableStateOf(false)
-
-    private var chatHistory by mutableStateOf(PromptLibraryHistory())
     var promptModel by mutableStateOf(Model())
     fun getPromptItem() = promptLibraryItem
 
@@ -51,13 +44,13 @@ class PromptChatVM(
         )
     }
 
-    fun sendMessage(message: PromptLibraryMessage) {
+    override fun sendMessage(message: PromptLibraryMessage) {
         isLoading = true
         _chatUiState.value.addMessage(message)
         getResponse()
     }
 
-    private fun getResponse() {
+    override fun getResponse() {
         when {
             chatHistory.model.isGeminiModel() -> getResponseFromGemini()
             chatHistory.model.isClaudeModel() -> getResponseFromClaude()
@@ -66,13 +59,9 @@ class PromptChatVM(
         }
     }
 
-    private fun getResponseFromOpenAI() = getResponseFromRepository(openAiRepository)
-    private fun getResponseFromClaude() = getResponseFromRepository(claudeRepository)
-    private fun getResponseFromGemini() = getResponseFromRepository(geminiRepository)
-
-    private fun getResponseFromRepository(repository: HomeChatAbstract) {
+    override fun getResponseFromRepository(repo: HomeChatAbstract) {
         viewModelScope.launch {
-            repository.getResponse(
+            repo.getResponse(
                     chatHistory.toHistoryItem(),
                     chatUiState.value.getLast().toHistoryMessage()
             ).collect { response ->
@@ -85,7 +74,7 @@ class PromptChatVM(
         }
     }
 
-    fun regenerateResponse() {
+    override fun regenerateResponse() {
         viewModelScope.launch {
             isLoading = true
             chatUiState.value.removeLastMessage()
@@ -98,12 +87,5 @@ class PromptChatVM(
                 getResponse()
             }
         }
-    }
-
-    fun changeModel(newModel: Model) {
-        promptModel = newModel
-        chatHistory = chatHistory.copy(
-                model = newModel.actualName
-        )
     }
 }

@@ -32,12 +32,13 @@ import androidx.navigation.toRoute
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.RoutesStrings
+import com.prafull.chatbuddy.mainApp.common.components.DrawerContent
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeScreen
 import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
-import com.prafull.chatbuddy.mainApp.modelsScreen.ModelsScreen
-import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelChatScreen
-import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatVM
+import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatNewVM
+import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsNewChatScreen
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelsScreen
 import com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen.HomeChatScreen
 import com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen.HomeChatVM
 import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeScreen
@@ -47,7 +48,6 @@ import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptChatScreen
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptChatVM
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptScreen
-import com.prafull.chatbuddy.mainApp.ui.DrawerContent
 import com.prafull.chatbuddy.navigateAndPopBackStack
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -84,7 +84,7 @@ fun MainNavigation(appNavController: NavController) {
     ModalNavigationDrawer(
             drawerState = drawerState,
             drawerContent = {
-                if (currDestination == RoutesStrings.ChatScreen.name || currDestination == RoutesStrings.PaymentsScreen.name) {
+                if (currDestination == RoutesStrings.ModelsChatScreen.name || currDestination == RoutesStrings.PaymentsScreen.name) {
                     return@ModalNavigationDrawer
                 }
                 DrawerContent(
@@ -99,11 +99,11 @@ fun MainNavigation(appNavController: NavController) {
                         },
                         closeDrawer = { scope.launch { drawerState.close() } },
                         scope = scope,
-                        currChatUUID = chatViewModel.currChatUUID
+                        currChatUUID = ""
                 ) { chatHistory ->
                     scope.launch {
                         mainNavController.navigateAndPopBackStack(Routes.Home)
-                        chatViewModel.chatFromHistory(chatHistory)
+                        //chatViewModel.chatFromHistory(chatHistory)
                         delay(500L)
                         drawerState.close()
                     }
@@ -137,18 +137,18 @@ fun MainNavigation(appNavController: NavController) {
             }
             composable<Routes.ModelsScreen> {
                 currDestination = RoutesStrings.ModelsScreen.name
-                ModelsScreen(mainNavController, drawerState, homeViewModel)
+                ModelsScreen(mainNavController, drawerState, newHomeViewModel)
             }
             composable<Routes.PaymentsScreen> {
                 currDestination = RoutesStrings.PaymentsScreen.name
                 PaymentsScreen(mainNavController)
             }
-            composable<Routes.ChatScreen> { backStackEntry ->
-                currDestination = RoutesStrings.ChatScreen.name
-                val model: Routes.ChatScreen = backStackEntry.toRoute()
-                Log.d("ChatScreen", model.toString())
-                val viewModel: ModelsChatVM = koinViewModel { parametersOf(model.toModel()) }
-                ModelChatScreen(viewModel, mainNavController)
+            modelsNavigationScreen(
+                    mainNavController,
+                    drawerState,
+                    newHomeViewModel
+            ) {
+                currDestination = it
             }
             promptLibraryScreen(
                     drawerState,
@@ -162,6 +162,30 @@ fun MainNavigation(appNavController: NavController) {
         }
     }
 }
+
+fun NavGraphBuilder.modelsNavigationScreen(
+    navController: NavController, drawerState: DrawerState, homeVM: NewHomeViewModel,
+    currDestination: (String) -> Unit
+) {
+    navigation<Routes.ModelsNav>(startDestination = Routes.ModelsScreen) {
+
+        composable<Routes.ModelsScreen> {
+            currDestination(RoutesStrings.ModelsScreen.name)
+            ModelsScreen(
+                    navController = navController,
+                    drawerState = drawerState,
+                    homeViewModel = homeVM
+            )
+        }
+        composable<Routes.ModelChatScreen> { backStackEntry ->
+            currDestination(RoutesStrings.ModelsChatScreen.name)
+            val model: Routes.ModelChatScreen = backStackEntry.toRoute()
+            val viewModel: ModelsChatNewVM = koinViewModel { parametersOf(model.toModel()) }
+            ModelsNewChatScreen(viewModel, navController)
+        }
+    }
+}
+
 
 fun NavGraphBuilder.promptLibraryScreen(
     drawerState: DrawerState,

@@ -22,7 +22,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.mainApp.MainNavigation
-import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelSafety
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.model.Model
 import com.prafull.chatbuddy.settings.SettingsScreen
@@ -140,7 +140,11 @@ sealed interface Routes {
     }
 
     @Serializable
+    object ModelsNav
+
+    @Serializable
     object ModelsScreen
+
 
     @Serializable
     object PromptLibraryNav
@@ -163,7 +167,7 @@ sealed interface Routes {
 
 
     @Serializable
-    data class ChatScreen(
+    data class ModelChatScreen(
         val generalName: String = "",
         val actualName: String = "",
         val currPricePerToken: String = "0.0",
@@ -200,7 +204,7 @@ enum class RoutesStrings {
     Home,
     HomeWithArgs,
     ModelsScreen,
-    ChatScreen,
+    ModelsChatScreen,
     PromptScreen,
     PaymentsScreen,
     NewHome

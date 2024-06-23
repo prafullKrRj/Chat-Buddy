@@ -7,7 +7,7 @@ import com.prafull.chatbuddy.BuildConfig
 import com.prafull.chatbuddy.mainApp.common.model.HistoryItem
 import com.prafull.chatbuddy.mainApp.common.model.HistoryMessage
 import com.prafull.chatbuddy.mainApp.home.model.Participant
-import com.prafull.chatbuddy.mainApp.modelsScreen.ModelSafety
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelSafety
 import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow

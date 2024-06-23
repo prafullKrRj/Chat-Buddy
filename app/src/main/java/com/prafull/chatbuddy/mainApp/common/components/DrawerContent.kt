@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ui
+package com.prafull.chatbuddy.mainApp.common.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -71,12 +71,7 @@ fun DrawerContent(
                         iconRes = drawable.sharp_chat_bubble_outline_24,
                         onClick = {
                             scope.launch {
-                                if (currDestination != RoutesStrings.Home.name || chatViewModel.chatting) {
-                                    navController.navigateAndPopBackStack(Routes.Home)
-                                    chatViewModel.loadNewChat()
-                                    closeDrawer()
-                                    delay(100L)
-                                }
+
                             }
                         }
                 )
@@ -101,7 +96,7 @@ fun DrawerContent(
                         onClick = {
                             scope.launch {
                                 if (currDestination != RoutesStrings.ModelsScreen.name) {
-                                    navController.navigateAndPopBackStack(Routes.ModelsScreen)
+                                    navController.navigateAndPopBackStack(Routes.ModelsNav)
                                     delay(250L)
                                 }
                                 closeDrawer()
@@ -202,7 +197,7 @@ fun ChatHistorySection(
                                         Spacer(modifier = Modifier.width(4.dp))
                                         IconButton(onClick = {
                                             if (chatHistory.id == currChatUUID) {
-                                                chatViewModel.loadNewChat()
+                                                //    chatViewModel.loadNewChat()
                                             }
                                             homeViewModel.deleteChat(chatHistory.id)
                                         }, modifier = Modifier.weight(.1f)) {
