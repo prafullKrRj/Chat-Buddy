@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.common
+package com.prafull.chatbuddy.mainApp.common.model
 
 import android.graphics.Bitmap
 

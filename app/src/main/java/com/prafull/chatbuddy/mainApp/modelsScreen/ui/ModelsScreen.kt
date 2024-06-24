@@ -43,12 +43,12 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.ModelsAndPromptTopAppBar
-import com.prafull.chatbuddy.mainApp.ads.ModelScreenBannerAd
 import com.prafull.chatbuddy.mainApp.common.model.Model
 import com.prafull.chatbuddy.mainApp.common.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.common.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
+import com.prafull.chatbuddy.utils.ads.ModelScreenBannerAd
 import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 

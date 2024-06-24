@@ -20,7 +20,7 @@ import com.prafull.chatbuddy.mainApp.modelsScreen.ui.chat.ModelsChatNewVM
 import com.prafull.chatbuddy.mainApp.promptlibrary.data.PromptLibraryRepo
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptChatVM
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptLibraryViewModel
-import com.prafull.chatbuddy.settings.SettingsViewModel
+import com.prafull.chatbuddy.mainApp.settings.SettingsViewModel
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemePreferences
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeViewModel
 import com.prafull.chatbuddy.utils.SharedPrefManager

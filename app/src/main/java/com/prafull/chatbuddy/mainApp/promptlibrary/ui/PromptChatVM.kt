@@ -4,8 +4,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
-import com.prafull.chatbuddy.mainApp.common.BaseChatViewModel
 import com.prafull.chatbuddy.mainApp.common.data.repos.HomeChatAbstract
+import com.prafull.chatbuddy.mainApp.common.model.BaseChatViewModel
 import com.prafull.chatbuddy.mainApp.common.model.Model
 import com.prafull.chatbuddy.mainApp.common.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.common.model.isGeminiModel
@@ -66,8 +66,14 @@ class PromptChatVM(
                     chatHistory.toHistoryItem(),
                     chatUiState.value.getLast().toHistoryMessage()
             ).collect { response ->
-                saveAndUpdate(_chatUiState.value.getLast())
-                saveAndUpdate(response.toPromptLibMsg())
+                chatHistory.apply {
+                    messages.addAll(
+                            listOf(
+                                    _chatUiState.value.getLast(),
+                                    response.toPromptLibMsg()
+                            )
+                    )
+                }
                 _chatUiState.value.addMessage(response.toPromptLibMsg())
                 isLoading = false
             }

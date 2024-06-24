@@ -23,10 +23,10 @@ import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.mainApp.common.components.ChatTopBar
 import com.prafull.chatbuddy.mainApp.common.components.SelectModelDialogBox
-import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.ChatScreenMessageBubble
+import com.prafull.chatbuddy.mainApp.home.presentation.components.MessageBubble
+import com.prafull.chatbuddy.mainApp.home.presentation.components.PromptField
 import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.getBotImage2
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
-import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.NewHomePromptField
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryMessage
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.components.PromptCard
 
@@ -73,7 +73,7 @@ fun PromptChatScreen(
                 )
             },
             bottomBar = {
-                NewHomePromptField(
+                PromptField(
                         onSend = { message, images, participant ->
                             promptChatVM.sendMessage(
                                     PromptLibraryMessage(
@@ -100,7 +100,7 @@ fun PromptChatScreen(
             itemsIndexed(uiState.messages, key = { _, item ->
                 item.id
             }) { idx, message ->
-                ChatScreenMessageBubble(
+                MessageBubble(
                         modifier = Modifier.padding(horizontal = 8.dp),
                         participant = message.participant,
                         message = Pair(message.text, message.imageBitmaps),

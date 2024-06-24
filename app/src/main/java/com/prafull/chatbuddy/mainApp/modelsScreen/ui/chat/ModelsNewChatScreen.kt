@@ -32,9 +32,9 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.mainApp.common.components.BotImage
-import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.ChatScreenMessageBubble
+import com.prafull.chatbuddy.mainApp.home.presentation.components.MessageBubble
+import com.prafull.chatbuddy.mainApp.home.presentation.components.PromptField
 import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.getBotImage2
-import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.NewHomePromptField
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.ExitDialog
 
@@ -89,7 +89,7 @@ fun ModelsNewChatScreen(
                 })
             },
             bottomBar = {
-                NewHomePromptField(
+                PromptField(
                         onSend = { message, images, participant ->
                             modelsChatNewVM.sendMessage(
                                     ModelsMessage(
@@ -114,7 +114,7 @@ fun ModelsNewChatScreen(
                 itemsIndexed(uiState.messages, key = { _, item ->
                     item.id
                 }) { idx, message ->
-                    ChatScreenMessageBubble(
+                    MessageBubble(
                             modifier = Modifier.padding(horizontal = 8.dp),
                             participant = message.participant,
                             message = Pair(message.text, message.imageBitmaps),

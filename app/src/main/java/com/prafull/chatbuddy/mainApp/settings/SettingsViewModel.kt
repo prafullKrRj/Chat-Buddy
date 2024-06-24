@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.settings
+package com.prafull.chatbuddy.mainApp.settings
 
 import android.content.Context
 import androidx.compose.runtime.getValue

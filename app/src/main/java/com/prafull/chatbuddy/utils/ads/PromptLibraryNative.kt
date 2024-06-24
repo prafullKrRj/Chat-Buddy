@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.ads
+package com.prafull.chatbuddy.utils.ads
 
 import android.util.Log
 import androidx.compose.runtime.Composable

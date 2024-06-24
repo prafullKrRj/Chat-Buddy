@@ -41,8 +41,8 @@ import com.prafull.chatbuddy.mainApp.payments.PaymentsScreen
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptChatScreen
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptChatVM
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptScreen
+import com.prafull.chatbuddy.mainApp.settings.SettingsScreen
 import com.prafull.chatbuddy.navigateAndPopBackStack
-import com.prafull.chatbuddy.settings.SettingsScreen
 import org.koin.androidx.compose.getViewModel
 import org.koin.androidx.compose.koinViewModel
 import org.koin.core.parameter.parametersOf

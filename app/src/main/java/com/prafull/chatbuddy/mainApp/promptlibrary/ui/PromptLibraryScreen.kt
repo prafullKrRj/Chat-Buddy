@@ -49,10 +49,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.mainApp.ModelsAndPromptTopAppBar
-import com.prafull.chatbuddy.mainApp.ads.BannerAd
-import com.prafull.chatbuddy.mainApp.ads.loadInterstitialAd
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
+import com.prafull.chatbuddy.utils.ads.BannerAd
+import com.prafull.chatbuddy.utils.ads.loadInterstitialAd
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 

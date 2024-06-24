@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.common
+package com.prafull.chatbuddy.mainApp.common.model
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +10,6 @@ import com.prafull.chatbuddy.mainApp.common.data.repos.FirebaseRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.HomeChatAbstract
 import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
-import com.prafull.chatbuddy.mainApp.common.model.Model
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
