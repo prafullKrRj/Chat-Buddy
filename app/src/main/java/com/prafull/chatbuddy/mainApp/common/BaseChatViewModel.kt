@@ -9,8 +9,8 @@ import com.prafull.chatbuddy.mainApp.common.data.repos.ClaudeRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.HomeChatAbstract
 import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
-import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.mainApp.common.model.Model
+import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.koin.core.component.KoinComponent
@@ -30,7 +30,7 @@ abstract class BaseChatViewModel<T : Any, H : Any>(
     var isLoading by mutableStateOf(false)
     protected open lateinit var chatHistory: H
 
-    abstract fun changeModel(newModel: Model, homeViewModel: NewHomeViewModel?)
+    abstract fun changeModel(newModel: Model, homeViewModel: HomeViewModel?)
 
     protected fun getResponseFromOpenAI() = getResponseFromRepository(openAiRepository)
     protected fun getResponseFromClaude() = getResponseFromRepository(claudeRepository)

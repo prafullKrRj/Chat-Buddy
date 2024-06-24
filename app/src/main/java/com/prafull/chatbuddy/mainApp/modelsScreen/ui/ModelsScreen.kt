@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,19 +44,18 @@ import coil.request.ImageRequest
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.mainApp.ModelsAndPromptTopAppBar
 import com.prafull.chatbuddy.mainApp.ads.ModelScreenBannerAd
-import com.prafull.chatbuddy.mainApp.home.model.isClaudeModel
-import com.prafull.chatbuddy.mainApp.home.model.isGeminiModel
-import com.prafull.chatbuddy.mainApp.home.model.isGptModel
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
-import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.mainApp.common.model.Model
+import com.prafull.chatbuddy.mainApp.common.model.isClaudeModel
+import com.prafull.chatbuddy.mainApp.common.model.isGeminiModel
+import com.prafull.chatbuddy.mainApp.common.model.isGptModel
+import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import org.koin.androidx.compose.koinViewModel
 import java.util.Locale
 
 @Composable
 fun ModelsScreen(
     navController: NavController,
-    drawerState: DrawerState,
-    homeViewModel: NewHomeViewModel
+    homeViewModel: HomeViewModel
 ) {
 
     val modelViewModel: ModelViewModel = koinViewModel()
@@ -76,9 +74,7 @@ fun ModelsScreen(
 
     Scaffold(
             topBar = {
-                ModelsAndPromptTopAppBar(title = "Models", drawerState, scope) {
-                    homeViewModel.getPreviousChats()
-                }
+                ModelsAndPromptTopAppBar(title = "Models")
             }
     ) { paddingValues ->
 

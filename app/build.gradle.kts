@@ -88,6 +88,7 @@ dependencies {
     implementation(libs.androidx.material3.android)
     implementation(libs.firebase.storage)
     implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.androidx.material3.adaptive.navigation.suite.android)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -126,5 +127,10 @@ dependencies {
     implementation(libs.facebook)
     implementation(libs.mediation.test.suite)
     implementation(libs.claude.sdk)
+
+    implementation(libs.androidx.adaptive)
+    implementation(libs.androidx.adaptive.layout)
+    implementation(libs.androidx.adaptive.navigation.v100beta02)
+    implementation(libs.material3.adaptive.navigation.suite)
 
 }

@@ -1,9 +1,10 @@
 package com.prafull.chatbuddy.mainApp.common.data.remote
 
-import com.prafull.chatbuddy.mainApp.home.model.OpenAiRequest
-import com.prafull.chatbuddy.mainApp.home.model.OpenAiResponse
-import com.prafull.chatbuddy.mainApp.home.model.OpenAiUsage
-import com.prafull.chatbuddy.mainApp.home.model.ResponseChoice
+import com.prafull.chatbuddy.mainApp.common.model.OpenAiMessageResp
+import com.prafull.chatbuddy.mainApp.common.model.OpenAiRequest
+import com.prafull.chatbuddy.mainApp.common.model.OpenAiResponse
+import com.prafull.chatbuddy.mainApp.common.model.OpenAiUsage
+import com.prafull.chatbuddy.mainApp.common.model.ResponseChoice
 
 object OpenAIService {
 
@@ -15,7 +16,7 @@ object OpenAIService {
                                 finishReason = "",
                                 index = 0,
                                 logprobs = Any(),
-                                openAiMessageResp = com.prafull.chatbuddy.mainApp.home.model.OpenAiMessageResp(
+                                openAiMessageResp = OpenAiMessageResp(
                                         content = "Hello how can I help you?",
                                         role = "assistant"
                                 )

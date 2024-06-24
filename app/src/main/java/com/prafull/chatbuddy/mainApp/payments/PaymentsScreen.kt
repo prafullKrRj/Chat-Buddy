@@ -14,11 +14,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
-import com.prafull.chatbuddy.goBackStack
 
 @Composable
-fun PaymentsScreen(navController: NavController) {
+fun PaymentsScreen(backHandler: () -> Unit = {}) {
     var showDialog by remember {
         mutableStateOf(false)
     }
@@ -35,7 +33,7 @@ fun PaymentsScreen(navController: NavController) {
     if (showDialog) {
         ExitDialog(onDismiss = { showDialog = false }) {
             showDialog = false
-            navController.goBackStack()
+            backHandler()
         }
 
     }

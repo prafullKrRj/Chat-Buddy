@@ -13,9 +13,8 @@ import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.prafull.chatbuddy.BuildConfig
-import com.prafull.chatbuddy.mainApp.home.data.repos.HomeRepository
-import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
-import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.mainApp.common.data.HomeRepository
+import com.prafull.chatbuddy.mainApp.common.model.Model
 import com.prafull.chatbuddy.utils.Resource
 import com.prafull.chatbuddy.utils.SharedPrefManager
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +30,6 @@ class SettingsViewModel : ViewModel(), KoinComponent {
     val mAuth by inject<FirebaseAuth>()
     private val firestore by inject<FirebaseFirestore>()
     private val storage by inject<FirebaseStorage>()
-    private val chatViewModel by inject<ChatViewModel>()
     private val homeRepository by inject<HomeRepository>()
     private val sharedPrefManager by inject<SharedPrefManager>()
 

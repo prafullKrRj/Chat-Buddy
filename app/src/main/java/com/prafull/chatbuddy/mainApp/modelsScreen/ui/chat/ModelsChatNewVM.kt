@@ -1,4 +1,4 @@
-package com.prafull.chatbuddy.mainApp.promptlibrary.ui
+package com.prafull.chatbuddy.mainApp.modelsScreen.ui.chat
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -11,43 +11,25 @@ import com.prafull.chatbuddy.mainApp.common.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.common.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
-import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryHistory
-import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
-import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryMessage
+import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
+import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
 import kotlinx.coroutines.launch
 
+class ModelsChatNewVM(
+    suppliedModel: Model
+) : BaseChatViewModel<ModelsMessage, ModelsHistory>() {
 
-class PromptChatVM(
-    private val promptLibraryItem: PromptLibraryItem
-) : BaseChatViewModel<PromptLibraryMessage, PromptLibraryHistory>(
-) {
-
-    override var chatHistory by mutableStateOf(PromptLibraryHistory())
-
-    override fun changeModel(newModel: Model, homeViewModel: HomeViewModel?) {
-        promptModel = newModel
-        chatHistory = chatHistory.copy(
-                model = newModel.actualName
-        )
-    }
-
-    var promptModel by mutableStateOf(Model())
-    fun getPromptItem() = promptLibraryItem
+    var model by mutableStateOf(suppliedModel)
+    override var chatHistory: ModelsHistory by mutableStateOf(ModelsHistory())
 
     init {
-        chatHistory = PromptLibraryHistory(
-                name = promptLibraryItem.name,
-                description = promptLibraryItem.description,
-                system = promptLibraryItem.system,
-                user = promptLibraryItem.user,
-                model = promptModel.actualName
+        model = suppliedModel
+        chatHistory = chatHistory.copy(
+                model = model.actualName,
+                system = model.system,
+                safetySettings = model.safetySetting,
+                temperature = model.temperature
         )
-    }
-
-    override fun sendMessage(message: PromptLibraryMessage) {
-        isLoading = true
-        _chatUiState.value.addMessage(message)
-        getResponse()
     }
 
     override fun getResponse() {
@@ -66,9 +48,9 @@ class PromptChatVM(
                     chatUiState.value.getLast().toHistoryMessage()
             ).collect { response ->
                 chatHistory.apply {
-                    messages.addAll(listOf(_chatUiState.value.getLast(), response.toPromptLibMsg()))
+                    messages.addAll(listOf(_chatUiState.value.getLast(), response.toModelsHisMsg()))
                 }
-                _chatUiState.value.addMessage(response.toPromptLibMsg())
+                _chatUiState.value.addMessage(response.toModelsHisMsg())
                 isLoading = false
             }
         }
@@ -87,5 +69,15 @@ class PromptChatVM(
                 getResponse()
             }
         }
+    }
+
+    override fun sendMessage(message: ModelsMessage) {
+        isLoading = true
+        _chatUiState.value.addMessage(message)
+        getResponse()
+    }
+
+    override fun changeModel(newModel: Model, homeViewModel: HomeViewModel?) {
+        TODO("Not yet implemented")
     }
 }

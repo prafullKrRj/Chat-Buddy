@@ -1,8 +1,8 @@
 package com.prafull.chatbuddy.mainApp.common.data.remote
 
 import com.prafull.chatbuddy.BuildConfig
-import com.prafull.chatbuddy.mainApp.home.model.ClaudeRequest
-import com.prafull.chatbuddy.mainApp.home.model.ClaudeResponse
+import com.prafull.chatbuddy.mainApp.common.model.ClaudeRequest
+import com.prafull.chatbuddy.mainApp.common.model.ClaudeResponse
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.POST

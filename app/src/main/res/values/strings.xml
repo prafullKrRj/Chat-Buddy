@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Chat Buddy</string>
     <string name="prompt_library_access_button">Prompt Library Access Button</string>
-    <string name="explore_models">Explore Models</string>
+    <string name="explore_models">Models</string>
     <string name="no_recent_chats">No recent chats</string>
 
     <string name="premium_text">Harness the full power of ai with our premium plan!</string>
@@ -27,4 +27,7 @@
     <string name="confirm">Confirm</string>
     <string name="delete_account">Delete Account</string>
     <string name="default_model">Default Model</string>
+    <string name="home">Home</string>
+    <string name="prompt_library">Prompts</string>
+    <string name="history">History</string>
 </resources>

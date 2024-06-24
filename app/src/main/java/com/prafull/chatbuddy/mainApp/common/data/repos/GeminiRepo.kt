@@ -6,7 +6,7 @@ import com.google.ai.client.generativeai.type.generationConfig
 import com.prafull.chatbuddy.BuildConfig
 import com.prafull.chatbuddy.mainApp.common.model.HistoryItem
 import com.prafull.chatbuddy.mainApp.common.model.HistoryMessage
-import com.prafull.chatbuddy.mainApp.home.model.Participant
+import com.prafull.chatbuddy.mainApp.common.model.Participant
 import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelSafety
 import com.prafull.chatbuddy.utils.Const
 import kotlinx.coroutines.channels.awaitClose

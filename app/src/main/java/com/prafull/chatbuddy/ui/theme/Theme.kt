@@ -212,7 +212,7 @@ fun ChatBuddyTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> highContrastDarkColorScheme
+        darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 

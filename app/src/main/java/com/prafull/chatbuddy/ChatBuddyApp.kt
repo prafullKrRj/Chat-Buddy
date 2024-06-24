@@ -7,18 +7,15 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.gson.Gson
 import com.prafull.chatbuddy.authScreen.AuthViewModel
 import com.prafull.chatbuddy.authScreen.repo.AuthRepository
+import com.prafull.chatbuddy.mainApp.common.data.HomeRepository
 import com.prafull.chatbuddy.mainApp.common.data.remote.ClaudeApiService
 import com.prafull.chatbuddy.mainApp.common.data.repos.ClaudeRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
-import com.prafull.chatbuddy.mainApp.home.data.repos.HomeRepository
-import com.prafull.chatbuddy.mainApp.home.ui.homescreen.ChatViewModel
-import com.prafull.chatbuddy.mainApp.home.ui.homescreen.HomeViewModel
-import com.prafull.chatbuddy.mainApp.modelsScreen.chat.ModelsChatNewVM
+import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.HomeChatVM
+import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelViewModel
-import com.prafull.chatbuddy.mainApp.modelsScreen.ui.chat.ModelsChatVM
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen.HomeChatVM
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.chat.ModelsChatNewVM
 import com.prafull.chatbuddy.mainApp.promptlibrary.data.PromptLibraryRepo
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptChatVM
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.PromptLibraryViewModel
@@ -80,18 +77,14 @@ val firebaseModule = module {
 }
 val viewModels = module {
     viewModel<HomeViewModel> { HomeViewModel() }
-
-    viewModel<NewHomeViewModel> { NewHomeViewModel() }
     viewModel<HomeChatVM> { HomeChatVM(get(), get()) }
     viewModel { PromptChatVM(get()) }
     viewModel { ModelsChatNewVM(get()) }
 
-
-    viewModel<ChatViewModel> { ChatViewModel() }
-    viewModel<ModelsChatVM> { ModelsChatVM(get()) }
     viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }
     viewModel<ModelViewModel> { ModelViewModel() }
     viewModel<SettingsViewModel> { SettingsViewModel() }
+
     single { ThemePreferences(get()) } // Provide ThemePreferences
     viewModel { ThemeViewModel(get()) }
 }

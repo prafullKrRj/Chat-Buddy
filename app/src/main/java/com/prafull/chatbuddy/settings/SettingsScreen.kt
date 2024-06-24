@@ -1,7 +1,6 @@
 package com.prafull.chatbuddy.settings
 
 import android.content.Context
-import androidx.activity.compose.BackHandler
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.clickable
@@ -16,12 +15,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,8 +42,8 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.prafull.chatbuddy.R
+import com.prafull.chatbuddy.mainApp.common.components.SelectModelDialogBox
 import com.prafull.chatbuddy.mainApp.common.components.UserImage
-import com.prafull.chatbuddy.mainApp.home.ui.components.SelectModelDialogBox
 import com.prafull.chatbuddy.signOutAndNavigateToAuth
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeOption
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeViewModel
@@ -55,7 +52,7 @@ import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsScreen(navController: NavController, onBackClicked: () -> Unit) {
+fun SettingsScreen(navController: NavController) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val settingsViewModel: SettingsViewModel = koinViewModel()
     val modelsState by settingsViewModel.modelState.collectAsState()
@@ -71,10 +68,6 @@ fun SettingsScreen(navController: NavController, onBackClicked: () -> Unit) {
             settingsViewModel.showModelSelectionDialog = false
         }
     }
-
-    BackHandler {
-        onBackClicked()
-    }
     // Handle showing dialogs based on the ViewModel state
     HandleDialogs(settingsViewModel, context, navController)
 
@@ -82,7 +75,7 @@ fun SettingsScreen(navController: NavController, onBackClicked: () -> Unit) {
     Scaffold(
             modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
             topBar = {
-                SettingsTopAppBar(onBackClicked, scrollBehavior)
+                SettingsTopAppBar(scrollBehavior)
             }
     ) { paddingValues ->
         // Main content of the settings screen
@@ -131,17 +124,9 @@ private fun HandleDialogs(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun SettingsTopAppBar(onBackClicked: () -> Unit, scrollBehavior: TopAppBarScrollBehavior) {
+private fun SettingsTopAppBar(scrollBehavior: TopAppBarScrollBehavior) {
     TopAppBar(
             title = { Text(text = stringResource(R.string.settings)) },
-            navigationIcon = {
-                IconButton(onClick = onBackClicked) {
-                    Icon(
-                            imageVector = Icons.AutoMirrored.Default.ArrowBack,
-                            contentDescription = "Back"
-                    )
-                }
-            },
             scrollBehavior = scrollBehavior
     )
 }

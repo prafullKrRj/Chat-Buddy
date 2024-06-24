@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.gson.Gson
-import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.mainApp.common.model.Model
 import kotlinx.coroutines.tasks.await
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject

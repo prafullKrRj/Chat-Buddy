@@ -3,15 +3,10 @@ package com.prafull.chatbuddy.mainApp.common.model
 import android.graphics.Bitmap
 import com.google.ai.client.generativeai.type.Content
 import com.google.ai.client.generativeai.type.content
-import com.prafull.chatbuddy.mainApp.home.model.ClaudeMessage
-import com.prafull.chatbuddy.mainApp.home.model.ClaudeMessageContent
-import com.prafull.chatbuddy.mainApp.home.model.ClaudeMessageContentSource
-import com.prafull.chatbuddy.mainApp.home.model.OpenAiMessageContent
-import com.prafull.chatbuddy.mainApp.home.model.OpenAiMessageInp
+import com.prafull.chatbuddy.mainApp.home.models.ChatHistoryNormal
+import com.prafull.chatbuddy.mainApp.home.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
-import com.prafull.chatbuddy.mainApp.newHome.models.ChatHistoryNormal
-import com.prafull.chatbuddy.mainApp.newHome.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryMessage
 import com.prafull.chatbuddy.utils.toBase64
 import java.util.UUID

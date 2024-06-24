@@ -5,6 +5,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -22,10 +24,9 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.prafull.chatbuddy.authScreen.AuthScreen
 import com.prafull.chatbuddy.mainApp.MainNavigation
+import com.prafull.chatbuddy.mainApp.common.model.Model
 import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelSafety
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
-import com.prafull.chatbuddy.model.Model
-import com.prafull.chatbuddy.settings.SettingsScreen
 import com.prafull.chatbuddy.ui.theme.ChatBuddyTheme
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeOption
 import com.prafull.chatbuddy.ui.theme.themechanging.ThemeViewModel
@@ -69,11 +70,7 @@ class MainActivity : ComponentActivity() {
                         composable<Routes.App> {
                             MainNavigation(navController)
                         }
-                        composable<Routes.SettingsScreen> {
-                            SettingsScreen(navController = navController) {
-                                navController.goBackStack()
-                            }
-                        }
+
                     }
                 }
             }
@@ -82,14 +79,9 @@ class MainActivity : ComponentActivity() {
 }
 
 fun NavController.navigateAndPopBackStack(screen: Any) {
-    popBackStack()
+    while (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED)
+        popBackStack()
     navigate(screen)
-}
-
-fun NavController.navigateHomeWithArgs(promptLibraryItem: PromptLibraryItem) {
-    navigateAndPopBackStack(
-            promptLibraryItem.toHomeArgs()
-    )
 }
 
 fun NavController.goBackStack() {
@@ -118,26 +110,14 @@ sealed interface Routes {
 
 
     @Serializable
+    object NewHomeNav
+
+    @Serializable
     object Home
-
-    @Serializable
-    object NewHomeNavigation
-
-    @Serializable
-    object NewHome
 
     @Serializable
     object HomeChatScreen
 
-    @Serializable
-    data class HomeWithArgs(
-        val name: String,
-        val description: String,
-        val system: String,
-        val user: String
-    ) {
-        fun toPromptLibraryItem() = PromptLibraryItem(name, description, system, user)
-    }
 
     @Serializable
     object ModelsNav
@@ -153,7 +133,7 @@ sealed interface Routes {
     object PromptLibraryScreen
 
     @Serializable
-    data class PromptChatScreen(
+    data class PromptLibraryChat(
         val name: String,
         val description: String,
         val system: String,
@@ -195,17 +175,53 @@ sealed interface Routes {
         )
     }
 
+    @Serializable
+    object History
 }
 
-enum class RoutesStrings {
-    SettingsScreen,
-    Auth,
-    App,
-    Home,
-    HomeWithArgs,
-    ModelsScreen,
-    ModelsChatScreen,
-    PromptScreen,
-    PaymentsScreen,
-    NewHome
+sealed class AppDes(
+    val route: Any,
+    @StringRes val label: Int,
+    @DrawableRes val icon: Int,
+    @StringRes val contentDescription: Int,
+
+    ) {
+    data object Home : AppDes(
+            Routes.NewHomeNav,
+            R.string.home,
+            R.drawable.sharp_chat_bubble_outline_24,
+            R.string.home
+    )
+
+    data object PromptScreen : AppDes(
+            Routes.PromptLibraryNav,
+            R.string.prompt_library,
+            R.drawable.outline_apps_24,
+            R.string.prompt_library
+    )
+
+    data object HistoryScreen : AppDes(
+            Routes.History,
+            R.string.history,
+            R.drawable.sharp_manage_history_24,
+            R.string.history
+    )
+
+    data object ModelsScreen : AppDes(
+            Routes.ModelsNav,
+            R.string.explore_models,
+            R.drawable.baseline_explore_24,
+            R.string.explore_models
+    )
+
+    data object SettingsScreen : AppDes(
+            Routes.SettingsScreen,
+            R.string.settings,
+            R.drawable.outline_settings_24,
+            R.string.settings
+    )
+}
+
+enum class RouteString {
+    Home, HomeChat, PromptLib, PromptLibChat, Models, ModelsChat, Settings, History
 }

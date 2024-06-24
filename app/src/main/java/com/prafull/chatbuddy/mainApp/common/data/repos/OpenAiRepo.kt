@@ -3,8 +3,8 @@ package com.prafull.chatbuddy.mainApp.common.data.repos
 import com.prafull.chatbuddy.mainApp.common.data.remote.OpenAIService
 import com.prafull.chatbuddy.mainApp.common.model.HistoryItem
 import com.prafull.chatbuddy.mainApp.common.model.HistoryMessage
-import com.prafull.chatbuddy.mainApp.home.model.OpenAiRequest
-import com.prafull.chatbuddy.mainApp.home.model.Participant
+import com.prafull.chatbuddy.mainApp.common.model.OpenAiRequest
+import com.prafull.chatbuddy.mainApp.common.model.Participant
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow

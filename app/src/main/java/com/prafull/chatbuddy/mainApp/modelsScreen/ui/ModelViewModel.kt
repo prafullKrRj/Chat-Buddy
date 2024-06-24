@@ -3,7 +3,7 @@ package com.prafull.chatbuddy.mainApp.modelsScreen.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.FirebaseFirestore
-import com.prafull.chatbuddy.model.Model
+import com.prafull.chatbuddy.mainApp.common.model.Model
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

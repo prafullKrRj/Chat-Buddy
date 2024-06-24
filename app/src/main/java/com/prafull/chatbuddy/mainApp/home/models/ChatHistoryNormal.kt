@@ -1,25 +1,20 @@
-package com.prafull.chatbuddy.mainApp.promptlibrary.model
+package com.prafull.chatbuddy.mainApp.home.models
 
 import android.graphics.Bitmap
-import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.mainApp.common.model.HistoryItem
 import com.prafull.chatbuddy.mainApp.common.model.HistoryMessage
+import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelSafety
 import com.prafull.chatbuddy.utils.Const
 import java.util.UUID
 
-
-data class PromptLibraryHistory(
+data class ChatHistoryNormal(
     val id: String = UUID.randomUUID().toString(),
-    val system: String = "",
-    val messages: MutableList<PromptLibraryMessage> = mutableListOf(),
-    val temperature: Double = 1.0,
-    val safetySettings: String = "",
-    val promptType: String = Const.LIBRARY_HISTORY,
-    val model: String = "",
-
-    val name: String = "",
-    val description: String = "",
-    val user: String = "",
+    var messages: MutableList<NormalHistoryMsg> = mutableListOf(),
+    val system: String = Const.GENERAL_SYSTEM_PROMPT,
+    val safetySettings: String = ModelSafety.UNINTERRUPTED.name,
+    val temperature: Double = 0.7,
+    val promptType: String = Const.NORMAL_HISTORY,
+    val model: String
 ) {
     fun toHistoryItem(): HistoryItem {
         return HistoryItem(
@@ -34,14 +29,14 @@ data class PromptLibraryHistory(
     }
 }
 
-data class PromptLibraryMessage(
+data class NormalHistoryMsg(
     val id: String = UUID.randomUUID().toString(),
     val text: String = "",
+    val imageBase64: List<String> = emptyList(),
+    val imageBitmaps: List<Bitmap?> = emptyList(),
     val participant: String = "",
     val model: String = "",
-    var botImage: String = "",
-    val imageBase64: List<String> = emptyList(),
-    val imageBitmaps: List<Bitmap?> = emptyList()
+    var botImage: String = ""
 ) {
     fun toHistoryMessage(): HistoryMessage {
         return HistoryMessage(
@@ -54,21 +49,4 @@ data class PromptLibraryMessage(
                 imageBitmaps = imageBitmaps
         )
     }
-}
-
-data class PromptLibraryItem(
-    val name: String = "",
-    val description: String = "",
-    val system: String = "",
-    val user: String = ""
-) {
-    fun isEmpty(): Boolean {
-        return name.isEmpty() && description.isEmpty() && user.isEmpty()
-    }
-
-    fun isNotEmpty(): Boolean {
-        return name.isNotEmpty() || description.isNotEmpty() || user.isNotEmpty()
-    }
-
-    fun toPromptChatScreen() = Routes.PromptLibraryChat(name, description, system, user)
 }

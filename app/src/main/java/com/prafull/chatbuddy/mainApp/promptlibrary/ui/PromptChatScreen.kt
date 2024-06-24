@@ -1,6 +1,7 @@
 package com.prafull.chatbuddy.mainApp.promptlibrary.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -19,23 +20,21 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.google.firebase.auth.FirebaseAuth
-import com.prafull.chatbuddy.goBackStack
 import com.prafull.chatbuddy.mainApp.common.components.ChatTopBar
-import com.prafull.chatbuddy.mainApp.home.ui.components.SelectModelDialogBox
-import com.prafull.chatbuddy.mainApp.home.ui.homescreen.PromptCard
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen.ChatScreenMessageBubble
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homechatscreen.getBotImage2
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomePromptField
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
+import com.prafull.chatbuddy.mainApp.common.components.SelectModelDialogBox
+import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.ChatScreenMessageBubble
+import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.getBotImage2
+import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
+import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.NewHomePromptField
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryMessage
+import com.prafull.chatbuddy.mainApp.promptlibrary.ui.components.PromptCard
 
 @Composable
 fun PromptChatScreen(
     promptChatVM: PromptChatVM,
-    homeVM: NewHomeViewModel,
-    navController: NavController
+    homeVM: HomeViewModel,
+    backHandler: () -> Unit = {}
 ) {
     var showModelSelectionDialog by remember {
         mutableStateOf(false)
@@ -86,7 +85,8 @@ fun PromptChatScreen(
                                     )
                             )
                         },
-                        promptChatVM.isLoading,
+                        loading = promptChatVM.isLoading,
+                        modifier = Modifier.imePadding()
                 )
             }
     ) { paddingValues ->
@@ -128,7 +128,7 @@ fun PromptChatScreen(
         ExitDialog(
                 title = "Exit",
                 text = "Do you Want to exit the conversation",
-                confirm = { navController.goBackStack() },
+                confirm = backHandler,
                 dismiss = {
                     showExitDialog = false
                 }

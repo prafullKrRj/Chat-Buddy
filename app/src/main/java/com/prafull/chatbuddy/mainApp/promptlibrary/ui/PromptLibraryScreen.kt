@@ -22,7 +22,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -52,7 +51,7 @@ import com.prafull.chatbuddy.MainActivity
 import com.prafull.chatbuddy.mainApp.ModelsAndPromptTopAppBar
 import com.prafull.chatbuddy.mainApp.ads.BannerAd
 import com.prafull.chatbuddy.mainApp.ads.loadInterstitialAd
-import com.prafull.chatbuddy.mainApp.newHome.presentation.homescreen.NewHomeViewModel
+import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
@@ -63,8 +62,7 @@ import org.koin.androidx.compose.getViewModel
 @Composable
 fun PromptScreen(
     modifier: Modifier,
-    drawerState: DrawerState,
-    homeVM: NewHomeViewModel,
+    homeVM: HomeViewModel,
     toPromptChat: (PromptLibraryItem) -> Unit
 ) {
     val promptViewModel: PromptLibraryViewModel = getViewModel()
@@ -72,9 +70,7 @@ fun PromptScreen(
     val scope = rememberCoroutineScope()
     Scaffold(
             topBar = {
-                ModelsAndPromptTopAppBar(title = "Prompt", drawerState, scope) {
-                    homeVM.getPreviousChats()
-                }
+                ModelsAndPromptTopAppBar(title = "Prompt")
             },
             bottomBar = {
                 BannerAd()
