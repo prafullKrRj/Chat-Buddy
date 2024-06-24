@@ -10,6 +10,7 @@ import com.prafull.chatbuddy.authScreen.repo.AuthRepository
 import com.prafull.chatbuddy.mainApp.common.data.HomeRepository
 import com.prafull.chatbuddy.mainApp.common.data.remote.ClaudeApiService
 import com.prafull.chatbuddy.mainApp.common.data.repos.ClaudeRepo
+import com.prafull.chatbuddy.mainApp.common.data.repos.FirebaseRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
 import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.HomeChatVM
@@ -56,6 +57,7 @@ val repositoryModule = module {
     single { GeminiRepo() }
     single { ClaudeRepo() }
     single { OpenAiRepo() }
+    single { FirebaseRepo() }
 
     single<ClaudeApiService> {
         Retrofit.Builder()

@@ -13,6 +13,7 @@ import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class ModelsChatNewVM(
@@ -47,9 +48,9 @@ class ModelsChatNewVM(
                     chatHistory.toHistoryItem(),
                     chatUiState.value.getLast().toHistoryMessage()
             ).collect { response ->
-                chatHistory.apply {
-                    messages.addAll(listOf(_chatUiState.value.getLast(), response.toModelsHisMsg()))
-                }
+
+                saveAndUpdate(_chatUiState.value.getLast())
+                saveAndUpdate(response.toModelsHisMsg())
                 _chatUiState.value.addMessage(response.toModelsHisMsg())
                 isLoading = false
             }
@@ -65,8 +66,21 @@ class ModelsChatNewVM(
             * */
             chatHistory.messages.removeLast()
             chatHistory.messages.removeLast()
-            if (geminiRepository.deleteLastTwo(chatHistory.toHistoryItem())) {       // Delete the last two messages from the database as while getting response we are adding both prompt and response
+            if (removeLastTwoMessages(
+                        chatHistory.id,
+                        chatHistory.promptType
+                )
+            ) {       // Delete the last two messages from the database as while getting response we are adding both prompt and response
                 getResponse()
+            }
+        }
+    }
+
+    override fun saveAndUpdate(message: ModelsMessage) {
+        viewModelScope.launch(Dispatchers.IO) {
+            firebaseRepo.saveModelsMessage(chatHistory.copy(), _chatUiState.value.getLast())
+            chatHistory.apply {
+                messages.add(_chatUiState.value.getLast())
             }
         }
     }

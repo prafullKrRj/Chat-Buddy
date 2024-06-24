@@ -2,13 +2,9 @@ package com.prafull.chatbuddy.mainApp.common.data.repos
 
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.SetOptions
 import com.prafull.chatbuddy.mainApp.common.model.HistoryItem
 import com.prafull.chatbuddy.mainApp.common.model.HistoryMessage
-import com.prafull.chatbuddy.utils.CryptoEncryption
-import com.prafull.chatbuddy.utils.toBase64
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.tasks.await
 import org.koin.core.component.KoinComponent
@@ -45,34 +41,5 @@ abstract class HomeChatAbstract : KoinComponent {
             }
             return false
         }
-    }
-
-
-    /**
-     *          This function is used to save the message to the database
-     * */
-    fun saveMessage(history: HistoryItem, normalHistoryMsg: HistoryMessage) {
-        val encryptedText = CryptoEncryption.encrypt(normalHistoryMsg.text)
-        val encryptedMessage =
-            normalHistoryMsg.copy(
-                    text = encryptedText,
-                    imageBase64 = normalHistoryMsg.imageBitmaps.map {
-                        it?.toBase64() ?: ""
-                    },
-                    imageBitmaps = emptyList()
-            )
-        firestore.collection("users").document(auth.currentUser?.email!!)
-            .collection(history.promptType).document(history.id).set(
-                    mapOf(
-                            "id" to history.id,
-                            "model" to history.model,
-                            "messages" to FieldValue.arrayUnion(encryptedMessage),
-                            "system" to history.system,
-                            "temperature" to history.temperature,
-                            "safetySettings" to history.safetySettings,
-                            "promptType" to history.promptType,
-                    ),
-                    SetOptions.merge()
-            )
     }
 }

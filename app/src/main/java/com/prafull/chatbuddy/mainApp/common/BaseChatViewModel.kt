@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.toMutableStateList
 import androidx.lifecycle.ViewModel
 import com.prafull.chatbuddy.mainApp.common.data.repos.ClaudeRepo
+import com.prafull.chatbuddy.mainApp.common.data.repos.FirebaseRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.HomeChatAbstract
 import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
@@ -24,6 +25,8 @@ abstract class BaseChatViewModel<T : Any, H : Any>(
     protected val claudeRepository: ClaudeRepo by inject()
     protected val openAiRepository: OpenAiRepo by inject()
 
+    protected val firebaseRepo by inject<FirebaseRepo>()
+
     protected val _chatUiState = MutableStateFlow(ChatUIState<T>())
     val chatUiState = _chatUiState.asStateFlow()
 
@@ -41,6 +44,13 @@ abstract class BaseChatViewModel<T : Any, H : Any>(
     abstract fun getResponseFromRepository(repo: HomeChatAbstract)
 
     abstract fun regenerateResponse()
+
+    abstract fun saveAndUpdate(message: T)
+    fun removeLastTwoMessages(id: String, promptType: String) =
+        firebaseRepo.removeLastTwoMessages(id, promptType)
+
+    fun removeLastMessage(id: String, promptType: String) =
+        firebaseRepo.removeLastMessage(id, promptType)
 }
 
 class ChatUIState<T>(

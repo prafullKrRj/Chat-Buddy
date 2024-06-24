@@ -25,8 +25,6 @@ class OpenAiRepo : HomeChatAbstract() {
                 )
                 val response = OpenAIService.getResponse(request)
 
-                saveMessage(history, prompt)             // Save the prompt message
-
                 response.choices.first().openAiMessageResp.let {
                     val responseModel = HistoryMessage(
                             text = it.content,
@@ -34,7 +32,6 @@ class OpenAiRepo : HomeChatAbstract() {
                             model = history.model,
                             botImage = prompt.botImage
                     )
-                    saveMessage(history, responseModel)             // Save the response message
                     trySend(responseModel)
                 }
             } catch (e: Exception) {
@@ -44,7 +41,6 @@ class OpenAiRepo : HomeChatAbstract() {
                         participant = Participant.ASSISTANT.name,
                         botImage = prompt.botImage
                 )
-                saveMessage(history, responseModel)         // Save the error message
                 trySend(responseModel)
             }
             awaitClose { }

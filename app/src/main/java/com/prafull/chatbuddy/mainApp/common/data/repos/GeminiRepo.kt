@@ -29,12 +29,18 @@ class GeminiRepo : HomeChatAbstract() {
                             topK = 64
                             topP = 0.95f
                         },
-                        safetySettings = if (history.safetySettings == ModelSafety.ROMANTIC.name) {
-                            Const.SAFETY_SETTINGS_ROMANTIC
-                        } else if (history.safetySettings == ModelSafety.UNSPECIFIED.name) {
-                            Const.SAFETY_SETTINGS_NORMAL
-                        } else {
-                            Const.SAFETY_SETTINGS_UNINTERRUPTED
+                        safetySettings = when (history.safetySettings) {
+                            ModelSafety.ROMANTIC.name -> {
+                                Const.SAFETY_SETTINGS_ROMANTIC
+                            }
+
+                            ModelSafety.UNSPECIFIED.name -> {
+                                Const.SAFETY_SETTINGS_NORMAL
+                            }
+
+                            else -> {
+                                Const.SAFETY_SETTINGS_UNINTERRUPTED
+                            }
                         },
                         systemInstruction = content {
                             text(history.system)
@@ -48,8 +54,6 @@ class GeminiRepo : HomeChatAbstract() {
             try {
                 val response = chat.sendMessage(prompt.geminiContent())
 
-                saveMessage(history, prompt)            // Save the message to the database
-
                 response.text?.let { modelResponse ->
                     val responseModel = HistoryMessage(
                             text = modelResponse,
@@ -57,7 +61,6 @@ class GeminiRepo : HomeChatAbstract() {
                             model = prompt.model,
                             botImage = prompt.botImage
                     )
-                    saveMessage(history, responseModel)     // Save the message to the database
                     trySend(
                             responseModel
                     )
@@ -69,7 +72,6 @@ class GeminiRepo : HomeChatAbstract() {
                         model = prompt.model,
                         botImage = prompt.botImage
                 )
-                saveMessage(history, responseModel)     // Save the message to the database
                 trySend(
                         responseModel
                 )

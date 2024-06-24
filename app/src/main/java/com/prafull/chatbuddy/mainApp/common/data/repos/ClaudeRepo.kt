@@ -29,7 +29,6 @@ class ClaudeRepo : HomeChatAbstract() {
                         } + prompt.toClaudeMessage()
                 )
                 val response = claudeApiService.postMessage(request = request)
-                saveMessage(history, prompt)
                 response.content.firstOrNull()?.text?.let {
                     val responseModel = HistoryMessage(
                             text = it,
@@ -37,7 +36,6 @@ class ClaudeRepo : HomeChatAbstract() {
                             model = prompt.model,
                             botImage = prompt.botImage
                     )
-                    saveMessage(history, responseModel)     // Save the message to the database
                     trySend(
                             responseModel
                     )
@@ -49,7 +47,6 @@ class ClaudeRepo : HomeChatAbstract() {
                         model = prompt.model,
                         botImage = prompt.botImage
                 )
-                saveMessage(history, responseModel)     // Save the message to the database
                 trySend(
                         responseModel
                 )

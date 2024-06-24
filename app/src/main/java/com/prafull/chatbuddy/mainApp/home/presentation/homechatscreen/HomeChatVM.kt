@@ -13,6 +13,7 @@ import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.models.ChatHistoryNormal
 import com.prafull.chatbuddy.mainApp.home.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class HomeChatVM(
@@ -54,14 +55,8 @@ class HomeChatVM(
                     chatHistory.toHistoryItem(),
                     chatUiState.value.getLast().toHistoryMessage()
             ).collect { response ->
-                chatHistory.apply {
-                    messages.addAll(
-                            listOf(
-                                    _chatUiState.value.getLast(),
-                                    response.toNormalHistoryMsg()
-                            )
-                    )
-                }
+                saveAndUpdate(_chatUiState.value.getLast())
+                saveAndUpdate(response.toNormalHistoryMsg())
                 _chatUiState.value.addMessage(response.toNormalHistoryMsg())
                 isLoading = false
             }
@@ -77,8 +72,21 @@ class HomeChatVM(
             * */
             chatHistory.messages.removeLast()
             chatHistory.messages.removeLast()
-            if (geminiRepository.deleteLastTwo(chatHistory.toHistoryItem())) {       // Delete the last two messages from the database as while getting response we are adding both prompt and response
+            if (removeLastTwoMessages(
+                        chatHistory.id,
+                        chatHistory.promptType
+                )
+            ) {       // Delete the last two messages from the database as while getting response we are adding both prompt and response
                 getResponse()
+            }
+        }
+    }
+
+    override fun saveAndUpdate(message: NormalHistoryMsg) {
+        viewModelScope.launch(Dispatchers.IO) {
+            firebaseRepo.saveNormalMessage(chatHistory.copy(), _chatUiState.value.getLast())
+            chatHistory.apply {
+                messages.add(_chatUiState.value.getLast())
             }
         }
     }
