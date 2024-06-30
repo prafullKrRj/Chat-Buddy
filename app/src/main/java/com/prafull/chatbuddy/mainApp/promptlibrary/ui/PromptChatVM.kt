@@ -14,7 +14,6 @@ import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryHistory
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryItem
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryMessage
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 
@@ -74,6 +73,7 @@ class PromptChatVM(
                             )
                     )
                 }
+                saveToFirebase()
                 _chatUiState.value.addMessage(response.toPromptLibMsg())
                 isLoading = false
             }
@@ -99,12 +99,7 @@ class PromptChatVM(
         }
     }
 
-    override fun saveAndUpdate(message: PromptLibraryMessage) {
-        viewModelScope.launch(Dispatchers.IO) {
-            firebaseRepo.savePromptLibraryMessage(chatHistory.copy(), _chatUiState.value.getLast())
-            chatHistory.apply {
-                messages.add(_chatUiState.value.getLast())
-            }
-        }
+    override fun saveToFirebase() {
+        firebaseRepo.savePromptLibraryMessage(chatHistory.copy())
     }
 }

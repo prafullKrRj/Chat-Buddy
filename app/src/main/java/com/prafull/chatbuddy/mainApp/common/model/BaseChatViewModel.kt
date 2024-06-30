@@ -44,7 +44,7 @@ abstract class BaseChatViewModel<T : Any, H : Any>(
 
     abstract fun regenerateResponse()
 
-    abstract fun saveAndUpdate(message: T)
+    abstract fun saveToFirebase()
     fun removeLastTwoMessages(id: String, promptType: String) =
         firebaseRepo.removeLastTwoMessages(id, promptType)
 

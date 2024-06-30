@@ -34,8 +34,8 @@ import com.prafull.chatbuddy.mainApp.common.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.home.presentation.components.MessageBubble
+import com.prafull.chatbuddy.mainApp.home.presentation.components.PromptField
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
-import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.NewHomePromptField
 import com.prafull.chatbuddy.mainApp.promptlibrary.ui.ExitDialog
 
 @Composable
@@ -77,7 +77,7 @@ fun HomeChatScreen(
                 }
             },
             bottomBar = {
-                NewHomePromptField(
+                PromptField(
                         onSend = { message, images, participant ->
                             chatVM.sendMessage(
                                     NormalHistoryMsg(

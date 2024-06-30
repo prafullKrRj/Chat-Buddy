@@ -1,8 +1,6 @@
 package com.prafull.chatbuddy.mainApp
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +28,7 @@ import com.prafull.chatbuddy.AppDes
 import com.prafull.chatbuddy.R
 import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.goBackStack
+import com.prafull.chatbuddy.mainApp.historyscreen.ui.HistoryScreen
 import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.HomeChatScreen
 import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.HomeChatVM
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
@@ -59,7 +58,7 @@ fun MainNavigation(appNavController: NavController) {
     val showBottom = rememberSaveable {
         mutableStateOf(true)
     }
-    val nc = rememberNavController()
+    val navcontroller = rememberNavController()
     val destinations = listOf(
             AppDes.Home,
             AppDes.PromptScreen,
@@ -68,45 +67,38 @@ fun MainNavigation(appNavController: NavController) {
             AppDes.SettingsScreen
     )
 
-    Scaffold(
-            bottomBar = {
-                if (showBottom.value)
-                    NavigationBar {
-                        destinations.forEach { destination ->
-                            NavigationBarItem(
-                                    selected = destination.label == currentDestination.intValue,
-                                    onClick = {
-                                        if (currentDestination.intValue != destination.label) {
-                                            currentDestination.intValue = destination.label
-                                            nc.navigateAndPopBackStack(destination.route)
-                                        }
-                                    },
-                                    icon = {
-                                        Icon(
-                                                painter = painterResource(id = destination.icon),
-                                                contentDescription = stringResource(id = destination.contentDescription)
-                                        )
-                                    },
-                                    label = {
-                                        Text(text = stringResource(id = destination.label))
-                                    }
+    Scaffold(bottomBar = {
+        if (showBottom.value) NavigationBar {
+            destinations.forEach { destination ->
+                NavigationBarItem(selected = destination.label == currentDestination.intValue,
+                        onClick = {
+                            if (currentDestination.intValue != destination.label) {
+                                currentDestination.intValue = destination.label
+                                navcontroller.navigateAndPopBackStack(destination.route)
+                            }
+                        },
+                        icon = {
+                            Icon(
+                                    painter = painterResource(id = destination.icon),
+                                    contentDescription = stringResource(id = destination.contentDescription)
                             )
-                        }
-                    }
+                        },
+                        label = {
+                            Text(text = stringResource(id = destination.label))
+                        })
             }
-    ) { paddingValues ->
+        }
+    }) { paddingValues ->
         Column(Modifier.padding(paddingValues)) {
-            NavHost(navController = nc, startDestination = Routes.NewHomeNav) {
-                homeNavigation(nc, newHomeViewModel) { showBottom.value = it }
-                promptLibraryScreen(nc, newHomeViewModel) { showBottom.value = it }
-                modelsNavigationScreen(nc, newHomeViewModel) { showBottom.value = it }
+            NavHost(navController = navcontroller, startDestination = Routes.NewHomeNav) {
+                homeNavigation(navcontroller, newHomeViewModel) { showBottom.value = it }
+                promptLibraryScreen(navcontroller, newHomeViewModel) { showBottom.value = it }
+                modelsNavigationScreen(navcontroller, newHomeViewModel) { showBottom.value = it }
                 composable<Routes.SettingsScreen> {
-                    SettingsScreen(navController = nc)
+                    SettingsScreen(navController = navcontroller)
                 }
                 composable<Routes.History> {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Text(text = "History")
-                    }
+                    HistoryScreen(navController = navcontroller)
                 }
             }
         }
@@ -120,8 +112,7 @@ fun NavGraphBuilder.modelsNavigationScreen(
         composable<Routes.ModelsScreen> {
             showNavBar(true)
             ModelsScreen(
-                    navController = navController,
-                    homeViewModel = homeVM
+                    navController = navController, homeViewModel = homeVM
             )
         }
         composable<Routes.ModelChatScreen> { backStackEntry ->
@@ -138,8 +129,7 @@ fun NavGraphBuilder.modelsNavigationScreen(
 
 
 fun NavGraphBuilder.promptLibraryScreen(
-    navController: NavHostController,
-    newHomeVM: HomeViewModel, showNavBar: (Boolean) -> Unit = {}
+    navController: NavHostController, newHomeVM: HomeViewModel, showNavBar: (Boolean) -> Unit = {}
 ) {
     navigation<Routes.PromptLibraryNav>(startDestination = Routes.PromptLibraryScreen) {
         composable<Routes.PromptLibraryScreen> {
@@ -161,8 +151,7 @@ fun NavGraphBuilder.promptLibraryScreen(
 }
 
 fun NavGraphBuilder.homeNavigation(
-    navController: NavController,
-    homeVm: HomeViewModel, showNavBar: (Boolean) -> Unit = {}
+    navController: NavController, homeVm: HomeViewModel, showNavBar: (Boolean) -> Unit = {}
 ) {
     navigation<Routes.NewHomeNav>(startDestination = Routes.Home) {
         composable<Routes.Home> {

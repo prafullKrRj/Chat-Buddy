@@ -1,15 +1,13 @@
 package com.prafull.chatbuddy.mainApp.common.data.repos
 
+import android.util.Log
 import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
 import com.prafull.chatbuddy.mainApp.home.models.ChatHistoryNormal
-import com.prafull.chatbuddy.mainApp.home.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
-import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
 import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryHistory
-import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryMessage
 import com.prafull.chatbuddy.utils.CryptoEncryption
 import com.prafull.chatbuddy.utils.toBase64
 import org.koin.core.component.KoinComponent
@@ -20,16 +18,29 @@ class FirebaseRepo : KoinComponent {
     private val firebaseAuth by inject<FirebaseAuth>()
 
     // Save normal message
-    suspend fun saveNormalMessage(history: ChatHistoryNormal, message: NormalHistoryMsg) {
-        val encryptedMessage =
-            message.copy(
-                    text = getEncrypted(message.text),
-                    imageBase64 = message.imageBitmaps.map {
+    fun saveNormalMessage(history: ChatHistoryNormal) {
+        val response = history.messages.last()
+        val prompt = history.messages[history.messages.size - 2]
+        val encryptedPrompt =
+            prompt.copy(
+                    text = getEncrypted(prompt.text),
+                    imageBase64 = prompt.imageBitmaps.map {
                         it?.toBase64() ?: ""
                     },
                     imageBitmaps = emptyList()
             )
-        history.messages.add(encryptedMessage)
+        val encryptedResponse =
+            response.copy(
+                    text = getEncrypted(response.text),
+                    imageBase64 = response.imageBitmaps.map {
+                        it?.toBase64() ?: ""
+                    },
+                    imageBitmaps = emptyList()
+            )
+        history.messages.removeLast()
+        history.messages.removeLast()
+        history.messages.add(encryptedPrompt)
+        history.messages.add(encryptedResponse)
         firestore.collection("users").document(firebaseAuth.currentUser?.email!!)
             .collection(history.promptType).document(history.id).set(
                     history,
@@ -38,19 +49,31 @@ class FirebaseRepo : KoinComponent {
         addToUserHistory(history.id, history.promptType)
     }
 
-    suspend fun savePromptLibraryMessage(
-        history: PromptLibraryHistory,
-        message: PromptLibraryMessage
+    fun savePromptLibraryMessage(
+        history: PromptLibraryHistory
     ) {
-        val encryptedMessage =
-            message.copy(
-                    text = getEncrypted(message.text),
-                    imageBase64 = message.imageBitmaps.map {
+        val response = history.messages.last()
+        val prompt = history.messages[history.messages.size - 2]
+        val encryptedPrompt =
+            prompt.copy(
+                    text = getEncrypted(prompt.text),
+                    imageBase64 = prompt.imageBitmaps.map {
                         it?.toBase64() ?: ""
                     },
                     imageBitmaps = emptyList()
             )
-        history.messages.add(encryptedMessage)
+        val encryptedResponse =
+            response.copy(
+                    text = getEncrypted(response.text),
+                    imageBase64 = response.imageBitmaps.map {
+                        it?.toBase64() ?: ""
+                    },
+                    imageBitmaps = emptyList()
+            )
+        history.messages.removeLast()
+        history.messages.removeLast()
+        history.messages.add(encryptedPrompt)
+        history.messages.add(encryptedResponse)
         firestore.collection("users").document(firebaseAuth.currentUser?.email!!)
             .collection(history.promptType).document(history.id).set(
                     history,
@@ -59,16 +82,29 @@ class FirebaseRepo : KoinComponent {
         addToUserHistory(history.id, history.promptType)
     }
 
-    suspend fun saveModelsMessage(history: ModelsHistory, message: ModelsMessage) {
-        val encryptedMessage =
-            message.copy(
-                    text = getEncrypted(message.text),
-                    imageBase64 = message.imageBitmaps.map {
+    fun saveModelsMessage(history: ModelsHistory) {
+        val response = history.messages.last()
+        val prompt = history.messages[history.messages.size - 2]
+        val encryptedPrompt =
+            prompt.copy(
+                    text = getEncrypted(prompt.text),
+                    imageBase64 = prompt.imageBitmaps.map {
                         it?.toBase64() ?: ""
                     },
                     imageBitmaps = emptyList()
             )
-        history.messages.add(encryptedMessage)
+        val encryptedResponse =
+            response.copy(
+                    text = getEncrypted(response.text),
+                    imageBase64 = response.imageBitmaps.map {
+                        it?.toBase64() ?: ""
+                    },
+                    imageBitmaps = emptyList()
+            )
+        history.messages.removeLast()
+        history.messages.removeLast()
+        history.messages.add(encryptedPrompt)
+        history.messages.add(encryptedResponse)
         firestore.collection("users").document(firebaseAuth.currentUser?.email!!)
             .collection(history.promptType).document(history.id).set(
                     history,
@@ -78,8 +114,14 @@ class FirebaseRepo : KoinComponent {
     }
 
     private fun addToUserHistory(id: String, promptType: String) {
-        firestore.collection("users").document(firebaseAuth.currentUser!!.email.toString())
-            .update("history", UserHistory(id, promptType, Timestamp.now()))
+        val ref =
+            firestore.collection("users").document(firebaseAuth.currentUser!!.email.toString())
+        ref.get().addOnSuccessListener {
+            val history = it.get("history") as MutableList<UserHistory>
+            Log.d("FirebaseRepo", "addToUserHistory: ${history.size}")
+            history.add(UserHistory(id, promptType))
+            ref.update("history", history)
+        }
     }
 
     fun removeLastTwoMessages(id: String, promptType: String): Boolean {

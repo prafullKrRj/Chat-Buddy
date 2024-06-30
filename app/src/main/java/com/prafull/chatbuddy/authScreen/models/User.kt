@@ -7,5 +7,5 @@ data class User(
     val email: String = "",
     val subscribed: Boolean = false,
     val currCoins: Long = 0,
-    val history: UserHistory = UserHistory()
+    val history: List<UserHistory> = emptyList()
 )

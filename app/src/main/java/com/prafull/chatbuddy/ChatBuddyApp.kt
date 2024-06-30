@@ -13,6 +13,8 @@ import com.prafull.chatbuddy.mainApp.common.data.repos.ClaudeRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.FirebaseRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.GeminiRepo
 import com.prafull.chatbuddy.mainApp.common.data.repos.OpenAiRepo
+import com.prafull.chatbuddy.mainApp.historyscreen.data.HistoryRepo
+import com.prafull.chatbuddy.mainApp.historyscreen.ui.HistoryViewModel
 import com.prafull.chatbuddy.mainApp.home.presentation.homechatscreen.HomeChatVM
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.ui.ModelViewModel
@@ -58,7 +60,7 @@ val repositoryModule = module {
     single { ClaudeRepo() }
     single { OpenAiRepo() }
     single { FirebaseRepo() }
-
+    single { HistoryRepo() }
     single<ClaudeApiService> {
         Retrofit.Builder()
             .baseUrl("https://api.anthropic.com/")
@@ -82,7 +84,7 @@ val viewModels = module {
     viewModel<HomeChatVM> { HomeChatVM(get(), get()) }
     viewModel { PromptChatVM(get()) }
     viewModel { ModelsChatNewVM(get()) }
-
+    viewModel { HistoryViewModel() }
     viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }
     viewModel<ModelViewModel> { ModelViewModel() }
     viewModel<SettingsViewModel> { SettingsViewModel() }

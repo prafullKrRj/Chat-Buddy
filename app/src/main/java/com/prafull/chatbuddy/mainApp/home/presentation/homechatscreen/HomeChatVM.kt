@@ -13,7 +13,6 @@ import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.models.ChatHistoryNormal
 import com.prafull.chatbuddy.mainApp.home.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class HomeChatVM(
@@ -63,6 +62,7 @@ class HomeChatVM(
                             )
                     )
                 }
+                saveToFirebase()
                 _chatUiState.value.addMessage(response.toNormalHistoryMsg())
                 isLoading = false
             }
@@ -88,12 +88,7 @@ class HomeChatVM(
         }
     }
 
-    override fun saveAndUpdate(message: NormalHistoryMsg) {
-        viewModelScope.launch(Dispatchers.IO) {
-            firebaseRepo.saveNormalMessage(chatHistory.copy(), _chatUiState.value.getLast())
-            chatHistory.apply {
-                messages.add(_chatUiState.value.getLast())
-            }
-        }
+    override fun saveToFirebase() {
+        firebaseRepo.saveNormalMessage(chatHistory.copy())
     }
 }
