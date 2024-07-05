@@ -1,11 +1,13 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen.ui.chat
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.prafull.chatbuddy.mainApp.common.data.repos.HomeChatAbstract
 import com.prafull.chatbuddy.mainApp.common.model.BaseChatViewModel
+import com.prafull.chatbuddy.mainApp.common.model.ChatUIState
 import com.prafull.chatbuddy.mainApp.common.model.Model
 import com.prafull.chatbuddy.mainApp.common.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.common.model.isGeminiModel
@@ -13,23 +15,48 @@ import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ModelsChatNewVM(
-    suppliedModel: Model
+    suppliedModel: Model,
+    id: String
 ) : BaseChatViewModel<ModelsMessage, ModelsHistory>() {
 
     var model by mutableStateOf(suppliedModel)
-    override var chatHistory: ModelsHistory by mutableStateOf(ModelsHistory())
+    var historyLoading by mutableStateOf(false)
 
+    override var chatHistory: ModelsHistory by mutableStateOf(ModelsHistory())
     init {
+        Log.d("Models View Model", id)
         model = suppliedModel
-        chatHistory = chatHistory.copy(
-                model = model.actualName,
-                system = model.system,
-                safetySettings = model.safetySetting,
-                temperature = model.temperature
-        )
+        if (id.isEmpty()) {
+            chatHistory = chatHistory.copy(
+                    model = model.actualName,
+                    system = model.system,
+                    safetySettings = model.safetySetting,
+                    temperature = model.temperature
+            )
+        }
+        if (id.isNotEmpty()) {
+            getCharacterHistory(id)
+        }
+    }
+    /**
+     *      Get the character history from the firebase
+     * */
+    private fun getCharacterHistory(id: String) = viewModelScope.launch(Dispatchers.IO) {
+        historyLoading = true
+        firebaseRepo.getModelsHistory(id, model).collectLatest {
+            chatHistory = it
+            historyLoading = false
+            Log.d("Models View Model", "History: $chatHistory")
+            _chatUiState.update {
+                ChatUIState(messages = chatHistory.messages)
+            }
+        }
     }
 
     override fun getResponse() {

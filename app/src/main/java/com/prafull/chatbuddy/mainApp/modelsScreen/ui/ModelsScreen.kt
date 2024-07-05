@@ -27,7 +27,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
@@ -62,13 +61,18 @@ fun ModelsScreen(
     val uiState by modelViewModel.state.collectAsState()
     val navigate = remember<(Model) -> Unit> {
         {
-            Log.d("ModelsScreen", "navigate: ${it}")
-            navController.navigate(
-                    it.toChatScreen()
-            )
+            if (it.modelGroup == "Characters") {
+                Log.d("ModelsScreen", "navigate: $it")
+                navController.navigate(
+                        it.toChatScreen(id = it.generalName)
+                )
+            } else {
+                navController.navigate(
+                        it.toChatScreen()
+                )
+            }
         }
     }
-    val scope = rememberCoroutineScope()
     val modelResponse by modelViewModel.modelResponse.collectAsState()
     val context = LocalContext.current
 

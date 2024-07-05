@@ -148,6 +148,7 @@ sealed interface Routes {
 
     @Serializable
     data class ModelChatScreen(
+        val id: String = "",
         val generalName: String = "",
         val actualName: String = "",
         val currPricePerToken: String = "0.0",

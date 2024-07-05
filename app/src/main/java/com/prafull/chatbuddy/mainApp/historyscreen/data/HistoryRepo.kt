@@ -1,11 +1,11 @@
 package com.prafull.chatbuddy.mainApp.historyscreen.data
 
+import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.prafull.chatbuddy.mainApp.common.data.repos.UserHistory
 import com.prafull.chatbuddy.mainApp.historyscreen.model.HistoryClass
-import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
-import com.prafull.chatbuddy.mainApp.promptlibrary.model.PromptLibraryHistory
-import com.prafull.chatbuddy.utils.Const
+import com.prafull.chatbuddy.utils.CryptoEncryption
 import com.prafull.chatbuddy.utils.Resource
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -18,33 +18,47 @@ class HistoryRepo : KoinComponent {
 
     private val fireAuth by inject<FirebaseAuth>()
     private val firesStore by inject<FirebaseFirestore>()
-
+    private val user by lazy {
+        firesStore.collection("users").document(fireAuth.currentUser?.email.toString())
+    }
 
     suspend fun getHistory(): Flow<Resource<HistoryClass>> {
         return callbackFlow {
             try {
-                val historyClass = HistoryClass()
-                firesStore.collection("users").document(fireAuth.currentUser!!.email.toString())
-                    .collection(Const.MODELS_HISTORY).get().await().documents.forEach { document ->
-                        document.toObject(ModelsHistory::class.java)
-                            ?.let { historyClass.modelsHistory.add(it) }
-                    }
-                /*
-                firesStore.collection("users").document(fireAuth.currentUser!!.email.toString())
-                    .collection(Const.NORMAL_HISTORY).get().await().documents.forEach { document ->
-                        document.toObject(ChatHistoryNormal::class.java)
-                            ?.let { historyClass.normalHistory.add(it) }
-                    }*/
-                firesStore.collection("users").document(fireAuth.currentUser!!.email.toString())
-                    .collection(Const.LIBRARY_HISTORY).get().await().documents.forEach { document ->
-                        document.toObject(PromptLibraryHistory::class.java)
-                            ?.let { historyClass.promptLibHistory.add(it) }
-                    }
-                trySend(Resource.Success(historyClass))
+                val document = user.get().await()
+                val data = document["history"] as List<Map<String, Any>>
+                val historyList = data.map {
+                    UserHistory(
+                            id = it["id"] as String,
+                            promptType = (it["promptType"] as String),
+                            timestamp = it["timestamp"] as Timestamp,
+                            firstPrompt = CryptoEncryption.decrypt(it["firstPrompt"] as String),
+                            title = (it["title"] as String)
+                    )
+                }
+                trySend(Resource.Success(HistoryClass(historyList.sortedByDescending {
+                    it.timestamp
+                })))
             } catch (e: Exception) {
                 trySend(Resource.Error(e))
             }
             awaitClose { }
+        }
+    }
+
+    suspend fun deleteChat(chatId: String, promptType: String): Flow<Boolean> {
+        return callbackFlow {
+            user.collection(promptType).document(chatId).delete()
+            val document = user.get().await()
+            val data = document["history"] as MutableList<Map<String, Any>>
+
+            data.removeAll { it["id"] == chatId }
+            user.update("history", data).addOnSuccessListener {
+                trySend(true)
+            }.addOnFailureListener {
+                trySend(false)
+            }
+            awaitClose {  }
         }
     }
 }

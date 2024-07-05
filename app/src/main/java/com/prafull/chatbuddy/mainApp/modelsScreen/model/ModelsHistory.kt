@@ -28,7 +28,7 @@ data class ModelsHistory(
 
 data class ModelsMessage(
     val id: String = UUID.randomUUID().toString(),
-    val text: String = "",
+    var text: String = "",
     val participant: String = "",
     val model: String = "",
     var botImage: String = "",

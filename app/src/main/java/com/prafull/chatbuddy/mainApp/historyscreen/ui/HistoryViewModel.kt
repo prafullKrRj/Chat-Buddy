@@ -31,7 +31,10 @@ class HistoryViewModel : ViewModel(), KoinComponent {
                 when (response) {
                     is Resource.Error -> {
                         _historyState.update {
-                            HistoryUiState(error = Pair(true, response.exception.message ?: ""), loading = false)
+                            HistoryUiState(
+                                    error = Pair(true, response.exception.message ?: ""),
+                                    loading = false
+                            )
                         }
                     }
 
@@ -43,11 +46,21 @@ class HistoryViewModel : ViewModel(), KoinComponent {
 
                     is Resource.Success -> {
                         _historyState.update {
-                            HistoryUiState(error = Pair(false, ""), loading = false, history = response.data)
+                            HistoryUiState(
+                                    error = Pair(false, ""),
+                                    loading = false,
+                                    history = response.data
+                            )
                         }
                     }
                 }
             }
+        }
+    }
+
+    fun deleteChat(chatId: String, promptType: String) = viewModelScope.launch(Dispatchers.IO) {
+        historyRepo.deleteChat(chatId, promptType).collectLatest {
+            getHistory()
         }
     }
 }

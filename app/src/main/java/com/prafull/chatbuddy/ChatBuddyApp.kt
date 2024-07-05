@@ -83,7 +83,7 @@ val viewModels = module {
     viewModel<HomeViewModel> { HomeViewModel() }
     viewModel<HomeChatVM> { HomeChatVM(get(), get()) }
     viewModel { PromptChatVM(get()) }
-    viewModel { ModelsChatNewVM(get()) }
+    viewModel { ModelsChatNewVM(get(),get()) }
     viewModel { HistoryViewModel() }
     viewModel<PromptLibraryViewModel> { PromptLibraryViewModel() }
     viewModel<ModelViewModel> { ModelViewModel() }

@@ -18,9 +18,9 @@ object Const {
     const val NLP = "nlp"
 
     const val NORMAL_HISTORY = "normal_history"
-    const val MODELS_HISTORY = "characters_history"
+    const val MODELS_HISTORY = "models_history"
     const val LIBRARY_HISTORY = "library_history"
-
+    const val CHARACTER_HISTORY = "character_history"
 
     val SAFETY_SETTINGS_NORMAL = listOf(
             SafetySetting(
@@ -65,15 +65,15 @@ object Const {
             ),
             SafetySetting(
                     harmCategory = HarmCategory.HARASSMENT,
-                    threshold = BlockThreshold.MEDIUM_AND_ABOVE
+                    threshold = BlockThreshold.NONE
             ),
             SafetySetting(
                     harmCategory = HarmCategory.HATE_SPEECH,
-                    threshold = BlockThreshold.MEDIUM_AND_ABOVE
+                    threshold = BlockThreshold.NONE
             ),
             SafetySetting(
                     harmCategory = HarmCategory.DANGEROUS_CONTENT,
-                    threshold = BlockThreshold.LOW_AND_ABOVE
+                    threshold = BlockThreshold.NONE
             ),
     )
 }

@@ -18,7 +18,8 @@ data class Model(
     val system: String = Const.GENERAL_SYSTEM_PROMPT,
     val safetySetting: String = ModelSafety.UNSPECIFIED.name
 ) {
-    fun toChatScreen() = Routes.ModelChatScreen(
+    fun toChatScreen(id: String = "") = Routes.ModelChatScreen(
+            id = id,
             generalName,
             actualName,
             currPricePerToken.toString(),

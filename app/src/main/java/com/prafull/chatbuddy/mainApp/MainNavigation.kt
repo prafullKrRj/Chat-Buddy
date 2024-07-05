@@ -1,5 +1,6 @@
 package com.prafull.chatbuddy.mainApp
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -118,7 +119,8 @@ fun NavGraphBuilder.modelsNavigationScreen(
         composable<Routes.ModelChatScreen> { backStackEntry ->
             showNavBar(false)
             val model: Routes.ModelChatScreen = backStackEntry.toRoute()
-            val viewModel: ModelsChatNewVM = koinViewModel { parametersOf(model.toModel()) }
+            Log.d("Models Navigation", model.toString())
+            val viewModel: ModelsChatNewVM = koinViewModel { parametersOf(model.toModel(), model.id) }
             ModelsNewChatScreen(viewModel) {
                 showNavBar(true)
                 navController.goBackStack()
