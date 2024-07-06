@@ -31,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.prafull.chatbuddy.Routes
 import com.prafull.chatbuddy.mainApp.common.data.repos.UserHistory
 import com.prafull.chatbuddy.utils.Const
 import org.koin.androidx.compose.koinViewModel
@@ -99,12 +100,22 @@ fun HistoryItems(
                     .fillMaxSize()
                     .clickable {
                         when (history.promptType) {
-                            Const.NORMAL_HISTORY -> {}
-                            Const.MODELS_HISTORY -> {}
+                            Const.NORMAL_HISTORY -> {
+                                navController.navigate(Routes.HomeChatScreen(history.id))
+                            }
+
+                            Const.MODELS_HISTORY -> {
+                                navController.navigate(Routes.ModelChatScreen(history.id))
+                            }
+
                             Const.LIBRARY_HISTORY -> {}
+                            Const.CHARACTER_HISTORY -> {
+                                navController.navigate(Routes.ModelChatScreen(history.id))
+                            }
                         }
                     }
-                    .padding(12.dp)) {
+                    .padding(12.dp)
+        ) {
             if (history.title.isNotEmpty()) {
                 Row {
                     Text(
@@ -113,19 +124,22 @@ fun HistoryItems(
                             fontSize = 16.sp,
                             modifier = Modifier.weight(.9f)
                     )
-                    IconButton(onClick = {
-                        historyViewModel.deleteChat(history.id, history.promptType)
-                    }) {
-                        Icon(
-                                imageVector = Icons.Outlined.Delete,
-                                contentDescription = "Delete history composable"
-                        )
-                    }
                 }
             }
             Text(text = if (history.firstPrompt.length > 300) history.firstPrompt.substring(300) else history.firstPrompt)
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
+            Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End)
+            ) {
                 Text(formatTimestamp(history.timestamp.toDate().time))
+                IconButton(onClick = {
+                    historyViewModel.deleteChat(history.id, history.promptType)
+                }) {
+                    Icon(
+                            imageVector = Icons.Outlined.Delete,
+                            contentDescription = "Delete history composable"
+                    )
+                }
             }
         }
     }

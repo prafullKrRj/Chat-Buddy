@@ -99,6 +99,7 @@ fun MainNavigation(appNavController: NavController) {
                     SettingsScreen(navController = navcontroller)
                 }
                 composable<Routes.History> {
+                    showBottom.value = true
                     HistoryScreen(navController = navcontroller)
                 }
             }
@@ -120,7 +121,8 @@ fun NavGraphBuilder.modelsNavigationScreen(
             showNavBar(false)
             val model: Routes.ModelChatScreen = backStackEntry.toRoute()
             Log.d("Models Navigation", model.toString())
-            val viewModel: ModelsChatNewVM = koinViewModel { parametersOf(model.toModel(), model.id) }
+            val viewModel: ModelsChatNewVM =
+                koinViewModel { parametersOf(model.toModel(), model.id) }
             ModelsNewChatScreen(viewModel) {
                 showNavBar(true)
                 navController.goBackStack()
@@ -162,8 +164,9 @@ fun NavGraphBuilder.homeNavigation(
         }
         composable<Routes.HomeChatScreen> { backStackEntry ->
             showNavBar(false)
+            val homeChat: Routes.HomeChatScreen = backStackEntry.toRoute()
             val chatVM: HomeChatVM =
-                koinViewModel { parametersOf(homeVm.currPrompt, homeVm.currModel) }
+                koinViewModel { parametersOf(homeVm.currPrompt, homeVm.currModel, homeChat.id) }
             HomeChatScreen(chatVM, homeVm) {
                 showNavBar(true)
                 navController.goBackStack()

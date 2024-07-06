@@ -15,6 +15,7 @@ import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsMessage
+import com.prafull.chatbuddy.utils.CryptoEncryption
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
@@ -29,6 +30,7 @@ class ModelsChatNewVM(
     var historyLoading by mutableStateOf(false)
 
     override var chatHistory: ModelsHistory by mutableStateOf(ModelsHistory())
+
     init {
         Log.d("Models View Model", id)
         model = suppliedModel
@@ -44,19 +46,35 @@ class ModelsChatNewVM(
             getCharacterHistory(id)
         }
     }
+
     /**
      *      Get the character history from the firebase
      * */
     private fun getCharacterHistory(id: String) = viewModelScope.launch(Dispatchers.IO) {
         historyLoading = true
-        firebaseRepo.getModelsHistory(id, model).collectLatest {
+        firebaseRepo.getModelsHistory(id, model).collectLatest { it ->
             chatHistory = it
             historyLoading = false
-            Log.d("Models View Model", "History: $chatHistory")
             _chatUiState.update {
-                ChatUIState(messages = chatHistory.messages)
+                ChatUIState(
+                        messages = chatHistory.messages.map { message ->
+                            message.convertToDecryptedMessages()
+                        }
+                )
             }
         }
+    }
+
+    private fun ModelsMessage.convertToDecryptedMessages(): ModelsMessage {
+        return ModelsMessage(
+                id,
+                text = CryptoEncryption.decrypt(text),
+                participant,
+                model,
+                botImage,
+                imageBase64,
+                imageBitmaps
+        )
     }
 
     override fun getResponse() {

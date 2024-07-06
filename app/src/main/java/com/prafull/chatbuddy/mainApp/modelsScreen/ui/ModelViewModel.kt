@@ -20,6 +20,7 @@ class ModelViewModel : ViewModel(), KoinComponent {
     val state = _state.asStateFlow()
 
     init {
+        addModel()
         getModels()
     }
 
@@ -54,25 +55,18 @@ class ModelViewModel : ViewModel(), KoinComponent {
         }
     }
 
+
     private fun addModel() {
         viewModelScope.launch(Dispatchers.IO) {
-            firestore.collection("models").document("nlp").collection("Characters")
-                .document("James")
-                .set(
-                        Model(
-                                generalName = "James",
-                                actualName = "gemini-1.5-flash",
-                                currPricePerToken = 0.0,
-                                image = "https://firebasestorage.googleapis.com/v0/b/chat-buddy-4c59f.appspot.com/o/models%2FJames%20(1).jpg?alt=media&token=79a1158d-a0d6-4aa4-8ece-c77fcc4442a1",
-                                hasVision = false,
-                                hasFiles = false,
-                                modelGroup = "Characters",
-                                taskType = "nlp",
-                                temperature = 1.0,
-                                system = "Your name is James Act like an boyfriend to the user engage into romantic and seductive conversation with the user such also observing user that whether the user want to engage into romantic conversation or into emotional conversation. Make user in attached to your way of talking and your love. The language should be more sort of human like and romantic if needed. Also talk in same language in which user is talking like he was talking in Hinglish then you should talk in hinglish.",
-                                safetySetting = ModelSafety.ROMANTIC.name
-                        )
-                )
+            firestore.collection("models").document("nlp").collection("Characters").get()
+                .addOnSuccessListener { documents ->
+                    for (document in documents) {
+                        firestore.collection("models").document("nlp")
+                            .collection("Characters")
+                            .document(document.id)
+                            .update("safetySetting", ModelSafety.UNINTERRUPTED.name)
+                    }
+                }
         }
     }
 }
@@ -87,21 +81,13 @@ data class ModelResponse(
 )
 
 data class Group(
-    val name: String = "",
-    val models: List<Model> = emptyList()
+    val name: String = "", val models: List<Model> = emptyList()
 )
 
 data class ModelScreenUIState(
-    val models: List<Model> = emptyList(),
-    val loading: Boolean = false,
-    val error: Boolean = false
+    val models: List<Model> = emptyList(), val loading: Boolean = false, val error: Boolean = false
 )
 
 enum class ModelSafety {
-    ROMANTIC,
-    FRIENDLY,
-    PROFESSIONAL,
-    ACTOR,
-    UNSPECIFIED,
-    UNINTERRUPTED
+    ROMANTIC, FRIENDLY, PROFESSIONAL, ACTOR, UNSPECIFIED, UNINTERRUPTED
 }

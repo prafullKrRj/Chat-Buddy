@@ -5,6 +5,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.SetOptions
+import com.google.firebase.firestore.toObject
 import com.prafull.chatbuddy.mainApp.common.model.Model
 import com.prafull.chatbuddy.mainApp.home.models.ChatHistoryNormal
 import com.prafull.chatbuddy.mainApp.modelsScreen.model.ModelsHistory
@@ -143,9 +144,9 @@ class FirebaseRepo : KoinComponent {
         id: String,
         promptType: String,
         firstPrompt: String = "",
-        title: String = ""
+        title: String = "",
     ) {
-        user.get().addOnSuccessListener {
+        user.get().addOnSuccessListener { it ->
             val history = (it.get("history") as List<HashMap<String, Any>>).map { hashMap ->
                 hashMapToUserHistory(hashMap)
             }.toMutableList()
@@ -154,8 +155,13 @@ class FirebaseRepo : KoinComponent {
 
             if (existingHistory == null) {
                 history.add(UserHistory(id, promptType, firstPrompt = firstPrompt, title = title))
-                user.update("history", history)
+            } else {
+                val idx = history.indexOf(existingHistory)
+                history.removeAt(idx)
+                Log.d("History", existingHistory.toString())
+                history.add(existingHistory)
             }
+            user.update("history", history)
         }
     }
 
@@ -179,6 +185,7 @@ class FirebaseRepo : KoinComponent {
     }
 
     private fun getEncrypted(text: String) = CryptoEncryption.encrypt(text)
+
     fun removeLastMessage(id: String, promptType: String): Boolean {
         val docRef = user.collection(promptType).document(id)
         return try {
@@ -197,27 +204,39 @@ class FirebaseRepo : KoinComponent {
         }
     }
 
+    fun getNormalHistory(id: String): Flow<ChatHistoryNormal> {
+        return callbackFlow {
+            try {
+                val doc = user.collection(Const.NORMAL_HISTORY).document(id).get().await()
+                    .toObject<ChatHistoryNormal>()
+                Log.d("NormalHistory", doc.toString())
+                if (doc == null) trySend(ChatHistoryNormal(model = Const.CHAT_BUDDY))
+                else trySend(doc)
+            } catch (e: Exception) {
+                Log.d("NormalHistory", e.toString())
+                trySend(ChatHistoryNormal(model = Const.CHAT_BUDDY))
+            }
+            awaitClose { }
+        }
+
+    }
+
     fun getModelsHistory(id: String, model: Model): Flow<ModelsHistory> {
         return callbackFlow {
             try {
-                val doc = user.collection(Const.MODELS_HISTORY).document(id).get().await()
+                val doc = user.collection(Const.CHARACTER_HISTORY).document(id).get().await()
                     .toObject(ModelsHistory::class.java)
                 if (doc == null) trySend(
                         ModelsHistory(
                                 id = id, model = model.actualName,
                                 system = model.system,
                                 safetySettings = model.safetySetting,
-                                temperature = model.temperature
+                                temperature = model.temperature,
+                                promptType = Const.CHARACTER_HISTORY
                         )
                 )
                 else {
-                    val modelsHistory = doc.copy(
-                            messages = doc.messages.onEach {
-                                it.text = CryptoEncryption.decrypt(it.text)
-                            }
-                    )
-                    Log.d("ModelsHistory", modelsHistory.toString())
-                    trySend(modelsHistory)
+                    trySend(doc)
                 }
             } catch (e: Exception) {
                 Log.d("ModelsHistory", e.toString())
@@ -226,7 +245,8 @@ class FirebaseRepo : KoinComponent {
                                 id = id, model = model.actualName,
                                 system = model.system,
                                 safetySettings = model.safetySetting,
-                                temperature = model.temperature
+                                temperature = model.temperature,
+                                promptType = Const.CHARACTER_HISTORY
                         )
                 )
             }
@@ -241,7 +261,7 @@ class FirebaseRepo : KoinComponent {
 data class UserHistory(
     val id: String = "",
     val promptType: String = "",
-    val timestamp: Timestamp = Timestamp.now(),
+    var timestamp: Timestamp = Timestamp.now(),
     val firstPrompt: String = "",
-    val title: String = ""
+    val title: String = "",
 )

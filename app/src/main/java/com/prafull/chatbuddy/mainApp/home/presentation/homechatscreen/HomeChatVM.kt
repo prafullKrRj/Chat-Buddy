@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.prafull.chatbuddy.mainApp.common.data.repos.HomeChatAbstract
 import com.prafull.chatbuddy.mainApp.common.model.BaseChatViewModel
+import com.prafull.chatbuddy.mainApp.common.model.ChatUIState
 import com.prafull.chatbuddy.mainApp.common.model.Model
 import com.prafull.chatbuddy.mainApp.common.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.common.model.isGeminiModel
@@ -13,11 +14,15 @@ import com.prafull.chatbuddy.mainApp.common.model.isGptModel
 import com.prafull.chatbuddy.mainApp.home.models.ChatHistoryNormal
 import com.prafull.chatbuddy.mainApp.home.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.home.presentation.homescreen.HomeViewModel
+import com.prafull.chatbuddy.utils.CryptoEncryption
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class HomeChatVM(
     firstPrompt: NormalHistoryMsg,
-    initialModel: Model
+    initialModel: Model,
+    chatId: String
 ) : BaseChatViewModel<NormalHistoryMsg, ChatHistoryNormal>() {
 
     override var chatHistory by mutableStateOf(ChatHistoryNormal(model = "gemini-1.5-flash-latest"))
@@ -28,10 +33,35 @@ class HomeChatVM(
         homeViewModel?.currModel = newModel
     }
 
+    var screenLoading by mutableStateOf(false)
+
     init {
-        chatHistory = chatHistory.copy(model = initialModel.actualName)
-        sendMessage(firstPrompt)
+        if (chatId.isEmpty()) {
+            chatHistory = chatHistory.copy(model = initialModel.actualName)
+            sendMessage(firstPrompt)
+        } else {
+            screenLoading = true
+            getHistory(id = chatId)
+        }
     }
+
+    private fun getHistory(id: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            firebaseRepo.getNormalHistory(id).collect { history ->
+                chatHistory = history
+                _chatUiState.update {
+                    ChatUIState(
+                            messages = history.messages.map { it.convertToDecryptedMessage() }
+                    )
+                }
+                screenLoading = false
+            }
+        }
+    }
+
+    private fun NormalHistoryMsg.convertToDecryptedMessage() = this.copy(
+            text = CryptoEncryption.decrypt(text)
+    )
 
     override fun sendMessage(message: NormalHistoryMsg) {
         isLoading = true

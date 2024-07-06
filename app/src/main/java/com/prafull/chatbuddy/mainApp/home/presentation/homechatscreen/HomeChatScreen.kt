@@ -32,6 +32,7 @@ import com.prafull.chatbuddy.mainApp.common.components.SelectModelDialogBox
 import com.prafull.chatbuddy.mainApp.common.model.isClaudeModel
 import com.prafull.chatbuddy.mainApp.common.model.isGeminiModel
 import com.prafull.chatbuddy.mainApp.common.model.isGptModel
+import com.prafull.chatbuddy.mainApp.historyscreen.ui.Loader
 import com.prafull.chatbuddy.mainApp.home.models.NormalHistoryMsg
 import com.prafull.chatbuddy.mainApp.home.presentation.components.MessageBubble
 import com.prafull.chatbuddy.mainApp.home.presentation.components.PromptField
@@ -94,32 +95,35 @@ fun HomeChatScreen(
                 )
             }
     ) { paddingValues ->
-        LazyColumn(
-                state = listState,
-                contentPadding = paddingValues,
-                verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
-                modifier = Modifier.fillMaxSize()
-        ) {
-            itemsIndexed(uiState.messages, key = { _, item ->
-                item.id
-            }) { idx, message ->
-                MessageBubble(
-                        modifier = Modifier.padding(horizontal = 8.dp),
-                        participant = message.participant,
-                        message = Pair(message.text, message.imageBitmaps),
-                        botImage1 = message.botImage,
-                        botImage2 = getBotImage2(message.model),
-                        mA = mA,
-                        isLast = idx == uiState.messages.size - 1,
-                        isSecondLast = idx == uiState.messages.size - 2,
-                        clipboardManager = clipboardManager,
-                        model = message.model,
-                        regenerateOutput = regenerateOutput
-                )
+        if (chatVM.screenLoading) {
+            Loader()
+        } else {
+            LazyColumn(
+                    state = listState,
+                    contentPadding = paddingValues,
+                    verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Top),
+                    modifier = Modifier.fillMaxSize()
+            ) {
+                itemsIndexed(uiState.messages, key = { _, item ->
+                    item.id
+                }) { idx, message ->
+                    MessageBubble(
+                            modifier = Modifier.padding(horizontal = 8.dp),
+                            participant = message.participant,
+                            message = Pair(message.text, message.imageBitmaps),
+                            botImage1 = message.botImage,
+                            botImage2 = getBotImage2(message.model),
+                            mA = mA,
+                            isLast = idx == uiState.messages.size - 1,
+                            isSecondLast = idx == uiState.messages.size - 2,
+                            clipboardManager = clipboardManager,
+                            model = message.model,
+                            regenerateOutput = regenerateOutput
+                    )
+                }
             }
         }
     }
-
     if (showModelSelectionDialog) {
         SelectModelDialogBox(modelsState = modelState, onModelSelect = { newModel ->
             chatVM.changeModel(newModel, homeVM)

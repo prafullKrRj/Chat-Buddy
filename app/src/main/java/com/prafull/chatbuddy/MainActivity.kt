@@ -116,7 +116,9 @@ sealed interface Routes {
     object Home
 
     @Serializable
-    object HomeChatScreen
+    data class HomeChatScreen(
+        val id: String = ""
+    )
 
 
     @Serializable

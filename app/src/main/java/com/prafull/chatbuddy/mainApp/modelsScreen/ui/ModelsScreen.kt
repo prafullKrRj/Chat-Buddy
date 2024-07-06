@@ -1,7 +1,6 @@
 package com.prafull.chatbuddy.mainApp.modelsScreen.ui
 
 import android.content.Context
-import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -62,7 +61,6 @@ fun ModelsScreen(
     val navigate = remember<(Model) -> Unit> {
         {
             if (it.modelGroup == "Characters") {
-                Log.d("ModelsScreen", "navigate: $it")
                 navController.navigate(
                         it.toChatScreen(id = it.generalName)
                 )
@@ -151,34 +149,35 @@ fun ModelGroupComposable(
                 fontSize = 20.sp,
                 modifier = Modifier.padding(8.dp)
         )
-        LazyRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(models, key = {
-                it.actualName
-            }) { model ->
-                Card(
-                        modifier = Modifier
-                            .height(100.dp)
-                            .width(200.dp)
-                ) {
-                    Column(modifier = Modifier
-                        .fillMaxSize()
-                        .clickable {
-                            onModelClicked(model)
-                        }) {
-                        Row(verticalAlignment = CenterVertically) {
-                            if (id != null) {
-                                ModelImageOffline(id)
-                            } else {
-                                ModelImageFromInternet(context, model.image)
-                            }
-                            Column {
-                                Text(text = model.generalName)
-                                //   Text(text = model.modelGroup)
+        models.chunked(5).forEach { modelsChunk ->
+            LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(modelsChunk, key = {
+                    it.generalName
+                }) { model ->
+                    Card(
+                            modifier = Modifier
+                                .height(100.dp)
+                                .width(200.dp)
+                    ) {
+                        Column(modifier = Modifier
+                            .fillMaxSize()
+                            .clickable {
+                                onModelClicked(model)
+                            }) {
+                            Row(verticalAlignment = CenterVertically) {
+                                if (id != null) {
+                                    ModelImageOffline(id)
+                                } else {
+                                    ModelImageFromInternet(context, model.image)
+                                }
+                                Column {
+                                    Text(text = model.generalName)
+                                }
                             }
                         }
                     }

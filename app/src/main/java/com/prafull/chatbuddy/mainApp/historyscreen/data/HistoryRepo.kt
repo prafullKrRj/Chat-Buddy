@@ -58,7 +58,7 @@ class HistoryRepo : KoinComponent {
             }.addOnFailureListener {
                 trySend(false)
             }
-            awaitClose {  }
+            awaitClose { }
         }
     }
 }

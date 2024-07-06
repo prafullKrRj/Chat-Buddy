@@ -58,7 +58,7 @@ fun NewHomeScreen(
                             participant = participant,
                     )
             )
-            navController.navigate(Routes.HomeChatScreen)
+            navController.navigate(Routes.HomeChatScreen())
         })
     }) { paddingValues ->
         LazyColumn(

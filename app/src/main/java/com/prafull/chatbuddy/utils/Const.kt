@@ -43,19 +43,19 @@ object Const {
     val SAFETY_SETTINGS_UNINTERRUPTED = listOf(
             SafetySetting(
                     harmCategory = HarmCategory.SEXUALLY_EXPLICIT,
-                    threshold = BlockThreshold.MEDIUM_AND_ABOVE
+                    threshold = BlockThreshold.NONE
             ),
             SafetySetting(
                     harmCategory = HarmCategory.HARASSMENT,
-                    threshold = BlockThreshold.MEDIUM_AND_ABOVE
+                    threshold = BlockThreshold.NONE
             ),
             SafetySetting(
                     harmCategory = HarmCategory.HATE_SPEECH,
-                    threshold = BlockThreshold.MEDIUM_AND_ABOVE
+                    threshold = BlockThreshold.NONE
             ),
             SafetySetting(
                     harmCategory = HarmCategory.DANGEROUS_CONTENT,
-                    threshold = BlockThreshold.MEDIUM_AND_ABOVE
+                    threshold = BlockThreshold.NONE
             ),
     )
     val SAFETY_SETTINGS_ROMANTIC = listOf(

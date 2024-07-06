@@ -14,7 +14,7 @@ data class ChatHistoryNormal(
     val safetySettings: String = ModelSafety.UNINTERRUPTED.name,
     val temperature: Double = 0.7,
     val promptType: String = Const.NORMAL_HISTORY,
-    val model: String
+    val model: String = ""
 ) {
     fun toHistoryItem(): HistoryItem {
         return HistoryItem(
